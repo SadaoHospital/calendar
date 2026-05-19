@@ -41,7 +41,7 @@
         /* ✨ สไตล์สำหรับไฮไลท์วันนี้ (สีทองวาวๆ) */
         .today-card-glow {
             ring-width: 3px;
-            --tw-ring-color: #fbbf24; /* สีเหลืองทอง */
+            --tw-ring-color: #fbbf24;
             box-shadow: 0 0 20px rgba(251, 191, 36, 0.5), 0 10px 25px rgba(0,0,0,0.05);
             z-index: 20;
         }
@@ -188,18 +188,26 @@
                         <input type="text" id="eventTitle" required placeholder="ระบุชื่องาน (เช่น ประชุมบอร์ดบริหาร)" class="modern-input w-full px-4 py-3 rounded-2xl text-sm font-bold text-gray-800 outline-none shadow-sm">
                     </div>
 
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="col-span-1">
-                            <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1">วันที่เริ่ม <span class="text-red-500">*</span></label>
-                            <input type="text" id="eventDate" required placeholder="เลือกวัน" class="modern-input w-full px-4 py-3 rounded-2xl text-sm font-bold text-gray-800 outline-none shadow-sm cursor-pointer bg-white">
+                    <div class="bg-gray-50 border border-gray-100 p-3 rounded-2xl">
+                        <div class="mb-3">
+                            <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1 text-blue-700">📅 วันที่ปฏิบัติงาน <span class="text-xs font-normal text-gray-400">(คลิกเลือกวันเดียว หรือลากคลุมเพื่อเลือกหลายวันติดกัน)</span></label>
+                            <input type="text" id="eventDate" required placeholder="เลือกวัน หรือลากคลุมหลายวัน" class="modern-input w-full px-4 py-2.5 rounded-xl text-sm font-bold text-gray-800 outline-none shadow-sm cursor-pointer bg-white">
                         </div>
-                        <div class="col-span-1">
-                            <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1">เวลาเริ่ม <span class="text-red-500">*</span></label>
-                            <input type="text" id="eventTimeStart" required placeholder="--:--" class="modern-input w-full px-4 py-3 rounded-2xl text-sm font-bold text-gray-800 outline-none shadow-sm cursor-pointer bg-white">
-                        </div>
-                        <div class="col-span-1">
-                            <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1">เวลาจบ <span class="text-red-500">*</span></label>
-                            <input type="text" id="eventTimeEnd" required placeholder="--:--" class="modern-input w-full px-4 py-3 rounded-2xl text-sm font-bold text-gray-800 outline-none shadow-sm cursor-pointer bg-white">
+
+                        <div class="border-t border-gray-200 pt-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-[13px] font-bold text-slate-700 pl-1 text-blue-700">⏰ ช่วงเวลา</label>
+                                <div class="flex gap-1 bg-gray-200 p-1 rounded-lg">
+                                    <button type="button" onclick="setTimeBlock('custom')" id="tb-custom" class="time-block-btn px-2 py-1 text-[10px] font-bold rounded bg-white text-blue-600 shadow-sm transition-all">ระบุเอง</button>
+                                    <button type="button" onclick="setTimeBlock('allday')" id="tb-allday" class="time-block-btn px-2 py-1 text-[10px] font-bold rounded text-gray-600 hover:bg-white/60 transition-all">เต็มวัน</button>
+                                    <button type="button" onclick="setTimeBlock('morning')" id="tb-morning" class="time-block-btn px-2 py-1 text-[10px] font-bold rounded text-gray-600 hover:bg-white/60 transition-all">เช้า</button>
+                                    <button type="button" onclick="setTimeBlock('afternoon')" id="tb-afternoon" class="time-block-btn px-2 py-1 text-[10px] font-bold rounded text-gray-600 hover:bg-white/60 transition-all">บ่าย</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <input type="text" id="eventTimeStart" required placeholder="เวลาเริ่ม (--:--)" class="modern-input w-full px-4 py-2.5 rounded-xl text-sm font-bold text-gray-800 outline-none shadow-sm cursor-pointer bg-white text-center">
+                                <input type="text" id="eventTimeEnd" required placeholder="เวลาจบ (--:--)" class="modern-input w-full px-4 py-2.5 rounded-xl text-sm font-bold text-gray-800 outline-none shadow-sm cursor-pointer bg-white text-center">
+                            </div>
                         </div>
                     </div>
 
@@ -298,10 +306,38 @@
             }
         }
 
+        // ⚡ อัปเกรด: เปิดโหมด range ให้ลากคลุมเลือกวันได้เลย
         function initFlatpickr() {
-            fpDate = flatpickr("#eventDate", { locale: "th", altInput: true, altFormat: "d/m/Y", dateFormat: "Y-m-d", disableMobile: "true" });
+            fpDate = flatpickr("#eventDate", { 
+                locale: "th", 
+                altInput: true, 
+                altFormat: "d/m/Y", 
+                dateFormat: "Y-m-d", 
+                mode: "range", 
+                disableMobile: "true" 
+            });
             fpTimeStart = flatpickr("#eventTimeStart", { enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true, disableMobile: "true" });
             fpTimeEnd = flatpickr("#eventTimeEnd", { enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true, disableMobile: "true" });
+        }
+
+        // ⚡ ระบบคีย์ลัดเวลา
+        function setTimeBlock(type) {
+            document.querySelectorAll('.time-block-btn').forEach(b => {
+                b.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+                b.classList.add('text-gray-600', 'hover:bg-white/60');
+            });
+            document.getElementById('tb-' + type).classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+            document.getElementById('tb-' + type).classList.remove('text-gray-600', 'hover:bg-white/60');
+
+            if(type === 'custom') {
+                fpTimeStart.clear(); fpTimeEnd.clear();
+            } else if (type === 'allday') {
+                fpTimeStart.setDate('08:30'); fpTimeEnd.setDate('16:30');
+            } else if (type === 'morning') {
+                fpTimeStart.setDate('08:30'); fpTimeEnd.setDate('12:00');
+            } else if (type === 'afternoon') {
+                fpTimeStart.setDate('13:00'); fpTimeEnd.setDate('16:30');
+            }
         }
 
         async function fetchExecutives() {
@@ -367,7 +403,6 @@
             return new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
         }
 
-        // 🗓️ ระบบวาดการ์ด 7 คอลัมน์ (Sun-Sat)
         function renderMonthlyGrid(eventsArray) {
             const gridBox = document.getElementById("calendarGridBox");
             gridBox.innerHTML = "";
@@ -375,20 +410,17 @@
             const year = currentDisplayDate.getFullYear();
             const month = currentDisplayDate.getMonth();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const firstDay = new Date(year, month, 1).getDay(); // 0(Sun) - 6(Sat)
+            const firstDay = new Date(year, month, 1).getDay(); 
 
             document.getElementById("monthTitle").innerText = `${thaiMonthsFull[month]} ${year + 543}`;
             
             let todayDate = new Date();
             let htmlContent = "";
 
-            // 🟢 1. สร้างช่องว่างหลอก (Placeholder) สำหรับวันก่อนวันที่ 1 ให้ตรงกับวันในสัปดาห์
             for(let i = 0; i < firstDay; i++) {
-                // แสดงผลช่องว่างเฉพาะในจอใหญ่ (lg) ที่เป็น Layout 7 คอลัมน์
                 htmlContent += `<div class="hidden lg:block rounded-2xl bg-white/30 border border-white/40"></div>`;
             }
 
-            // 🟢 2. วนลูปสร้างการ์ดวันที่ 1 ถึงวันสุดท้าย
             for (let day = 1; day <= daysInMonth; day++) {
                 let targetDate = new Date(year, month, day);
                 let dateStr = getLocalISOString(targetDate);
@@ -397,12 +429,10 @@
                 
                 let dayName = thaiDays[dayOfWeek];
 
-                // เช็คว่าเป็นวันนี้หรือไม่
                 let isToday = (targetDate.getDate() === todayDate.getDate() && 
                                targetDate.getMonth() === todayDate.getMonth() && 
                                targetDate.getFullYear() === todayDate.getFullYear());
 
-                // ป้ายแจ้งเตือนต่างๆ
                 let holidayBadge = "";
                 let todayBadgeSpan = "";
 
@@ -419,7 +449,6 @@
                 let dayEvents = eventsArray.filter(e => e.date === dateStr);
                 dayEvents.sort((a,b) => (a.timeStart || "").localeCompare(b.timeStart || ""));
 
-                // 🌟 สไตล์ไฮไลท์กรอบทองวาวๆ สำหรับ "วันนี้"
                 let todayHighlight = isToday ? "today-card-glow ring-[3px]" : "";
                 let headerBg = isToday ? "bg-amber-50/90" : theme.bg;
                 let numColor = isToday ? "text-amber-600" : theme.text;
@@ -498,9 +527,8 @@
 
         function openModal() {
             document.getElementById('eventModal').classList.remove('hidden');
-            if(fpDate) fpDate.setDate(new Date()); 
-            if(fpTimeStart) fpTimeStart.clear();
-            if(fpTimeEnd) fpTimeEnd.clear();
+            if(fpDate) fpDate.clear(); // ล้างค่าวันให้โล่งๆ พร้อมใช้งาน
+            setTimeBlock('custom'); // รีเซ็ตปุ่มคีย์ลัดเวลา
         }
         
         function closeModal() {
@@ -508,6 +536,17 @@
             document.getElementById('eventForm').reset(); 
             selectedExecData = null;
             document.getElementById('dropdownSelectedText').innerHTML = '-- เลือกผู้บริหาร --';
+        }
+
+        // ตัวช่วยสร้าง Array วันที่กรณีลากคลุมหลายวัน
+        function getDatesInRange(startDate, endDate) {
+            const date = new Date(startDate);
+            const dates = [];
+            while (date <= new Date(endDate)) {
+                dates.push(getLocalISOString(date));
+                date.setDate(date.getDate() + 1);
+            }
+            return dates;
         }
 
         function generateRecurringEvents(baseEvent, recurType) {
@@ -568,24 +607,44 @@
             submitBtn.innerHTML = '⏳ กำลังประมวลผล...';
             submitBtn.disabled = true;
 
-            const baseEvent = {
-                uid: selectedExecData.uid, execName: selectedExecData.fullName, execPosition: selectedExecData.position, avatar: selectedExecData.avatarUrl,
-                title: document.getElementById('eventTitle').value,
-                date: document.getElementById('eventDate').value,
-                timeStart: timeStartVal,
-                timeEnd: timeEndVal,
-                room: document.getElementById('eventRoom').value,
-                priority: document.getElementById('eventPriority').value,
-                timestamp: new Date().toISOString()
-            };
-
+            const dateValue = document.getElementById('eventDate').value;
             const recurType = document.getElementById('eventRecurrence').value;
-            const eventsToSave = generateRecurringEvents(baseEvent, recurType);
+            
+            // ⚡ จัดการการลากคลุมหลายวัน (เช่น 19 ถึง 21)
+            let datesToProcess = [];
+            if (dateValue.includes(" ถึง ")) {
+                let parts = dateValue.split(" ถึง ");
+                datesToProcess = getDatesInRange(parts[0], parts[1]);
+            } else if (dateValue.includes(" to ")) {
+                let parts = dateValue.split(" to ");
+                datesToProcess = getDatesInRange(parts[0], parts[1]);
+            } else {
+                datesToProcess = [dateValue];
+            }
+
+            let allEventsToSave = [];
+            
+            datesToProcess.forEach(baseDateStr => {
+                let baseEvent = {
+                    uid: selectedExecData.uid, execName: selectedExecData.fullName, execPosition: selectedExecData.position, avatar: selectedExecData.avatarUrl,
+                    title: document.getElementById('eventTitle').value,
+                    date: baseDateStr,
+                    timeStart: timeStartVal,
+                    timeEnd: timeEndVal,
+                    room: document.getElementById('eventRoom').value,
+                    priority: document.getElementById('eventPriority').value,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // ต่อยอดให้รองรับการทำซ้ำในแต่ละวันที่ลากคลุมด้วย
+                let recurred = generateRecurringEvents(baseEvent, recurType);
+                allEventsToSave.push(...recurred);
+            });
 
             try {
                 Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
                 
-                const promises = eventsToSave.map(ev => 
+                const promises = allEventsToSave.map(ev => 
                     fetch(FIREBASE_URL + "sadaoExecCalendar/events.json", {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -596,9 +655,9 @@
                 await Promise.all(promises);
 
                 closeModal();
-                Swal.fire({ title: 'บันทึกสำเร็จ!', text: `เพิ่มตารางงานลงปฏิทินเรียบร้อย (${eventsToSave.length} รายการ)`, icon: 'success', confirmButtonColor: '#3b82f6' });
+                Swal.fire({ title: 'บันทึกสำเร็จ!', text: `เพิ่มตารางงานลงปฏิทินเรียบร้อย (${allEventsToSave.length} รายการ)`, icon: 'success', confirmButtonColor: '#3b82f6' });
                 
-                currentDisplayDate = new Date(baseEvent.date);
+                currentDisplayDate = new Date(datesToProcess[0]);
                 fetchEvents();
 
             } catch (error) { Swal.fire('ข้อผิดพลาด', error.message, 'error'); } 
