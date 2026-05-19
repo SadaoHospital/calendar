@@ -131,7 +131,7 @@
                 </div>
                 
                 <div class="flex items-center">
-                    <button onclick="openModal()" class="w-full lg:w-auto h-full px-6 py-3 rounded-2xl btn-3d text-white text-xs md:text-sm font-bold tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30">
+                    <button onclick="openModal()" id="btnAddEvent" class="hidden w-full lg:w-auto h-full px-6 py-3 rounded-2xl btn-3d text-white text-xs md:text-sm font-bold tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30">
                         ➕ เพิ่มนัดหมาย
                     </button>
                 </div>
@@ -151,9 +151,8 @@
         </div>
     </div>
 
-    <div id="eventModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div id="eventModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white/95 backdrop-blur-xl rounded-[32px] shadow-2xl border border-white w-full max-w-xl overflow-visible modal-enter relative my-auto">
-            
             <form id="eventForm" onsubmit="saveEvent(event)" class="relative z-10 flex flex-col h-full">
                 <div class="px-8 pt-6 pb-2 flex justify-between items-center">
                     <div class="flex items-center gap-3">
@@ -189,7 +188,7 @@
 
                     <div class="bg-gray-50 border border-gray-100 p-3 rounded-2xl">
                         <div class="mb-3">
-                            <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1 text-blue-700">📅 วันที่ปฏิบัติงาน <span class="text-xs font-normal text-gray-400">(คลิกเลือกวันเดียว หรือลากคลุมเพื่อเลือกหลายวันติดกัน)</span></label>
+                            <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1 text-blue-700">📅 วันที่ปฏิบัติงาน <span class="text-xs font-normal text-gray-400">(คลิกเลือกวันเดียว หรือลากคลุมหลายวัน)</span></label>
                             <input type="text" id="eventDate" required placeholder="เลือกวัน หรือลากคลุมหลายวัน" class="modern-input w-full px-4 py-2.5 rounded-xl text-sm font-bold text-gray-800 outline-none shadow-sm cursor-pointer bg-white">
                         </div>
 
@@ -257,6 +256,55 @@
         </div>
     </div>
 
+    <div id="viewEventModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-[32px] shadow-2xl border border-white w-full max-w-sm modal-enter relative my-auto overflow-hidden">
+            <div id="viewModalHeader" class="px-6 py-5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white flex justify-between items-start">
+                <div class="flex items-center gap-3">
+                    <img id="viewAvatar" src="" class="w-12 h-12 rounded-full border-2 border-white/50 shadow-md object-cover bg-white">
+                    <div>
+                        <h4 id="viewExecName" class="text-base font-black tracking-tight leading-tight">Name</h4>
+                        <p id="viewExecPosition" class="text-[10px] font-medium text-blue-100">Position</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeViewModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/40 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="px-6 py-5 space-y-4">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span id="viewPriorityBadge" class="text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">ทั่วไป</span>
+                        <span id="viewPrivacyBadge" class="text-[9px] font-bold px-2 py-0.5 rounded shadow-sm bg-gray-100 text-gray-600 border border-gray-200">🌐 สาธารณะ</span>
+                    </div>
+                    <h3 id="viewTitle" class="text-lg font-black text-gray-800 leading-tight">Event Title</h3>
+                </div>
+
+                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-3">
+                    <div class="flex items-center gap-3 text-sm font-semibold text-gray-700">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">📅</div>
+                        <span id="viewDate">Date</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm font-semibold text-gray-700">
+                        <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">⏰</div>
+                        <span id="viewTime">Time</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm font-semibold text-gray-700">
+                        <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0">📍</div>
+                        <span id="viewRoom">Room</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="deleteActionBox" class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2 hidden">
+                <button type="button" onclick="confirmDelete()" class="w-full px-4 py-3 rounded-xl font-bold text-white bg-red-500 hover:bg-red-600 shadow-md shadow-red-500/20 transition-all flex items-center justify-center gap-2 text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    ลบข้อมูลนัดหมายนี้
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const MY_LIFF_ID = "2010128406-pWJYT2lK"; 
         const FIREBASE_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/";
@@ -265,6 +313,11 @@
         let allEventsData = []; 
         let fpDate, fpTimeStart, fpTimeEnd;
         let currentDisplayDate = new Date(); 
+        
+        // 🟢 เพิ่มตัวแปรสำหรับจัดการสิทธิ์
+        let currentLiffUid = "";
+        let isBoardMember = false;
+        let viewingEventId = null; 
 
         const thaiMonthsFull = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
         const thaiDays = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
@@ -296,6 +349,8 @@
 
                 if (liff.isLoggedIn()) {
                     const profile = await liff.getProfile();
+                    currentLiffUid = profile.userId; // เก็บ UID ของผู้ใช้งานปัจจุบัน
+
                     document.getElementById("profileBox").classList.remove("hidden");
                     document.getElementById("profileBox").classList.add("flex");
                     document.getElementById("dashboardArea").classList.remove("hidden");
@@ -303,7 +358,7 @@
                     document.getElementById("pictureUrl").src = profile.pictureUrl;
                     document.getElementById("displayName").innerText = profile.displayName;
 
-                    await fetchExecutives();
+                    await fetchExecutives(); // ดึงข้อมูลกรรมการ และตรวจสอบสิทธิ์
                     await fetchEvents(); 
                 } else {
                     liff.login();
@@ -316,12 +371,7 @@
 
         function initFlatpickr() {
             fpDate = flatpickr("#eventDate", { 
-                locale: "th", 
-                altInput: true, 
-                altFormat: "d/m/Y", 
-                dateFormat: "Y-m-d", 
-                mode: "range", 
-                disableMobile: "true" 
+                locale: "th", altInput: true, altFormat: "d/m/Y", dateFormat: "Y-m-d", mode: "range", disableMobile: "true" 
             });
             fpTimeStart = flatpickr("#eventTimeStart", { enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true, disableMobile: "true" });
             fpTimeEnd = flatpickr("#eventTimeEnd", { enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true, disableMobile: "true" });
@@ -352,21 +402,28 @@
             let selectMain = document.getElementById("execSelect");
             let dropdownMenu = document.getElementById("dropdownMenu");
 
+            isBoardMember = false; // รีเซ็ตสิทธิ์
+
             if(data) {
                 dropdownMenu.innerHTML = ''; 
                 
-                // แปลง Object เป็น Array เพื่อให้ Sort ได้
                 let execArray = Object.keys(data).map(uid => {
                     return { uid: uid, ...data[uid] };
                 });
+
+                // ตรวจสอบว่าคนที่ล็อคอิน เป็น 1 ในบอร์ดบริหารหรือไม่
+                const foundSelf = execArray.find(e => e.uid === currentLiffUid && e.isActive);
+                if (foundSelf) {
+                    isBoardMember = true;
+                    // แสดงปุ่มเพิ่มนัดหมายเฉพาะคนที่เป็นกรรมการ
+                    document.getElementById("btnAddEvent").classList.remove("hidden");
+                }
                 
-                // เรียงลำดับตาม sortOrder (น้อยไปมาก)
                 execArray.sort((a, b) => (a.sortOrder || 999) - (b.sortOrder || 999));
 
                 execArray.forEach(exec => {
                     let opt1 = document.createElement("option");
                     opt1.value = exec.uid; 
-                    // แสดงลำดับด้านหน้า ถ้ามี
                     opt1.innerText = `${exec.sortOrder && exec.sortOrder !== 999 ? '['+exec.sortOrder+'] ' : ''}${exec.position} ➔ ${exec.fullName}`;
                     selectMain.appendChild(opt1);
 
@@ -409,14 +466,34 @@
         function triggerRenderMonthlyGrid() {
             let selectedUid = document.getElementById("execSelect").value;
             let eventsToRender = allEventsData;
+            
+            // กรองตามคนใน Dropdown
             if(selectedUid !== "ALL" && selectedUid) {
-                eventsToRender = allEventsData.filter(ev => ev.uid === selectedUid);
+                eventsToRender = eventsToRender.filter(ev => ev.uid === selectedUid);
             }
+
+            // 🟢 ระบบกรองตามสิทธิการมองเห็น (Privacy Access)
+            eventsToRender = eventsToRender.filter(ev => {
+                if (ev.visibility === 'private') {
+                    // ส่วนตัว = เห็นเฉพาะเจ้าของงาน (คนที่ UID ตรงกัน)
+                    return ev.uid === currentLiffUid;
+                } else if (ev.visibility === 'board' || ev.visibility === 'เฉพาะกรรมการ') {
+                    // เฉพาะกรรมการ = เห็นเฉพาะคนที่มีรายชื่อในฐานข้อมูล
+                    return isBoardMember; 
+                }
+                return true; // สาธารณะ (public) ใครก็เห็นได้
+            });
+
             renderMonthlyGrid(eventsToRender);
         }
 
         function getLocalISOString(dateObj) {
             return new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        }
+
+        function formatDateThai(dateStr) {
+            const d = new Date(dateStr);
+            return `${d.getDate()} ${thaiMonthsFull[d.getMonth()]} ${d.getFullYear() + 543}`;
         }
 
         function renderMonthlyGrid(eventsArray) {
@@ -442,7 +519,6 @@
                 let dateStr = getLocalISOString(targetDate);
                 let dayOfWeek = targetDate.getDay(); 
                 let theme = colorThemes[dayOfWeek];
-                
                 let dayName = thaiDays[dayOfWeek];
 
                 let isToday = (targetDate.getDate() === todayDate.getDate() && 
@@ -500,13 +576,13 @@
                         if(ev.priority === "ด่วนที่สุด") pClass = "bg-red-100 text-red-600";
                         let avatar = ev.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(ev.execName)}&background=eff6ff&color=3b82f6&rounded=true&bold=true`;
                         
-                        // แสดงไอคอนล็อคหากเป็นกิจกรรมแบบส่วนตัวหรือเฉพาะบอร์ด
                         let privacyIcon = "";
                         if(ev.visibility === "private") privacyIcon = "🔒";
                         else if(ev.visibility === "board") privacyIcon = "👥";
 
+                        // 🟢 เพิ่ม onclick เพื่อเปิดหน้าต่างดูรายละเอียด
                         cardHTML += `
-                            <div class="flex flex-col p-1.5 bg-white hover:bg-blue-50 border border-gray-100 rounded-lg transition-all shadow-sm relative group cursor-pointer" title="${privacyIcon} [${ev.timeStart}-${ev.timeEnd}] ${ev.title} @${ev.room}">
+                            <div onclick="openViewModal('${ev.id}')" class="flex flex-col p-1.5 bg-white hover:bg-blue-50 border border-gray-100 rounded-lg transition-all shadow-sm relative group cursor-pointer" title="${privacyIcon} [${ev.timeStart}-${ev.timeEnd}] ${ev.title} @${ev.room}">
                                 <div class="flex justify-between items-start mb-0.5">
                                     <div class="flex items-center gap-1 min-w-0 pr-1">
                                         <img src="${avatar}" class="w-3.5 h-3.5 rounded-full object-cover shrink-0">
@@ -529,6 +605,120 @@
             gridBox.innerHTML = htmlContent;
         }
 
+        // =====================================
+        // 🟢 ส่วนจัดการ View Modal & Delete
+        // =====================================
+        function openViewModal(eventId) {
+            const ev = allEventsData.find(e => e.id === eventId);
+            if (!ev) return;
+            
+            viewingEventId = eventId; // เก็บ ID ที่กำลังเปิดอยู่
+            
+            // ใส่ข้อมูลลงใน Modal
+            document.getElementById("viewAvatar").src = ev.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(ev.execName)}`;
+            document.getElementById("viewExecName").innerText = ev.execName;
+            document.getElementById("viewExecPosition").innerText = ev.execPosition;
+            document.getElementById("viewTitle").innerText = ev.title;
+            document.getElementById("viewDate").innerText = formatDateThai(ev.date);
+            document.getElementById("viewTime").innerText = `${ev.timeStart} - ${ev.timeEnd} น.`;
+            document.getElementById("viewRoom").innerText = ev.room;
+
+            // ตกแต่งป้าย Priority
+            const pBadge = document.getElementById("viewPriorityBadge");
+            pBadge.innerText = ev.priority;
+            pBadge.className = "text-[9px] font-bold px-2 py-0.5 rounded shadow-sm"; // รีเซ็ต
+            if(ev.priority === "สำคัญ") pBadge.classList.add("bg-orange-100", "text-orange-600");
+            else if(ev.priority === "ด่วนที่สุด") pBadge.classList.add("bg-red-100", "text-red-600");
+            else pBadge.classList.add("bg-gray-100", "text-gray-600");
+
+            // ตกแต่งป้าย Privacy
+            const privBadge = document.getElementById("viewPrivacyBadge");
+            if(ev.visibility === "private") privBadge.innerHTML = "🔒 ส่วนตัว";
+            else if(ev.visibility === "board") privBadge.innerHTML = "👥 เฉพาะกรรมการ";
+            else privBadge.innerHTML = "🌐 สาธารณะ";
+
+            // ตรวจสอบสิทธิ์การแสดงปุ่มลบ (ลบได้เฉพาะเจ้าของงาน หรือ Board Member)
+            const btnDelete = document.getElementById("deleteActionBox");
+            if(ev.uid === currentLiffUid || isBoardMember) {
+                btnDelete.classList.remove("hidden");
+            } else {
+                btnDelete.classList.add("hidden");
+            }
+
+            document.getElementById("viewEventModal").classList.remove("hidden");
+        }
+
+        function closeViewModal() {
+            document.getElementById("viewEventModal").classList.add("hidden");
+            viewingEventId = null;
+        }
+
+        async function confirmDelete() {
+            const ev = allEventsData.find(e => e.id === viewingEventId);
+            if(!ev) return;
+
+            let text = "คุณต้องการลบข้อมูลนัดหมายนี้ออกจากปฏิทินใช่หรือไม่?";
+            let showDenyButton = false;
+            let confirmButtonText = 'ลบงานนี้';
+            let denyButtonText = '';
+            
+            // เช็คว่างานนี้มี Group ID (ถูกสร้างแบบลากคลุมหลายวัน หรือ ทำซ้ำรายเดือน)
+            const hasGroup = ev.groupId !== undefined;
+            let groupCount = 0;
+            if (hasGroup) {
+                groupCount = allEventsData.filter(e => e.groupId === ev.groupId).length;
+            }
+
+            if(hasGroup && groupCount > 1) {
+                text = `กิจกรรมนี้เป็นกิจกรรมแบบทำซ้ำ (${groupCount} รายการ) คุณต้องการลบแบบไหน?`;
+                showDenyButton = true;
+                confirmButtonText = 'ลบเฉพาะวันนี้';
+                denyButtonText = 'ลบทิ้งทั้งหมด';
+            }
+
+            Swal.fire({
+                title: 'ยืนยันการลบ',
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                showDenyButton: showDenyButton,
+                confirmButtonColor: '#ef4444',
+                denyButtonColor: '#b91c1c',
+                cancelButtonColor: '#9ca3af',
+                confirmButtonText: confirmButtonText,
+                denyButtonText: denyButtonText,
+                cancelButtonText: 'ยกเลิก'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    // ลบอันเดียว
+                    await deleteFromFirebase([ev.id]);
+                } else if (result.isDenied) {
+                    // ลบทั้ง Group
+                    const relatedIds = allEventsData.filter(e => e.groupId === ev.groupId).map(e => e.id);
+                    await deleteFromFirebase(relatedIds);
+                }
+            });
+        }
+
+        async function deleteFromFirebase(ids) {
+            Swal.fire({ title: 'กำลังลบข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+            try {
+                const promises = ids.map(id => 
+                    fetch(FIREBASE_URL + "sadaoExecCalendar/events/" + id + ".json", { method: 'DELETE' })
+                );
+                await Promise.all(promises);
+                
+                closeViewModal();
+                Swal.fire('ลบสำเร็จ!', 'ข้อมูลนัดหมายถูกลบออกจากปฏิทินแล้ว', 'success');
+                fetchEvents(); // ดึงตารางมาวาดใหม่
+            } catch(e) {
+                Swal.fire('เกิดข้อผิดพลาด', e.message, 'error');
+            }
+        }
+
+        // =====================================
+        // 🟡 ส่วนจัดการ Event Form Modal (ของเดิม)
+        // =====================================
         document.getElementById('execSelect').addEventListener('change', triggerRenderMonthlyGrid);
 
         document.getElementById('dropdownTrigger').addEventListener('click', function() {
@@ -550,6 +740,12 @@
             document.getElementById('eventModal').classList.remove('hidden');
             if(fpDate) fpDate.clear(); 
             setTimeBlock('custom'); 
+            
+            // Pre-select ตัวเองถ้าเป็นกรรมการ
+            if(isBoardMember) {
+                const myExecData = Array.from(document.getElementById('dropdownMenu').children).find(el => el.innerHTML.includes(document.getElementById("displayName").innerText));
+                if(myExecData) myExecData.click();
+            }
         }
         
         function closeModal() {
@@ -629,9 +825,8 @@
 
             const dateValue = document.getElementById('eventDate').value;
             const recurType = document.getElementById('eventRecurrence').value;
-            const visibilityVal = document.getElementById('eventVisibility').value; // สิทธิ์การมองเห็น
+            const visibilityVal = document.getElementById('eventVisibility').value; 
             
-            // สร้าง Group ID สำหรับกิจกรรมทำซ้ำหรือลากคลุม
             const groupId = 'GRP_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
             
             let datesToProcess = [];
