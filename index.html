@@ -81,7 +81,7 @@
                 </div>
             </div>
             <div id="profileBox" class="hidden items-center gap-3 bg-white p-2 pr-5 rounded-full border border-gray-100 shadow-sm">
-                <img id="pictureUrl" src="" alt="User Profile" class="w-10 h-10 rounded-full border-2 border-blue-100 shadow-sm">
+                <img id="pictureUrl" src="" alt="User Profile" class="w-10 h-10 rounded-full border-2 border-blue-100 shadow-sm object-cover">
                 <span id="displayName" class="text-sm font-bold text-gray-700">กำลังโหลด...</span>
             </div>
         </div>
@@ -206,9 +206,8 @@
         const FIREBASE_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/";
         
         let selectedExecData = null; 
-        let allEventsData = []; // เก็บตารางงานทั้งหมดที่ดึงมาจาก Firebase
+        let allEventsData = []; 
 
-        // ชุดคำตั้งค่ารูปแบบวันที่ภาษาไทย และ ธีมสีประจำวัน
         const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
         const thaiDays = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
         const colorThemes = [
@@ -236,7 +235,7 @@
                     document.getElementById("displayName").innerText = profile.displayName;
 
                     await fetchExecutives();
-                    await fetchEvents(); // เรียกฟังก์ชันดึงตารางงานของจริง แทนของจำลอง
+                    await fetchEvents(); 
                 } else {
                     liff.login();
                 }
@@ -263,12 +262,13 @@
                         opt1.value = uid; opt1.innerText = exec.position + " ➔ " + exec.fullName;
                         selectMain.appendChild(opt1);
 
-                        let avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(exec.fullName)}&background=eff6ff&color=3b82f6&rounded=true&bold=true`;
+                        // 🟢 ดึงรูปจริงมาโชว์ ถ้าไม่มีในฐานข้อมูลค่อยสุ่มเป็นตัวอักษร
+                        let avatarUrl = exec.picUrl ? exec.picUrl : `https://ui-avatars.com/api/?name=${encodeURIComponent(exec.fullName)}&background=eff6ff&color=3b82f6&rounded=true&bold=true`;
                         
                         let item = document.createElement("div");
                         item.className = "flex items-center gap-3 p-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0";
                         item.innerHTML = `
-                            <img src="${avatarUrl}" class="w-9 h-9 rounded-full shadow-sm border border-white">
+                            <img src="${avatarUrl}" class="w-9 h-9 rounded-full shadow-sm border border-white object-cover">
                             <div class="flex flex-col">
                                 <span class="text-sm font-bold text-gray-800">${exec.fullName}</span>
                                 <span class="text-[10px] font-bold text-blue-500">${exec.position}</span>
@@ -284,7 +284,7 @@
         }
 
         // ==========================================
-        // 📥 ระบบดึงตารางงานจริงจาก Firebase มาแสดงผล
+        // 📥 ระบบดึงตารางงานจริงจาก Firebase
         // ==========================================
         async function fetchEvents() {
             try {
@@ -293,13 +293,11 @@
                 allEventsData = [];
 
                 if(data) {
-                    // แปลง Object จาก Firebase เป็น Array
                     for(let key in data) {
                         allEventsData.push({ ...data[key], id: key });
                     }
                 }
 
-                // เรียงลำดับงานตามวันที่ และเวลา (จากเก่าไปใหม่)
                 allEventsData.sort((a, b) => {
                     let dateA = new Date(a.date + "T" + (a.time || "00:00"));
                     let dateB = new Date(b.date + "T" + (b.time || "00:00"));
@@ -313,7 +311,7 @@
             }
         }
 
-        // 🎨 ฟังก์ชันวาดการ์ดตารางงานของจริงลงหน้าจอ
+        // 🎨 ฟังก์ชันวาดการ์ดตารางงาน
         function renderCalendarCards(eventsArray) {
             const gridBox = document.getElementById("calendarGridBox");
             gridBox.innerHTML = "";
@@ -323,17 +321,15 @@
                 return;
             }
 
-            // จัดกลุ่มงานที่อยู่ในวันเดียวกัน ให้อยู่ในการ์ดเดียวกัน
             const grouped = {};
             eventsArray.forEach(ev => {
                 if(!grouped[ev.date]) grouped[ev.date] = [];
                 grouped[ev.date].push(ev);
             });
 
-            // วนลูปวาดการ์ดทีละวัน
             for(let dateStr in grouped) {
                 let dateObj = new Date(dateStr);
-                let dayOfWeek = dateObj.getDay(); // 0 = อาทิตย์, 1 = จันทร์ ...
+                let dayOfWeek = dateObj.getDay(); 
                 let theme = colorThemes[dayOfWeek];
                 
                 let dayNum = dateObj.getDate();
@@ -355,7 +351,6 @@
                         <div class="p-3 overflow-y-auto hide-scroll flex-1 space-y-2">
                 `;
 
-                // วาดงานย่อยๆ ที่อยู่ในวันนั้น
                 grouped[dateStr].forEach(ev => {
                     let pClass = "bg-gray-100 text-gray-600";
                     if(ev.priority === "สำคัญ") pClass = "bg-orange-100 text-orange-600";
@@ -394,9 +389,9 @@
         document.getElementById('execSelect').addEventListener('change', function() {
             let selectedUid = this.value;
             if(selectedUid === "ALL" || !selectedUid) {
-                renderCalendarCards(allEventsData); // โชว์ทั้งหมด
+                renderCalendarCards(allEventsData); 
             } else {
-                let filtered = allEventsData.filter(ev => ev.uid === selectedUid); // โชว์เฉพาะคนนั้น
+                let filtered = allEventsData.filter(ev => ev.uid === selectedUid); 
                 renderCalendarCards(filtered);
             }
         });
@@ -419,7 +414,7 @@
             selectedExecData = { uid, fullName, position, avatarUrl };
             document.getElementById('dropdownSelectedText').innerHTML = `
                 <div class="flex items-center gap-2 -ml-1">
-                    <img src="${avatarUrl}" class="w-6 h-6 rounded-full border border-gray-200">
+                    <img src="${avatarUrl}" class="w-6 h-6 rounded-full border border-gray-200 object-cover">
                     <span class="text-gray-800 font-bold">${fullName}</span>
                 </div>
             `;
@@ -457,7 +452,7 @@
                 uid: selectedExecData.uid,
                 execName: selectedExecData.fullName,
                 execPosition: selectedExecData.position,
-                avatar: selectedExecData.avatarUrl,
+                avatar: selectedExecData.avatarUrl, // 🟢 บันทึกรูปโปรไฟล์ไปด้วย จะได้ดึงมาโชว์บนการ์ดง่ายๆ
                 title: document.getElementById('eventTitle').value,
                 date: document.getElementById('eventDate').value,
                 time: document.getElementById('eventTime').value,
@@ -477,9 +472,7 @@
                     closeModal();
                     Swal.fire({ title: 'บันทึกสำเร็จ!', text: 'เพิ่มตารางงานเข้าสู่ระบบเรียบร้อยแล้ว', icon: 'success', confirmButtonColor: '#3b82f6', shape: 'rounded-2xl' });
                     
-                    // 🔄 ดึงข้อมูลใหม่มาโชว์ทันทีหลังบันทึกเสร็จ
                     fetchEvents();
-                    // รีเซ็ตตัวกรองให้กลับไปโชว์ทั้งหมดด้วย
                     document.getElementById("execSelect").value = "ALL";
                 } else {
                     throw new Error("บันทึกไม่สำเร็จ");
