@@ -8,107 +8,99 @@
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     
     <style>
-        /* 🧪 ธีมใหม่: ขาว 60% / ฟ้าอ่อน 30% / สีไฮไลท์ 10% */
+        /* 🧪 ธีมขาว 60% / ฟ้าอ่อน 30% / สีไฮไลท์ 10% */
         body {
-            background: radial-gradient(circle at top left, #ffffff 60%, #e0f2fe 90%, #dbeafe 100%);
+            background: radial-gradient(circle at top left, #ffffff 60%, #f0f9ff 90%, #e0f2fe 100%);
             background-attachment: fixed;
             min-height: 100vh;
         }
 
         .glass-master {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 20px 50px rgba(59, 130, 246, 0.1), 
-                        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 20px 50px rgba(59, 130, 246, 0.08), 
+                        inset 0 1px 0 rgba(255, 255, 255, 1);
         }
 
-        /* 🎨 เอฟเฟกต์การ์ดกระจกพื้นฐาน */
-        .glass-card {
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+        /* 🎨 การ์ดสีขาวสะอาดตา พร้อมขอบสีประจำวัน */
+        .event-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid #f3f4f6;
+            transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
         }
-        .glass-card:hover {
-            transform: translateY(-4px) scale(1.01);
+        .event-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
         }
 
-        /* 🌈 คลาสสีประจำวัน (ไล่สี Gradient + เงาสะท้อน) */
-        .card-mon { background: linear-gradient(135deg, rgba(254,252,232,0.85) 0%, rgba(253,224,71,0.15) 100%); border-top-color: #eab308; box-shadow: 0 6px 20px rgba(234, 179, 8, 0.15); } /* จันทร์-เหลือง */
-        .card-tue { background: linear-gradient(135deg, rgba(253,242,248,0.85) 0%, rgba(244,114,182,0.15) 100%); border-top-color: #ec4899; box-shadow: 0 6px 20px rgba(236, 72, 153, 0.15); } /* อังคาร-ชมพู */
-        .card-wed { background: linear-gradient(135deg, rgba(240,253,244,0.85) 0%, rgba(74,222,128,0.15) 100%); border-top-color: #22c55e; box-shadow: 0 6px 20px rgba(34, 197, 94, 0.15); } /* พุธ-เขียว */
-        .card-thu { background: linear-gradient(135deg, rgba(255,247,237,0.85) 0%, rgba(251,146,60,0.15) 100%); border-top-color: #f97316; box-shadow: 0 6px 20px rgba(249, 115, 22, 0.15); } /* พฤหัส-ส้ม */
-        .card-fri { background: linear-gradient(135deg, rgba(239,246,255,0.85) 0%, rgba(96,165,250,0.15) 100%); border-top-color: #3b82f6; box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15); } /* ศุกร์-ฟ้า */
-        .card-sat { background: linear-gradient(135deg, rgba(250,245,255,0.85) 0%, rgba(192,132,252,0.15) 100%); border-top-color: #a855f7; box-shadow: 0 6px 20px rgba(168, 85, 247, 0.15); } /* เสาร์-ม่วง */
-        .card-sun { background: linear-gradient(135deg, rgba(254,242,242,0.85) 0%, rgba(248,113,113,0.15) 100%); border-top-color: #ef4444; box-shadow: 0 6px 20px rgba(239, 68, 68, 0.15); } /* อาทิตย์-แดง */
-
-        /* ปุ่มสีฟ้าแบบพรีเมียม 3D */
+        /* ปุ่มสีฟ้าแบบพรีเมียม */
         .btn-3d {
-            background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
             text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
         }
         .btn-3d:active {
-            transform: scale(0.97);
+            transform: scale(0.98);
+        }
+
+        /* ซ่อน Scrollbar แต่ยังเลื่อนได้ สำหรับกล่องที่มีงานเยอะ */
+        .hide-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .hide-scroll::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body class="p-3 md:p-6 text-gray-800 font-sans">
 
-    <div class="max-w-5xl mx-auto glass-master rounded-[32px] p-4 md:p-8 mt-2">
+    <div class="max-w-6xl mx-auto glass-master rounded-[32px] p-4 md:p-8 mt-2">
         
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 pb-6 border-b border-blue-100">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 pb-6 border-b border-blue-100/50">
             <div class="flex items-center gap-4">
-                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-md overflow-hidden border border-gray-100 p-1">
-                    <img src="https://drive.google.com/uc?export=view&id=13SeLK90wd7wZQQtqU5TNEagUqWYka6gT" alt="Sadao Hospital Logo" class="w-full h-full object-contain">
+                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm overflow-hidden border border-gray-100 p-1">
+                    <img src="https://github.com/SadaoHospital/calendar/blob/Img/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%20%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B8%B2%20-%20Copy.png?raw=true" alt="Sadao Hospital Logo" class="w-full h-full object-contain">
                 </div>
                 <div>
-                    <h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-blue-700 to-cyan-500 bg-clip-text text-transparent">ระบบปฏิทินผู้บริหาร</h1>
-                    <p class="text-xs font-bold text-blue-500 tracking-widest uppercase">Sadao Hospital Dashboard</p>
+                    <h1 class="text-2xl md:text-3xl font-black tracking-tight text-gray-800">ระบบปฏิทินผู้บริหาร</h1>
+                    <p class="text-xs md:text-sm font-bold text-blue-500 tracking-widest uppercase mt-0.5">Sadao Hospital Dashboard</p>
                 </div>
             </div>
             
-            <div id="profileBox" class="hidden items-center gap-3 bg-white/80 p-1.5 pr-4 rounded-full border border-blue-100 shadow-sm">
-                <img id="pictureUrl" src="" alt="User Profile" class="w-9 h-9 rounded-full border border-blue-200 shadow-sm">
-                <span id="displayName" class="text-xs font-bold text-gray-700">กำลังโหลด...</span>
+            <div id="profileBox" class="hidden items-center gap-3 bg-white p-2 pr-5 rounded-full border border-gray-100 shadow-sm">
+                <img id="pictureUrl" src="" alt="User Profile" class="w-10 h-10 rounded-full border-2 border-blue-100 shadow-sm">
+                <span id="displayName" class="text-sm font-bold text-gray-700">กำลังโหลด...</span>
             </div>
         </div>
 
         <div id="loading" class="text-center py-12 animate-pulse text-blue-500 font-bold tracking-wide">
-            🌀 กำลังเชื่อมต่อฐานข้อมูล...
+            🌀 กำลังจัดเรียงตารางงาน...
         </div>
 
         <div id="dashboardArea" class="hidden">
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <div class="bg-white/70 p-4 rounded-2xl border border-blue-100 shadow-sm">
-                    <label class="block text-xs font-black text-blue-400 uppercase tracking-wider mb-1.5 pl-1">📌 เลือกผู้บริหารควบคุม:</label>
-                    <select id="execSelect" class="w-full p-3 rounded-xl bg-white border border-blue-200 text-sm font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-inner appearance-none cursor-pointer">
-                        <option value="">กำลังสืบค้นข้อมูลจาก Firebase...</option>
+                <div class="bg-white/80 p-4 rounded-2xl border border-gray-100 shadow-sm">
+                    <label class="block text-[11px] font-black text-gray-400 uppercase tracking-wider mb-1.5 pl-1">📌 ตัวกรองผู้บริหาร:</label>
+                    <select id="execSelect" class="w-full p-3.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-bold text-gray-700 focus:outline-none focus:border-blue-400 focus:bg-white transition-colors cursor-pointer appearance-none">
+                        <option value="">-- แสดงตารางงานของผู้บริหารทั้งหมด --</option>
                     </select>
                 </div>
                 <div class="flex items-center justify-end">
-                    <button class="w-full md:w-auto px-6 py-4 rounded-2xl btn-3d text-white text-sm font-bold tracking-wide transition-all">
-                        ➕ บันทึกตารางงานใหม่
+                    <button class="w-full md:w-auto px-8 py-4 rounded-2xl btn-3d text-white text-sm font-bold tracking-wide transition-all flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        บันทึกตารางงานใหม่
                     </button>
                 </div>
             </div>
 
-            <div class="mb-4 flex items-center justify-between px-1">
-                <h3 class="font-black text-gray-700 text-base flex items-center gap-2">
-                    📂 ตารางกิจกรรมการปฏิบัติงานรายวัน 
-                    <span class="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full border border-blue-200">กางออกทั้งหมด</span>
-                </h3>
-                <span class="text-xs text-blue-400 font-medium hidden md:inline flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
-                    มือถือสามารถกางนิ้วซูมเพื่อดูรายละเอียดได้
-                </span>
-            </div>
-
-            <div id="calendarGridBox" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div id="calendarGridBox" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 </div>
 
         </div>
@@ -148,7 +140,6 @@
                 let response = await fetch(FIREBASE_URL + "sadaoExecCalendar/executives.json");
                 let data = await response.json();
                 let select = document.getElementById("execSelect");
-                select.innerHTML = '<option value="">-- กรุณาระบุผู้บริหารเพื่อดูตารางงาน --</option>';
 
                 if(data) {
                     for (let uid in data) {
@@ -164,37 +155,95 @@
             }
         }
 
-        // 🛠️ จำลองข้อมูลการ์ดแยกสีประจำวัน (Color Coded by Thai Days)
+        // 🛠️ จำลองข้อมูลแบบใหม่: 1 วัน มีงานหลายคน เรียงลำดับความสำคัญ รูปโปรไฟล์อยู่หน้า
         function generateMockCalendarCards() {
             const gridBox = document.getElementById("calendarGridBox");
             gridBox.innerHTML = "";
 
-            const mockEvents = [
-                { date: "วันจันทร์ที่ 18 พ.ค.", title: "ประชุมบอร์ดบริหาร รพ. ประจำเดือน", time: "09:00 - 12:00 น.", room: "ห้องประชุมไพทูรย์", badge: "ประชุมด่วน", badgeColor: "bg-yellow-100 text-yellow-700 border-yellow-200", dayClass: "card-mon" },
-                { date: "วันอังคารที่ 19 พ.ค.", title: "ลงพื้นที่ตรวจเยี่ยมศูนย์แพทย์ชุมชนเมือง", time: "13:30 - 16:30 น.", room: "ศสม.เครือข่ายสะเดา", badge: "ตรวจราชการ", badgeColor: "bg-pink-100 text-pink-700 border-pink-200", dayClass: "card-tue" },
-                { date: "วันพุธที่ 20 พ.ค.", title: "ต้อนรับคณะผู้ประเมินมาตรฐานโรงพยาบาล HA", time: "08:30 - 16:30 น.", room: "ตึกอำนวยการชั้น 2", badge: "รับการประเมิน", badgeColor: "bg-green-100 text-green-700 border-green-200", dayClass: "card-wed" },
-                { date: "วันพฤหัสฯที่ 21 พ.ค.", title: "งานสัมมนาทิศทางการแพทย์แผนไทยยุคใหม่", time: "09:00 - 15:00 น.", room: "โรงแรมในหาดใหญ่", badge: "อบรม/วิชาการ", badgeColor: "bg-orange-100 text-orange-700 border-orange-200", dayClass: "card-thu" },
-                { date: "วันศุกร์ที่ 22 พ.ค.", title: "เคลียร์เอกสารอนุมัติงบประมาณครุภัณฑ์", time: "10:00 - 12:00 น.", room: "ห้องทำงาน ผอ.", badge: "งานบริหาร", badgeColor: "bg-blue-100 text-blue-700 border-blue-200", dayClass: "card-fri" },
-                { date: "วันเสาร์ที่ 23 พ.ค.", title: "ไม่มีตารางงานนัดหมายอย่างเป็นทางการ", time: "-", room: "-", badge: "วันหยุด", badgeColor: "bg-purple-100 text-purple-700 border-purple-200", dayClass: "card-sat" },
-                { date: "วันอาทิตย์ที่ 24 พ.ค.", title: "วันหยุดพักผ่อนประจำสัปดาห์", time: "-", room: "-", badge: "วันหยุด", badgeColor: "bg-red-100 text-red-700 border-red-200", dayClass: "card-sun" }
+            // โครงสร้างข้อมูลจำลองแบบละเอียด (เรียงลำดับจาก ด่วนมาก -> ทั่วไป)
+            const mockDays = [
+                { 
+                    dateNum: "18", monthYear: "พ.ค. 2569", dayName: "วันจันทร์", 
+                    borderColor: "border-t-yellow-400", dateColor: "text-yellow-500", bgColor: "bg-yellow-50/50",
+                    events: [
+                        { time: "09:00", title: "ประชุมบอร์ดบริหาร รพ. ประจำเดือน", person: "นพ.ทดสอบ (ผอ.)", room: "ห้องประชุมไพทูรย์", priority: "ด่วนที่สุด", priorityClass: "bg-red-100 text-red-600", avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d" },
+                        { time: "13:30", title: "รับฟังรายงานความคืบหน้า HA", person: "พญ.ใจดี (รอง ผอ.)", room: "ตึกอำนวยการ", priority: "สำคัญ", priorityClass: "bg-orange-100 text-orange-600", avatar: "https://i.pravatar.cc/150?u=a04258a2462d826712d" }
+                    ]
+                },
+                { 
+                    dateNum: "19", monthYear: "พ.ค. 2569", dayName: "วันอังคาร", 
+                    borderColor: "border-t-pink-400", dateColor: "text-pink-500", bgColor: "bg-pink-50/50",
+                    events: [
+                        { time: "08:30", title: "ลงพื้นที่ศูนย์แพทย์ชุมชนเมือง", person: "นพ.ทดสอบ (ผอ.)", room: "ศสม.สะเดา", priority: "สำคัญ", priorityClass: "bg-orange-100 text-orange-600", avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d" },
+                        { time: "14:00", title: "ตรวจสอบงบประมาณประจำปี", person: "คุณสมหมาย (หน.บริหาร)", room: "ห้องการเงิน", priority: "ทั่วไป", priorityClass: "bg-gray-100 text-gray-600", avatar: "https://i.pravatar.cc/150?u=a048581f4e29026701d" },
+                        { time: "15:30", title: "ประชุมเตรียมงาน 5S", person: "พญ.ใจดี (รอง ผอ.)", room: "ห้องประชุมเล็ก", priority: "ทั่วไป", priorityClass: "bg-gray-100 text-gray-600", avatar: "https://i.pravatar.cc/150?u=a04258a2462d826712d" }
+                    ]
+                },
+                { 
+                    dateNum: "20", monthYear: "พ.ค. 2569", dayName: "วันพุธ", 
+                    borderColor: "border-t-green-500", dateColor: "text-green-600", bgColor: "bg-green-50/50",
+                    events: [
+                        { time: "09:00", title: "ต้อนรับคณะกรรมการประเมิน", person: "ผู้บริหารทุกท่าน", room: "ห้องประชุมใหญ่", priority: "ด่วนที่สุด", priorityClass: "bg-red-100 text-red-600", avatar: "https://ui-avatars.com/api/?name=ALL&background=random" }
+                    ]
+                },
+                { 
+                    dateNum: "21", monthYear: "พ.ค. 2569", dayName: "วันพฤหัสบดี", 
+                    borderColor: "border-t-orange-400", dateColor: "text-orange-500", bgColor: "bg-orange-50/50",
+                    events: [
+                        { time: "09:00", title: "สัมมนาการแพทย์แผนไทยยุคใหม่", person: "นพ.ทดสอบ (ผอ.)", room: "โรงแรมในหาดใหญ่", priority: "ราชการ", priorityClass: "bg-blue-100 text-blue-600", avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d" }
+                    ]
+                }
             ];
 
-            mockEvents.forEach(ev => {
-                gridBox.innerHTML += `
-                    <div class="glass-card rounded-2xl p-5 border-t-[6px] ${ev.dayClass} flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-center mb-3">
-                                <span class="text-xs font-black text-gray-600/90 tracking-wide">${ev.date}</span>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm border ${ev.badgeColor}">${ev.badge}</span>
+            mockDays.forEach(day => {
+                // 1. สร้างส่วนหัววันที่ให้เด่นชัด และมีสีตามวัน
+                let cardHTML = `
+                    <div class="event-card border-t-4 ${day.borderColor} flex flex-col max-h-[400px]">
+                        
+                        <div class="px-5 py-4 ${day.bgColor} border-b border-gray-100 flex items-center justify-between sticky top-0 z-10">
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-3xl font-black ${day.dateColor} tracking-tighter">${day.dateNum}</span>
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold text-gray-700">${day.monthYear}</span>
+                                    <span class="text-[10px] font-bold text-gray-400">${day.dayName}</span>
+                                </div>
                             </div>
-                            <h4 class="text-sm font-bold text-gray-800 line-clamp-2 mb-4 leading-relaxed h-10">${ev.title}</h4>
+                            <span class="text-xs font-bold text-gray-400 bg-white px-2 py-1 rounded-lg shadow-sm border border-gray-100">${day.events.length} ภารกิจ</span>
                         </div>
-                        <div class="pt-3 border-t border-gray-900/10 text-xs text-gray-700 space-y-1.5 font-medium">
-                            <div class="flex items-center gap-2"><span class="text-lg">⏰</span> <span class="bg-white/60 px-1.5 py-0.5 rounded">${ev.time}</span></div>
-                            <div class="flex items-center gap-2"><span class="text-lg">📍</span> <span class="bg-white/60 px-1.5 py-0.5 rounded">${ev.room}</span></div>
+
+                        <div class="p-3 overflow-y-auto hide-scroll flex-1 space-y-2">
+                `;
+
+                // 2. วนลูปสร้างกิจกรรมในแต่ละวัน (เรียงตามลำดับความสำคัญ)
+                day.events.forEach(ev => {
+                    cardHTML += `
+                        <div class="flex items-start gap-3 p-3 bg-white hover:bg-gray-50 border border-gray-100 hover:border-gray-200 rounded-xl transition-all cursor-pointer group">
+                            <div class="relative shrink-0 mt-0.5">
+                                <img src="${ev.avatar}" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover group-hover:scale-105 transition-transform">
+                            </div>
+                            
+                            <div class="flex-1 min-w-0">
+                                <div class="flex flex-wrap justify-between items-start gap-1 mb-1">
+                                    <h5 class="text-[13px] font-bold text-gray-800 leading-tight truncate pr-2">${ev.title}</h5>
+                                    <span class="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded ${ev.priorityClass}">${ev.priority}</span>
+                                </div>
+                                <p class="text-[11px] font-semibold text-blue-600 mb-1.5 truncate">${ev.person}</p>
+                                
+                                <div class="flex items-center gap-3 text-[10px] font-medium text-gray-500">
+                                    <span class="flex items-center gap-1 bg-gray-100/80 px-1.5 py-0.5 rounded"><span class="text-[11px]">⏰</span> ${ev.time}</span>
+                                    <span class="flex items-center gap-1 truncate"><span class="text-[11px]">📍</span> ${ev.room}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                cardHTML += `
                         </div>
                     </div>
                 `;
+                
+                gridBox.innerHTML += cardHTML;
             });
         }
 
