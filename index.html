@@ -2,119 +2,672 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sadao Hospital Executive Calendar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0">
+    <title>ระบบปฏิทินผู้บริหาร รพ.สะเดา</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
     
     <style>
-        body { background: #f1f5f9; font-family: 'Sarabun', sans-serif; }
-        .glass { background: white; border: 1px solid #e2e8f0; }
-        /* 🟢 ขอบสีทองเรืองแสงสำหรับ "วันนี้" */
-        .today-glow { border: 2px solid #fbbf24 !important; box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
-        .btn-3d { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
+        body {
+            background: radial-gradient(circle at top left, #ffffff 60%, #f0f9ff 90%, #e0f2fe 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        .glass-master {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 20px 50px rgba(59, 130, 246, 0.08);
+        }
+        .event-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid #f3f4f6;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .event-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* ✨ สไตล์สำหรับไฮไลท์วันนี้ (สีทองวาวๆ) */
+        .today-card-glow {
+            ring-width: 3px;
+            --tw-ring-color: #fbbf24;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5), 0 10px 25px rgba(0,0,0,0.05);
+            z-index: 20;
+        }
+        @media (min-width: 1024px) {
+            .today-card-glow { transform: scale(1.03); }
+        }
+
+        .btn-3d {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        .btn-3d:active { transform: scale(0.96); }
+        .hide-scroll::-webkit-scrollbar { width: 4px; }
+        .hide-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        .modal-enter { animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        .modern-input {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .modern-input:focus, .modern-input.active {
+            background: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            display: none; -webkit-appearance: none;
+        }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-2 md:p-4 lg:p-6 text-gray-800 font-sans">
 
-<div class="max-w-4xl mx-auto">
-    <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-        <h1 class="text-xl font-black text-slate-800">ระบบปฏิทินผู้บริหาร รพ.สะเดา</h1>
-        <div class="flex gap-2">
-            <button onclick="changeMonth(-1)" class="px-4 py-2 bg-slate-100 rounded-xl font-bold">⬅️</button>
-            <span id="monthTitle" class="px-4 py-2 font-black text-blue-700 bg-blue-50 rounded-xl w-32 text-center">...</span>
-            <button onclick="changeMonth(1)" class="px-4 py-2 bg-slate-100 rounded-xl font-bold">➡️</button>
-            <button onclick="goToToday()" class="px-4 py-2 bg-amber-500 text-white font-bold rounded-xl text-sm">🎯 วันนี้</button>
-            <button onclick="openModal()" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-xl ml-2">➕ เพิ่มงาน</button>
+    <div class="max-w-[1400px] mx-auto glass-master rounded-[32px] p-4 md:p-6 lg:p-8 mt-2 relative">
+        
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 pb-6 border-b border-blue-100/50">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 md:w-16 md:h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm overflow-hidden border border-gray-100 p-1 shrink-0">
+                    <img src="https://github.com/SadaoHospital/calendar/blob/Img/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%20%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B8%B2%20-%20Copy.png?raw=true" alt="Sadao Hospital Logo" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-3xl font-black tracking-tight text-gray-800">ระบบปฏิทินผู้บริหาร</h1>
+                    <p class="text-[10px] md:text-sm font-bold text-blue-500 tracking-widest uppercase mt-0.5">Sadao Hospital Dashboard</p>
+                </div>
+            </div>
+            <div id="profileBox" class="hidden items-center gap-3 bg-white p-2 pr-5 rounded-full border border-gray-100 shadow-sm">
+                <img id="pictureUrl" src="" alt="User Profile" class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-blue-100 shadow-sm object-cover">
+                <span id="displayName" class="text-xs md:text-sm font-bold text-gray-700">กำลังโหลด...</span>
+            </div>
+        </div>
+
+        <div id="loading" class="text-center py-12 animate-pulse text-blue-500 font-bold tracking-wide">
+            🌀 กำลังเชื่อมต่อฐานข้อมูลอัจฉริยะ...
+        </div>
+
+        <div id="dashboardArea" class="hidden">
+            <div class="flex flex-col lg:flex-row gap-4 mb-6">
+                <div class="flex-1 bg-white/80 p-3 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                    <button onclick="changeMonth(-1)" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    
+                    <div class="flex flex-col items-center gap-1">
+                        <h2 id="monthTitle" class="text-lg md:text-2xl font-black text-blue-900 tracking-tight">กำลังโหลดเดือน...</h2>
+                        <button onclick="goToToday()" class="px-3 py-1 bg-gradient-to-r from-amber-400 to-yellow-500 text-white hover:from-amber-500 hover:to-yellow-600 rounded-lg text-[10px] font-bold transition-all shadow-sm flex items-center gap-1">
+                            🎯 กลับไปวันนี้
+                        </button>
+                    </div>
+
+                    <button onclick="changeMonth(1)" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+
+                <div class="bg-white/80 p-3 rounded-2xl border border-gray-100 shadow-sm lg:w-[350px]">
+                    <select id="execSelect" class="w-full h-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs md:text-sm font-bold text-gray-700 focus:outline-none focus:border-blue-400 focus:bg-white cursor-pointer appearance-none">
+                        <option value="ALL">-- แสดงตารางของทุกคน --</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-center">
+                    <button onclick="openModal()" class="w-full lg:w-auto h-full px-6 py-3 rounded-2xl btn-3d text-white text-xs md:text-sm font-bold tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30">
+                        ➕ เพิ่มนัดหมาย
+                    </button>
+                </div>
+            </div>
+
+            <div class="hidden lg:grid grid-cols-7 gap-3 mb-2 text-center text-[13px] font-black bg-white/50 rounded-2xl p-3 border border-gray-100 shadow-sm">
+                <div class="text-red-500">อาทิตย์</div>
+                <div class="text-yellow-600">จันทร์</div>
+                <div class="text-pink-500">อังคาร</div>
+                <div class="text-green-600">พุธ</div>
+                <div class="text-orange-500">พฤหัสบดี</div>
+                <div class="text-blue-500">ศุกร์</div>
+                <div class="text-purple-500">เสาร์</div>
+            </div>
+
+            <div id="calendarGridBox" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3 md:gap-4"></div>
         </div>
     </div>
 
-    <div id="timelineContainer" class="space-y-6"></div>
-</div>
-
-<div id="eventModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
-        <h2 class="text-xl font-black mb-4">บันทึกภารกิจ</h2>
-        <form id="eventForm" onsubmit="saveEvent(event)" class="space-y-4">
-            <input type="text" id="eventTitle" placeholder="ชื่อกิจกรรม" required class="w-full p-3 rounded-xl border border-gray-200">
-            <input type="text" id="eventDate" placeholder="วันที่" required class="w-full p-3 rounded-xl border border-gray-200">
-            <div class="grid grid-cols-2 gap-2">
-                <input type="text" id="eventTimeStart" placeholder="เริ่ม" required class="w-full p-3 rounded-xl border border-gray-200">
-                <input type="text" id="eventTimeEnd" placeholder="จบ" required class="w-full p-3 rounded-xl border border-gray-200">
-            </div>
-            <div class="flex items-center gap-2">
-                <input type="checkbox" id="isPrivate" class="w-5 h-5"> <label>โหมดส่วนตัว</label>
-            </div>
-            <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl">ยืนยัน</button>
-        </form>
-    </div>
-</div>
-
-<script>
-    const FIREBASE_URL = 'https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/';
-    let allEvents = [];
-    let current = new Date();
-
-    async function initialize() {
-        flatpickr("#eventDate", { locale: "th", altInput: true, altFormat: "d/m/Y", dateFormat: "Y-m-d" });
-        flatpickr("#eventTimeStart", { enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true });
-        flatpickr("#eventTimeEnd", { enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true });
-        
-        let res = await fetch(FIREBASE_URL + "sadaoExecCalendar/events.json");
-        let data = await res.json();
-        allEvents = data ? Object.values(data) : [];
-        render();
-    }
-
-    function render() {
-        const container = document.getElementById('timelineContainer');
-        container.innerHTML = '';
-        const year = current.getFullYear();
-        const month = current.getMonth();
-        document.getElementById('monthTitle').innerText = `${["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."][month]} ${year + 543}`;
-
-        const days = new Date(year, month + 1, 0).getDate();
-        for(let i=1; i<=days; i++) {
-            const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-            const isToday = (new Date().toISOString().slice(0,10) === dStr);
-            const dailyEvents = allEvents.filter(e => e.date === dStr);
-
-            const div = document.createElement('div');
-            div.className = `p-6 rounded-3xl bg-white border ${isToday ? 'today-glow border-amber-300' : 'border-slate-200'}`;
+    <div id="eventModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white/95 backdrop-blur-xl rounded-[32px] shadow-2xl border border-white w-full max-w-xl overflow-visible modal-enter relative my-auto">
             
-            let eventsHtml = dailyEvents.length > 0 ? dailyEvents.map(ev => `
-                <div class="text-sm border-l-4 border-blue-500 pl-3 py-1">
-                    <p class="font-bold">${ev.isPrivate ? "🚫 ติดภารกิจส่วนตัว" : ev.title}</p>
-                    <p class="text-xs text-slate-500">${ev.timeStart || '--'} น.</p>
+            <form id="eventForm" onsubmit="saveEvent(event)" class="relative z-10 flex flex-col h-full">
+                <div class="px-8 pt-6 pb-2 flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-inner">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-gray-800 tracking-tight">เพิ่มตารางงานใหม่</h3>
+                            <p class="text-xs font-semibold text-blue-500">Smart Appointment & Recurring</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-red-100 hover:text-red-500 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
-            `).join('') : '<p class="text-slate-400 text-sm italic">ไม่มีนัดหมาย</p>';
 
-            div.innerHTML = `
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="text-4xl font-black ${isToday ? 'text-amber-600' : 'text-slate-800'}">${i}</div>
-                    <div class="text-xs font-bold text-slate-400">${new Date(dStr).toLocaleDateString('th-TH', { weekday: 'long' })}</div>
+                <div class="px-8 py-2 space-y-4">
+                    <div class="relative" id="dropdownContainer">
+                        <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1">ผู้บริหารที่รับผิดชอบ <span class="text-red-500">*</span></label>
+                        <button type="button" id="dropdownTrigger" class="modern-input w-full pl-12 pr-4 py-3 rounded-2xl text-sm font-bold text-gray-700 text-left flex items-center justify-between shadow-sm">
+                            <span id="dropdownSelectedText" class="text-gray-400 font-medium">-- เลือกผู้บริหาร --</span>
+                        </button>
+                        <div class="absolute inset-y-0 left-0 top-[24px] flex items-center pl-4 pointer-events-none text-blue-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        </div>
+                        <div id="dropdownMenu" class="hidden absolute z-50 w-full mt-1 bg-white border border-gray-100 rounded-2xl shadow-xl max-h-48 overflow-y-auto hide-scroll"></div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1">หัวข้อภารกิจ/กิจกรรม <span class="text-red-500">*</span></label>
+                        <input type="text" id="eventTitle" required placeholder="ระบุชื่องาน (เช่น ประชุมบอร์ดบริหาร)" class="modern-input w-full px-4 py-3 rounded-2xl text-sm font-bold text-gray-800 outline-none shadow-sm">
+                    </div>
+
+                    <div class="bg-gray-50 border border-gray-100 p-3 rounded-2xl">
+                        <div class="mb-3">
+                            <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1 text-blue-700">📅 วันที่ปฏิบัติงาน <span class="text-xs font-normal text-gray-400">(คลิกเลือกวันเดียว หรือลากคลุมเพื่อเลือกหลายวันติดกัน)</span></label>
+                            <input type="text" id="eventDate" required placeholder="เลือกวัน หรือลากคลุมหลายวัน" class="modern-input w-full px-4 py-2.5 rounded-xl text-sm font-bold text-gray-800 outline-none shadow-sm cursor-pointer bg-white">
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-[13px] font-bold text-slate-700 pl-1 text-blue-700">⏰ ช่วงเวลา</label>
+                                <div class="flex gap-1 bg-gray-200 p-1 rounded-lg">
+                                    <button type="button" onclick="setTimeBlock('custom')" id="tb-custom" class="time-block-btn px-2 py-1 text-[10px] font-bold rounded bg-white text-blue-600 shadow-sm transition-all">ระบุเอง</button>
+                                    <button type="button" onclick="setTimeBlock('allday')" id="tb-allday" class="time-block-btn px-2 py-1 text-[10px] font-bold rounded text-gray-600 hover:bg-white/60 transition-all">เต็มวัน</button>
+                                    <button type="button" onclick="setTimeBlock('morning')" id="tb-morning" class="time-block-btn px-2 py-1 text-[10px] font-bold rounded text-gray-600 hover:bg-white/60 transition-all">เช้า</button>
+                                    <button type="button" onclick="setTimeBlock('afternoon')" id="tb-afternoon" class="time-block-btn px-2 py-1 text-[10px] font-bold rounded text-gray-600 hover:bg-white/60 transition-all">บ่าย</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <input type="text" id="eventTimeStart" required placeholder="เวลาเริ่ม (--:--)" class="modern-input w-full px-4 py-2.5 rounded-xl text-sm font-bold text-gray-800 outline-none shadow-sm cursor-pointer bg-white text-center">
+                                <input type="text" id="eventTimeEnd" required placeholder="เวลาจบ (--:--)" class="modern-input w-full px-4 py-2.5 rounded-xl text-sm font-bold text-gray-800 outline-none shadow-sm cursor-pointer bg-white text-center">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50/50 border border-blue-100 p-3 rounded-2xl">
+                        <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1 flex items-center gap-2">
+                            🔁 รูปแบบการทำซ้ำ (ต่อเนื่อง 1 ปีข้างหน้า)
+                        </label>
+                        <select id="eventRecurrence" class="modern-input w-full px-4 py-2.5 rounded-xl text-sm font-bold outline-none cursor-pointer shadow-sm text-blue-700">
+                            <option value="none">-- ไม่ทำซ้ำ (กิจกรรมครั้งเดียว) --</option>
+                            <option value="monthly_date">ทำซ้ำ "ทุกวันที่นี้" ของทุกเดือน</option>
+                            <option value="monthly_weekday">ทำซ้ำ "ทุกสัปดาห์นี้และวันนี้" ของทุกเดือน (เช่น จันทร์แรก)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1">สถานที่ <span class="text-red-500">*</span></label>
+                            <input type="text" id="eventRoom" required placeholder="ระบุสถานที่" class="modern-input w-full px-4 py-3 rounded-2xl text-sm font-bold text-gray-800 outline-none shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1">ระดับความสำคัญ <span class="text-red-500">*</span></label>
+                            <select id="eventPriority" required class="modern-input w-full px-4 py-3 rounded-2xl text-sm font-bold outline-none appearance-none cursor-pointer shadow-sm">
+                                <option value="ทั่วไป">🟢 ทั่วไป</option>
+                                <option value="สำคัญ">🟠 สำคัญ</option>
+                                <option value="ด่วนที่สุด">🔴 ด่วนที่สุด</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="space-y-3">${eventsHtml}</div>
-            `;
-            container.appendChild(div);
+
+                <div class="px-8 py-5 mt-4 bg-gray-50/50 border-t border-gray-100 flex justify-end gap-3 rounded-b-[32px]">
+                    <button type="button" onclick="closeModal()" class="px-6 py-3 rounded-2xl font-bold text-gray-500 bg-white border border-gray-200 hover:bg-gray-50 transition-colors text-sm shadow-sm">ยกเลิก</button>
+                    <button type="submit" id="submitBtn" class="px-8 py-3 rounded-2xl font-bold text-white btn-3d text-sm flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        ยืนยันการบันทึก
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const MY_LIFF_ID = "2010128406-pWJYT2lK"; 
+        const FIREBASE_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/";
+        
+        let selectedExecData = null; 
+        let allEventsData = []; 
+        let fpDate, fpTimeStart, fpTimeEnd;
+        let currentDisplayDate = new Date(); 
+
+        const thaiMonthsFull = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+        const thaiDays = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
+        
+        const thaiHolidays = {
+            "2026-01-01": "วันขึ้นปีใหม่", "2026-03-02": "วันมาฆบูชา", "2026-04-06": "วันจักรี",
+            "2026-04-13": "สงกรานต์", "2026-04-14": "สงกรานต์", "2026-04-15": "สงกรานต์",
+            "2026-05-01": "วันแรงงานฯ", "2026-05-04": "วันฉัตรมงคล", "2026-06-01": "วันวิสาขบูชา",
+            "2026-07-28": "วันเฉลิมฯ ร.10", "2026-07-29": "วันอาสาฬหบูชา", "2026-08-12": "วันแม่แห่งชาติ",
+            "2026-10-13": "วันสวรรคต ร.9", "2026-10-23": "วันปิยมหาราช", "2026-12-05": "วันพ่อแห่งชาติ",
+            "2026-12-10": "วันรัฐธรรมนูญ", "2026-12-31": "วันสิ้นปี"
+        };
+
+        const colorThemes = [
+            { border: "border-t-red-400", text: "text-red-500", bg: "bg-red-50/50" },       
+            { border: "border-t-yellow-400", text: "text-yellow-500", bg: "bg-yellow-50/50" }, 
+            { border: "border-t-pink-400", text: "text-pink-500", bg: "bg-pink-50/50" },       
+            { border: "border-t-green-500", text: "text-green-600", bg: "bg-green-50/50" },    
+            { border: "border-t-orange-400", text: "text-orange-500", bg: "bg-orange-50/50" }, 
+            { border: "border-t-blue-400", text: "text-blue-500", bg: "bg-blue-50/50" },       
+            { border: "border-t-purple-400", text: "text-purple-500", bg: "bg-purple-50/50" }  
+        ];
+
+        async function initializeLiff() {
+            try {
+                initFlatpickr();
+                await liff.init({ liffId: MY_LIFF_ID });
+                document.getElementById("loading").classList.add("hidden");
+
+                if (liff.isLoggedIn()) {
+                    const profile = await liff.getProfile();
+                    document.getElementById("profileBox").classList.remove("hidden");
+                    document.getElementById("profileBox").classList.add("flex");
+                    document.getElementById("dashboardArea").classList.remove("hidden");
+                    
+                    document.getElementById("pictureUrl").src = profile.pictureUrl;
+                    document.getElementById("displayName").innerText = profile.displayName;
+
+                    await fetchExecutives();
+                    await fetchEvents(); 
+                } else {
+                    liff.login();
+                }
+            } catch (err) {
+                console.error("LIFF Init Error", err);
+                document.getElementById("loading").innerText = "เกิดข้อผิดพลาด: " + err.message;
+            }
         }
-    }
 
-    function changeMonth(n) { current.setMonth(current.getMonth() + n); render(); }
-    function goToToday() { current = new Date(); render(); }
-    function openModal() { document.getElementById('eventModal').classList.remove('hidden'); }
-    function closeModal() { document.getElementById('eventModal').classList.add('hidden'); }
-    async function saveEvent(e) {
-        e.preventDefault();
-        // ส่วนจัดการ Firebase ที่คุณปิงมีอยู่แล้ว
-        Swal.fire('สำเร็จ', 'บันทึกข้อมูลเรียบร้อย', 'success');
-        closeModal();
-    }
-    window.onload = initialize;
-</script>
+        // ⚡ อัปเกรด: เปิดโหมด range ให้ลากคลุมเลือกวันได้เลย
+        function initFlatpickr() {
+            fpDate = flatpickr("#eventDate", { 
+                locale: "th", 
+                altInput: true, 
+                altFormat: "d/m/Y", 
+                dateFormat: "Y-m-d", 
+                mode: "range", 
+                disableMobile: "true" 
+            });
+            fpTimeStart = flatpickr("#eventTimeStart", { enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true, disableMobile: "true" });
+            fpTimeEnd = flatpickr("#eventTimeEnd", { enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true, disableMobile: "true" });
+        }
+
+        // ⚡ ระบบคีย์ลัดเวลา
+        function setTimeBlock(type) {
+            document.querySelectorAll('.time-block-btn').forEach(b => {
+                b.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+                b.classList.add('text-gray-600', 'hover:bg-white/60');
+            });
+            document.getElementById('tb-' + type).classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+            document.getElementById('tb-' + type).classList.remove('text-gray-600', 'hover:bg-white/60');
+
+            if(type === 'custom') {
+                fpTimeStart.clear(); fpTimeEnd.clear();
+            } else if (type === 'allday') {
+                fpTimeStart.setDate('08:30'); fpTimeEnd.setDate('16:30');
+            } else if (type === 'morning') {
+                fpTimeStart.setDate('08:30'); fpTimeEnd.setDate('12:00');
+            } else if (type === 'afternoon') {
+                fpTimeStart.setDate('13:00'); fpTimeEnd.setDate('16:30');
+            }
+        }
+
+        async function fetchExecutives() {
+            let response = await fetch(FIREBASE_URL + "sadaoExecCalendar/executives.json");
+            let data = await response.json();
+            let selectMain = document.getElementById("execSelect");
+            let dropdownMenu = document.getElementById("dropdownMenu");
+
+            if(data) {
+                dropdownMenu.innerHTML = ''; 
+                for (let uid in data) {
+                    let exec = data[uid];
+                    let opt1 = document.createElement("option");
+                    opt1.value = uid; opt1.innerText = exec.position + " ➔ " + exec.fullName;
+                    selectMain.appendChild(opt1);
+
+                    let avatarUrl = exec.picUrl ? exec.picUrl : `https://ui-avatars.com/api/?name=${encodeURIComponent(exec.fullName)}&background=eff6ff&color=3b82f6&rounded=true&bold=true`;
+                    let item = document.createElement("div");
+                    item.className = "flex items-center gap-3 p-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0";
+                    item.innerHTML = `
+                        <img src="${avatarUrl}" class="w-9 h-9 rounded-full shadow-sm border border-white object-cover">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-gray-800">${exec.fullName}</span>
+                            <span class="text-[10px] font-bold text-blue-500">${exec.position}</span>
+                        </div>
+                    `;
+                    item.onclick = () => selectExecutive(uid, exec.fullName, exec.position, avatarUrl);
+                    dropdownMenu.appendChild(item);
+                }
+            }
+        }
+
+        async function fetchEvents() {
+            let response = await fetch(FIREBASE_URL + "sadaoExecCalendar/events.json");
+            let data = await response.json();
+            allEventsData = [];
+            if(data) {
+                for(let key in data) { allEventsData.push({ ...data[key], id: key }); }
+            }
+            triggerRenderMonthlyGrid();
+        }
+
+        function changeMonth(offset) {
+            currentDisplayDate.setMonth(currentDisplayDate.getMonth() + offset);
+            triggerRenderMonthlyGrid();
+        }
+        
+        function goToToday() {
+            currentDisplayDate = new Date();
+            triggerRenderMonthlyGrid();
+        }
+
+        function triggerRenderMonthlyGrid() {
+            let selectedUid = document.getElementById("execSelect").value;
+            let eventsToRender = allEventsData;
+            if(selectedUid !== "ALL" && selectedUid) {
+                eventsToRender = allEventsData.filter(ev => ev.uid === selectedUid);
+            }
+            renderMonthlyGrid(eventsToRender);
+        }
+
+        function getLocalISOString(dateObj) {
+            return new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        }
+
+        function renderMonthlyGrid(eventsArray) {
+            const gridBox = document.getElementById("calendarGridBox");
+            gridBox.innerHTML = "";
+
+            const year = currentDisplayDate.getFullYear();
+            const month = currentDisplayDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay(); 
+
+            document.getElementById("monthTitle").innerText = `${thaiMonthsFull[month]} ${year + 543}`;
+            
+            let todayDate = new Date();
+            let htmlContent = "";
+
+            for(let i = 0; i < firstDay; i++) {
+                htmlContent += `<div class="hidden lg:block rounded-2xl bg-white/30 border border-white/40"></div>`;
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                let targetDate = new Date(year, month, day);
+                let dateStr = getLocalISOString(targetDate);
+                let dayOfWeek = targetDate.getDay(); 
+                let theme = colorThemes[dayOfWeek];
+                
+                let dayName = thaiDays[dayOfWeek];
+
+                let isToday = (targetDate.getDate() === todayDate.getDate() && 
+                               targetDate.getMonth() === todayDate.getMonth() && 
+                               targetDate.getFullYear() === todayDate.getFullYear());
+
+                let holidayBadge = "";
+                let todayBadgeSpan = "";
+
+                if (isToday) {
+                    todayBadgeSpan = `<span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-gradient-to-r from-amber-400 to-yellow-500 text-white shadow-sm ml-1 animate-pulse">วันนี้</span>`;
+                }
+
+                if (thaiHolidays[dateStr]) {
+                    holidayBadge = `<span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-red-500 text-white shadow-sm mt-0.5 truncate max-w-[90px]" title="${thaiHolidays[dateStr]}">🎈 ${thaiHolidays[dateStr]}</span>`;
+                } else if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    holidayBadge = `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-gray-400 text-white shadow-sm mt-0.5">💤 วันหยุด</span>`;
+                }
+
+                let dayEvents = eventsArray.filter(e => e.date === dateStr);
+                dayEvents.sort((a,b) => (a.timeStart || "").localeCompare(b.timeStart || ""));
+
+                let todayHighlight = isToday ? "today-card-glow ring-[3px]" : "";
+                let headerBg = isToday ? "bg-amber-50/90" : theme.bg;
+                let numColor = isToday ? "text-amber-600" : theme.text;
+
+                let cardHTML = `
+                    <div class="event-card border-t-[4px] ${theme.border} flex flex-col h-64 md:h-72 ${todayHighlight} transition-all duration-300 relative">
+                        <div class="px-3 py-2.5 ${headerBg} border-b border-gray-100 flex items-center justify-between sticky top-0 z-10 rounded-t-[15px]">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-2xl font-black ${numColor} tracking-tighter leading-none">${day}</span>
+                                <div class="flex flex-col justify-center">
+                                    <div class="flex items-center">
+                                        <span class="text-[10px] font-bold text-gray-400 lg:hidden mr-1">${dayName}</span>
+                                        ${todayBadgeSpan}
+                                    </div>
+                                    ${holidayBadge}
+                                </div>
+                            </div>
+                            <span class="text-[9px] font-bold ${dayEvents.length > 0 ? 'text-blue-600 bg-white border-blue-100' : 'text-gray-400 bg-gray-100 border-gray-200'} px-1.5 py-0.5 rounded shadow-sm border">${dayEvents.length} งาน</span>
+                        </div>
+                        <div class="p-1.5 overflow-y-auto hide-scroll flex-1 space-y-1.5 bg-gray-50/40">
+                `;
+
+                if (dayEvents.length === 0) {
+                    cardHTML += `
+                        <div class="flex items-center justify-center h-full text-[10px] font-bold text-gray-300 opacity-60">
+                            ว่าง
+                        </div>
+                    `;
+                } else {
+                    dayEvents.forEach(ev => {
+                        let pClass = "bg-gray-100 text-gray-600";
+                        if(ev.priority === "สำคัญ") pClass = "bg-orange-100 text-orange-600";
+                        if(ev.priority === "ด่วนที่สุด") pClass = "bg-red-100 text-red-600";
+                        let avatar = ev.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(ev.execName)}&background=eff6ff&color=3b82f6&rounded=true&bold=true`;
+
+                        cardHTML += `
+                            <div class="flex flex-col p-1.5 bg-white hover:bg-blue-50 border border-gray-100 rounded-lg transition-all shadow-sm relative group cursor-pointer" title="[${ev.timeStart}-${ev.timeEnd}] ${ev.title} @${ev.room}">
+                                <div class="flex justify-between items-start mb-0.5">
+                                    <div class="flex items-center gap-1 min-w-0 pr-1">
+                                        <img src="${avatar}" class="w-3.5 h-3.5 rounded-full object-cover shrink-0">
+                                        <span class="text-[9px] font-bold text-blue-600 truncate">${ev.execName}</span>
+                                    </div>
+                                    <span class="shrink-0 text-[7px] font-bold px-1 py-0.5 rounded ${pClass} leading-none mt-0.5">${ev.priority}</span>
+                                </div>
+                                <h5 class="text-[10px] font-bold text-gray-800 leading-tight line-clamp-2 mb-1">${ev.title}</h5>
+                                <div class="flex items-center justify-between text-[8px] font-medium text-gray-500">
+                                    <span class="truncate bg-gray-50 px-1 rounded">⏰ ${ev.timeStart}-${ev.timeEnd}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                cardHTML += `</div></div>`;
+                htmlContent += cardHTML;
+            }
+
+            gridBox.innerHTML = htmlContent;
+        }
+
+        document.getElementById('execSelect').addEventListener('change', triggerRenderMonthlyGrid);
+
+        document.getElementById('dropdownTrigger').addEventListener('click', function() {
+            document.getElementById('dropdownMenu').classList.toggle('hidden');
+            this.classList.toggle('border-blue-400');
+        });
+
+        function selectExecutive(uid, fullName, position, avatarUrl) {
+            selectedExecData = { uid, fullName, position, avatarUrl };
+            document.getElementById('dropdownSelectedText').innerHTML = `
+                <div class="flex items-center gap-2 -ml-1">
+                    <img src="${avatarUrl}" class="w-6 h-6 rounded-full object-cover"><span class="text-gray-800 font-bold">${fullName}</span>
+                </div>
+            `;
+            document.getElementById('dropdownMenu').classList.add('hidden');
+        }
+
+        function openModal() {
+            document.getElementById('eventModal').classList.remove('hidden');
+            if(fpDate) fpDate.clear(); // ล้างค่าวันให้โล่งๆ พร้อมใช้งาน
+            setTimeBlock('custom'); // รีเซ็ตปุ่มคีย์ลัดเวลา
+        }
+        
+        function closeModal() {
+            document.getElementById('eventModal').classList.add('hidden');
+            document.getElementById('eventForm').reset(); 
+            selectedExecData = null;
+            document.getElementById('dropdownSelectedText').innerHTML = '-- เลือกผู้บริหาร --';
+        }
+
+        // ตัวช่วยสร้าง Array วันที่กรณีลากคลุมหลายวัน
+        function getDatesInRange(startDate, endDate) {
+            const date = new Date(startDate);
+            const dates = [];
+            while (date <= new Date(endDate)) {
+                dates.push(getLocalISOString(date));
+                date.setDate(date.getDate() + 1);
+            }
+            return dates;
+        }
+
+        function generateRecurringEvents(baseEvent, recurType) {
+            let events = [baseEvent];
+            if (recurType === 'none') return events;
+
+            let baseDate = new Date(baseEvent.date);
+            let year = baseDate.getFullYear();
+            let month = baseDate.getMonth();
+            let date = baseDate.getDate();
+            let dayOfWeek = baseDate.getDay();
+            let nth = Math.ceil(date / 7); 
+
+            for (let i = 1; i < 12; i++) {
+                let nextMonth = month + i;
+                let newEvent = { ...baseEvent };
+
+                if (recurType === 'monthly_date') {
+                    let targetDate = new Date(year, nextMonth, date);
+                    if (targetDate.getMonth() !== (nextMonth % 12)) {
+                        targetDate = new Date(year, nextMonth + 1, 0); 
+                    }
+                    newEvent.date = getLocalISOString(targetDate);
+                    events.push(newEvent);
+
+                } else if (recurType === 'monthly_weekday') {
+                    let firstDayOfNextMonth = new Date(year, nextMonth, 1);
+                    let firstDayOfWeek = firstDayOfNextMonth.getDay();
+                    let diff = dayOfWeek - firstDayOfWeek;
+                    if (diff < 0) diff += 7;
+                    let targetDay = 1 + diff + ((nth - 1) * 7);
+
+                    let daysInNextMonth = new Date(year, nextMonth + 1, 0).getDate();
+                    if (targetDay <= daysInNextMonth) {
+                        let targetDate = new Date(year, nextMonth, targetDay);
+                        newEvent.date = getLocalISOString(targetDate);
+                        events.push(newEvent);
+                    }
+                }
+            }
+            return events;
+        }
+
+        async function saveEvent(e) {
+            e.preventDefault(); 
+            if(!selectedExecData) {
+                Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเลือกผู้บริหารก่อนครับ' }); return;
+            }
+
+            const timeStartVal = document.getElementById('eventTimeStart').value;
+            const timeEndVal = document.getElementById('eventTimeEnd').value;
+            if(!timeStartVal || !timeEndVal) {
+                Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาระบุเวลาให้ครบถ้วนครับ' }); return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '⏳ กำลังประมวลผล...';
+            submitBtn.disabled = true;
+
+            const dateValue = document.getElementById('eventDate').value;
+            const recurType = document.getElementById('eventRecurrence').value;
+            
+            // ⚡ จัดการการลากคลุมหลายวัน (เช่น 19 ถึง 21)
+            let datesToProcess = [];
+            if (dateValue.includes(" ถึง ")) {
+                let parts = dateValue.split(" ถึง ");
+                datesToProcess = getDatesInRange(parts[0], parts[1]);
+            } else if (dateValue.includes(" to ")) {
+                let parts = dateValue.split(" to ");
+                datesToProcess = getDatesInRange(parts[0], parts[1]);
+            } else {
+                datesToProcess = [dateValue];
+            }
+
+            let allEventsToSave = [];
+            
+            datesToProcess.forEach(baseDateStr => {
+                let baseEvent = {
+                    uid: selectedExecData.uid, execName: selectedExecData.fullName, execPosition: selectedExecData.position, avatar: selectedExecData.avatarUrl,
+                    title: document.getElementById('eventTitle').value,
+                    date: baseDateStr,
+                    timeStart: timeStartVal,
+                    timeEnd: timeEndVal,
+                    room: document.getElementById('eventRoom').value,
+                    priority: document.getElementById('eventPriority').value,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // ต่อยอดให้รองรับการทำซ้ำในแต่ละวันที่ลากคลุมด้วย
+                let recurred = generateRecurringEvents(baseEvent, recurType);
+                allEventsToSave.push(...recurred);
+            });
+
+            try {
+                Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+                
+                const promises = allEventsToSave.map(ev => 
+                    fetch(FIREBASE_URL + "sadaoExecCalendar/events.json", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(ev)
+                    })
+                );
+                
+                await Promise.all(promises);
+
+                closeModal();
+                Swal.fire({ title: 'บันทึกสำเร็จ!', text: `เพิ่มตารางงานลงปฏิทินเรียบร้อย (${allEventsToSave.length} รายการ)`, icon: 'success', confirmButtonColor: '#3b82f6' });
+                
+                currentDisplayDate = new Date(datesToProcess[0]);
+                fetchEvents();
+
+            } catch (error) { Swal.fire('ข้อผิดพลาด', error.message, 'error'); } 
+            finally { 
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false; 
+            }
+        }
+
+        window.onload = initializeLiff;
+    </script>
 </body>
 </html>
