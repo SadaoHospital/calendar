@@ -9,11 +9,14 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
+        /* 🧪 ธีมพื้นหลัง */
         body {
             background: radial-gradient(circle at top left, #ffffff 60%, #f0f9ff 90%, #e0f2fe 100%);
             background-attachment: fixed;
             min-height: 100vh;
         }
+        
+        /* สไตล์หน้าต่างกระจก (Glassmorphism) */
         .glass-master {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(24px);
@@ -21,6 +24,8 @@
             border: 1px solid rgba(255, 255, 255, 0.9);
             box-shadow: 0 20px 50px rgba(59, 130, 246, 0.08);
         }
+        
+        /* สไตล์การ์ดงาน */
         .event-card {
             background: #ffffff;
             border-radius: 20px;
@@ -32,6 +37,8 @@
             transform: translateY(-3px);
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
         }
+        
+        /* ปุ่มมีมิติ 3D */
         .btn-3d {
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
@@ -39,15 +46,19 @@
             transition: all 0.2s;
         }
         .btn-3d:active { transform: scale(0.96); }
+        
+        /* ปรับแต่ง Scrollbar */
         .hide-scroll::-webkit-scrollbar { width: 4px; }
         .hide-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
+        /* แอนิเมชันตอนเปิด Modal */
         .modal-enter { animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes modalFadeIn {
             from { opacity: 0; transform: scale(0.9) translateY(20px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
         
+        /* สไตล์ช่องกรอกข้อมูล พรีเมียม */
         .modern-input {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -70,6 +81,7 @@
 <body class="p-3 md:p-6 text-gray-800 font-sans">
 
     <div class="max-w-6xl mx-auto glass-master rounded-[32px] p-4 md:p-8 mt-2 relative">
+        
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 pb-6 border-b border-blue-100/50">
             <div class="flex items-center gap-4">
                 <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm overflow-hidden border border-gray-100 p-1">
@@ -91,6 +103,7 @@
         </div>
 
         <div id="dashboardArea" class="hidden">
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 <div class="bg-white/80 p-4 rounded-2xl border border-gray-100 shadow-sm">
                     <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5 pl-1">📌 ตัวกรองผู้บริหาร:</label>
@@ -106,15 +119,18 @@
                 </div>
             </div>
 
-            <div id="calendarGridBox" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="calendarGridBox" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
         </div>
     </div>
 
     <div id="eventModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white/95 backdrop-blur-xl rounded-[32px] shadow-2xl border border-white w-full max-w-xl overflow-visible modal-enter relative">
+            
             <svg class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 text-blue-50 opacity-50 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
 
             <form id="eventForm" onsubmit="saveEvent(event)" class="relative z-10 flex flex-col h-full">
+                
                 <div class="px-8 pt-8 pb-4 flex justify-between items-center">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-inner">
@@ -131,6 +147,7 @@
                 </div>
 
                 <div class="px-8 py-2 space-y-5">
+                    
                     <div class="relative" id="dropdownContainer">
                         <label class="block text-[13px] font-bold text-slate-700 mb-1.5 pl-1">ผู้บริหารที่รับผิดชอบ <span class="text-red-500">*</span></label>
                         <button type="button" id="dropdownTrigger" class="modern-input w-full pl-12 pr-4 py-3.5 rounded-2xl text-sm font-bold text-gray-700 outline-none text-left flex items-center justify-between shadow-sm">
@@ -160,7 +177,7 @@
                         </div>
                         <div>
                             <label class="block text-[13px] font-bold text-slate-700 mb-1.5 pl-1">เวลา (เริ่มต้น) <span class="text-red-500">*</span></label>
-                            <input type="time" id="eventTime" required class="modern-input w-full px-4 py-3.5 rounded-2xl text-sm font-bold text-gray-800 outline-none shadow-sm">
+                            <input type="time" id="eventTime" required step="60" class="modern-input w-full px-4 py-3.5 rounded-2xl text-sm font-bold text-gray-800 outline-none shadow-sm">
                         </div>
                     </div>
 
@@ -208,6 +225,7 @@
         let selectedExecData = null; 
         let allEventsData = []; 
 
+        // ชุดคำตั้งค่ารูปแบบวันที่ภาษาไทย และ ธีมสีประจำวัน
         const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
         const thaiDays = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
         const colorThemes = [
@@ -220,6 +238,7 @@
             { border: "border-t-purple-400", text: "text-purple-500", bg: "bg-purple-50/50" }  // 6: เสาร์
         ];
 
+        // 1. ตรวจสอบ LINE LIFF
         async function initializeLiff() {
             try {
                 await liff.init({ liffId: MY_LIFF_ID });
@@ -245,6 +264,7 @@
             }
         }
 
+        // 2. ดึงรายชื่อผู้บริหาร
         async function fetchExecutives() {
             try {
                 let response = await fetch(FIREBASE_URL + "sadaoExecCalendar/executives.json");
@@ -262,7 +282,7 @@
                         opt1.value = uid; opt1.innerText = exec.position + " ➔ " + exec.fullName;
                         selectMain.appendChild(opt1);
 
-                        // 🟢 ดึงรูปจริงมาโชว์ ถ้าไม่มีในฐานข้อมูลค่อยสุ่มเป็นตัวอักษร
+                        // 🟢 ดึงรูปล่าสุดมาโชว์ 
                         let avatarUrl = exec.picUrl ? exec.picUrl : `https://ui-avatars.com/api/?name=${encodeURIComponent(exec.fullName)}&background=eff6ff&color=3b82f6&rounded=true&bold=true`;
                         
                         let item = document.createElement("div");
@@ -283,9 +303,33 @@
             }
         }
 
-        // ==========================================
-        // 📥 ระบบดึงตารางงานจริงจาก Firebase
-        // ==========================================
+        // 3. ระบบจัดการ Custom Dropdown 
+        document.getElementById('dropdownTrigger').addEventListener('click', function(e) {
+            document.getElementById('dropdownMenu').classList.toggle('hidden');
+            this.classList.toggle('border-blue-400');
+            this.classList.toggle('shadow-[0_0_0_4px_rgba(59,130,246,0.15)]');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!document.getElementById('dropdownContainer').contains(e.target)) {
+                document.getElementById('dropdownMenu').classList.add('hidden');
+                document.getElementById('dropdownTrigger').classList.remove('border-blue-400', 'shadow-[0_0_0_4px_rgba(59,130,246,0.15)]');
+            }
+        });
+
+        function selectExecutive(uid, fullName, position, avatarUrl) {
+            selectedExecData = { uid, fullName, position, avatarUrl };
+            document.getElementById('dropdownSelectedText').innerHTML = `
+                <div class="flex items-center gap-2 -ml-1">
+                    <img src="${avatarUrl}" class="w-6 h-6 rounded-full border border-gray-200 object-cover">
+                    <span class="text-gray-800 font-bold">${fullName}</span>
+                </div>
+            `;
+            document.getElementById('dropdownMenu').classList.add('hidden');
+            document.getElementById('dropdownTrigger').classList.remove('border-blue-400', 'shadow-[0_0_0_4px_rgba(59,130,246,0.15)]');
+        }
+
+        // 4. ดูดตารางงานจริงจาก Firebase
         async function fetchEvents() {
             try {
                 let response = await fetch(FIREBASE_URL + "sadaoExecCalendar/events.json");
@@ -298,6 +342,7 @@
                     }
                 }
 
+                // เรียงลำดับงานตามวันที่ และเวลา (จากเก่าไปใหม่)
                 allEventsData.sort((a, b) => {
                     let dateA = new Date(a.date + "T" + (a.time || "00:00"));
                     let dateB = new Date(b.date + "T" + (b.time || "00:00"));
@@ -311,7 +356,7 @@
             }
         }
 
-        // 🎨 ฟังก์ชันวาดการ์ดตารางงาน
+        // 5. วาดการ์ดตารางงาน
         function renderCalendarCards(eventsArray) {
             const gridBox = document.getElementById("calendarGridBox");
             gridBox.innerHTML = "";
@@ -332,6 +377,7 @@
                 let dayOfWeek = dateObj.getDay(); 
                 let theme = colorThemes[dayOfWeek];
                 
+                // 🟢 รูปแบบ วันที่/เดือน/ปี 
                 let dayNum = dateObj.getDate();
                 let monthYear = thaiMonths[dateObj.getMonth()] + " " + (dateObj.getFullYear() + 543);
                 let dayName = thaiDays[dayOfWeek];
@@ -370,7 +416,7 @@
                                 </div>
                                 <p class="text-[11px] font-semibold text-blue-600 mb-1.5 truncate">${ev.execName}</p>
                                 <div class="flex items-center gap-3 text-[10px] font-medium text-gray-500">
-                                    <span class="flex items-center gap-1 bg-gray-100/80 px-1.5 py-0.5 rounded">⏰ ${ev.time}</span>
+                                    <span class="flex items-center gap-1 bg-gray-100/80 px-1.5 py-0.5 rounded">⏰ ${ev.time} น.</span>
                                     <span class="flex items-center gap-1 truncate">📍 ${ev.room}</span>
                                 </div>
                             </div>
@@ -383,9 +429,7 @@
             }
         }
 
-        // ==========================================
-        // 🔍 ระบบตัวกรองผู้บริหาร
-        // ==========================================
+        // 6. ตัวกรองผู้บริหาร
         document.getElementById('execSelect').addEventListener('change', function() {
             let selectedUid = this.value;
             if(selectedUid === "ALL" || !selectedUid) {
@@ -396,37 +440,12 @@
             }
         });
 
-        // ระบบจัดการ Custom Dropdown
-        document.getElementById('dropdownTrigger').addEventListener('click', function(e) {
-            document.getElementById('dropdownMenu').classList.toggle('hidden');
-            this.classList.toggle('border-blue-400');
-            this.classList.toggle('shadow-[0_0_0_4px_rgba(59,130,246,0.15)]');
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!document.getElementById('dropdownContainer').contains(e.target)) {
-                document.getElementById('dropdownMenu').classList.add('hidden');
-                document.getElementById('dropdownTrigger').classList.remove('border-blue-400', 'shadow-[0_0_0_4px_rgba(59,130,246,0.15)]');
-            }
-        });
-
-        function selectExecutive(uid, fullName, position, avatarUrl) {
-            selectedExecData = { uid, fullName, position, avatarUrl };
-            document.getElementById('dropdownSelectedText').innerHTML = `
-                <div class="flex items-center gap-2 -ml-1">
-                    <img src="${avatarUrl}" class="w-6 h-6 rounded-full border border-gray-200 object-cover">
-                    <span class="text-gray-800 font-bold">${fullName}</span>
-                </div>
-            `;
-            document.getElementById('dropdownMenu').classList.add('hidden');
-            document.getElementById('dropdownTrigger').classList.remove('border-blue-400', 'shadow-[0_0_0_4px_rgba(59,130,246,0.15)]');
-        }
-
-        // ระบบ Modal และ บันทึกข้อมูล
+        // 7. จัดการ Modal 
         function openModal() {
             document.getElementById('eventModal').classList.remove('hidden');
             document.getElementById('eventDate').valueAsDate = new Date();
         }
+        
         function closeModal() {
             document.getElementById('eventModal').classList.add('hidden');
             document.getElementById('eventForm').reset(); 
@@ -435,6 +454,7 @@
             document.getElementById('dropdownSelectedText').className = 'text-gray-400 font-medium';
         }
 
+        // 8. เซฟงานเข้า Firebase
         async function saveEvent(e) {
             e.preventDefault(); 
             
@@ -452,7 +472,7 @@
                 uid: selectedExecData.uid,
                 execName: selectedExecData.fullName,
                 execPosition: selectedExecData.position,
-                avatar: selectedExecData.avatarUrl, // 🟢 บันทึกรูปโปรไฟล์ไปด้วย จะได้ดึงมาโชว์บนการ์ดง่ายๆ
+                avatar: selectedExecData.avatarUrl,
                 title: document.getElementById('eventTitle').value,
                 date: document.getElementById('eventDate').value,
                 time: document.getElementById('eventTime').value,
@@ -472,7 +492,7 @@
                     closeModal();
                     Swal.fire({ title: 'บันทึกสำเร็จ!', text: 'เพิ่มตารางงานเข้าสู่ระบบเรียบร้อยแล้ว', icon: 'success', confirmButtonColor: '#3b82f6', shape: 'rounded-2xl' });
                     
-                    fetchEvents();
+                    fetchEvents(); // โหลดข้อมูลใหม่ทันที
                     document.getElementById("execSelect").value = "ALL";
                 } else {
                     throw new Error("บันทึกไม่สำเร็จ");
