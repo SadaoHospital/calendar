@@ -2,83 +2,107 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ปฏิทินผู้บริหาร รพ.สะเดา</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0">
+    <title>ระบบปฏิทินผู้บริหาร รพ.สะเดา</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    
     <style>
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-        }
+        /* 🧪 3D Glassmorphism & Soft Gradient Background */
         body {
-            background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%);
+            background: radial-gradient(circle at 20% 20%, #fff5f5 0%, #ffe4e1 40%, #f3e5f5 80%);
             background-attachment: fixed;
+            min-height: 100vh;
         }
-        .glass-btn {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 182, 193, 0.5);
-            transition: all 0.2s;
+
+        .glass-master {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 50px rgba(255, 182, 193, 0.25), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.6);
         }
-        .glass-btn:active {
-            background: rgba(255, 105, 180, 0.2);
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 24px rgba(142, 68, 173, 0.04);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(255, 105, 180, 0.15);
+        }
+
+        /* ตกแต่งปุ่มกดแนว 3D ผิวเนียน */
+        .btn-3d {
+            background: linear-gradient(135deg, #ff7ba9 0%, #ff4081 100%);
+            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.35);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .btn-3d:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
-<body class="min-h-screen p-4 text-gray-800 font-sans pb-20">
+<body class="p-3 md:p-6 text-gray-800 font-sans">
 
-    <div class="max-w-md mx-auto glass-panel rounded-3xl p-6 mt-4">
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-pink-600 mb-1">🌸 ปฏิทินผู้บริหาร</h1>
-            <p class="text-sm text-gray-500 font-medium">โรงพยาบาลสะเดา</p>
-        </div>
-
-        <div id="loading" class="text-center py-8 animate-pulse text-pink-400 font-medium">
-            กำลังเชื่อมต่อระบบ...
-        </div>
-
-        <div id="profileBox" class="hidden flex items-center gap-4 p-4 bg-white/50 rounded-2xl mb-4 border border-white/60 shadow-sm">
-            <img id="pictureUrl" src="" alt="Profile" class="w-14 h-14 rounded-full shadow-sm">
-            <div>
-                <p class="text-xs text-gray-500 mb-0.5">ยินดีต้อนรับ</p>
-                <p id="displayName" class="font-bold text-gray-800 text-lg leading-tight"></p>
-            </div>
-        </div>
+    <div class="max-w-5xl mx-auto glass-master rounded-[32px] p-4 md:p-8 mt-2">
         
-        <div id="calendarArea" class="hidden">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 pb-6 border-b border-white/40">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-400 to-purple-400 flex items-center justify-center text-2xl shadow-md">🌸</div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">ระบบปฏิทินผู้บริหาร</h1>
+                    <p class="text-xs font-bold text-purple-400 tracking-widest uppercase">Sadao Hospital Dashboard</p>
+                </div>
+            </div>
             
-            <div class="mb-4">
-                <label class="block text-xs font-bold text-gray-500 mb-1 pl-1">เลือกผู้บริหารที่ต้องการดูตารางงาน:</label>
-                <select id="execSelect" class="w-full p-3 rounded-xl bg-white/70 border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm font-medium shadow-sm appearance-none">
-                    <option value="">กำลังดึงรายชื่อจากฐานข้อมูล...</option>
-                </select>
+            <div id="profileBox" class="hidden items-center gap-3 bg-white/60 p-1.5 pr-4 rounded-full border border-white/80 shadow-sm">
+                <img id="pictureUrl" src="" alt="User Profile" class="w-9 h-9 rounded-full border border-pink-200 shadow-sm">
+                <span id="displayName" class="text-xs font-bold text-gray-700">กำลังโหลด...</span>
+            </div>
+        </div>
+
+        <div id="loading" class="text-center py-12 animate-bounce text-pink-500 font-bold">
+            🔮 กำลังร่ายเวทมนตร์ดีไซน์โปร่งแสง...
+        </div>
+
+        <div id="dashboardArea" class="hidden">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="bg-white/50 p-4 rounded-2xl border border-white/60 shadow-sm">
+                    <label class="block text-xs font-black text-gray-400 uppercase tracking-wider mb-1.5 pl-1">📌 เลือกผู้บริหารควบคุม:</label>
+                    <select id="execSelect" class="w-full p-3 rounded-xl bg-white/90 border border-pink-200 text-sm font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-inner appearance-none">
+                        <option value="">กำลังสืบค้นข้อมูลจาก Firebase...</option>
+                    </select>
+                </div>
+                <div class="flex items-center justify-end">
+                    <button class="w-full md:w-auto px-6 py-3.5 rounded-xl btn-3d text-white text-sm font-bold tracking-wide transition-all">
+                        ➕ บันทึกตารางงานใหม่
+                    </button>
+                </div>
             </div>
 
-            <div class="bg-white/60 rounded-2xl p-4 shadow-sm border border-white/50">
-                <div class="flex justify-between items-center mb-4 px-2">
-                    <button class="text-pink-500 font-bold hover:bg-pink-100 p-2 rounded-lg transition">&lt;</button>
-                    <h2 id="monthYearDisplay" class="font-bold text-gray-700">พฤษภาคม 2569</h2>
-                    <button class="text-pink-500 font-bold hover:bg-pink-100 p-2 rounded-lg transition">&gt;</button>
-                </div>
-                <div class="grid grid-cols-7 gap-1 text-center text-xs font-bold text-gray-400 mb-2">
-                    <div class="text-red-400">อา</div><div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div class="text-pink-500">ส</div>
-                </div>
-                <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-center text-sm">
-                    </div>
+            <div class="mb-4 flex items-center justify-between px-1">
+                <h3 class="font-black text-gray-700 text-base flex items-center gap-1.5">
+                    📂 ตารางกิจกรรมการปฏิบัติงานรายวัน <span class="text-xs font-medium text-pink-500 bg-pink-100 px-2 py-0.5 rounded-full">กางออกทั้งหมด</span>
+                </h3>
+                <span class="text-xs text-gray-400 hidden md:inline">💡 มือถือสามารถกางนิ้วกางซูมส่องดูรายละเอียดงานได้</span>
             </div>
 
-            <button class="mt-6 w-full glass-btn text-pink-600 font-bold py-3 rounded-xl shadow-sm hover:shadow-md">
-                + เพิ่มตารางงาน/นัดหมาย
-            </button>
+            <div id="calendarGridBox" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                </div>
+
         </div>
     </div>
 
     <script>
         const MY_LIFF_ID = "2010128406-pWJYT2lK"; 
-        // ลิงก์ Firebase ของระบบเรา
         const FIREBASE_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/";
 
         async function initializeLiff() {
@@ -89,14 +113,14 @@
                 if (liff.isLoggedIn()) {
                     const profile = await liff.getProfile();
                     document.getElementById("profileBox").classList.remove("hidden");
-                    document.getElementById("calendarArea").classList.remove("hidden");
+                    document.getElementById("profileBox").classList.add("flex");
+                    document.getElementById("dashboardArea").classList.remove("hidden");
                     
                     document.getElementById("pictureUrl").src = profile.pictureUrl;
                     document.getElementById("displayName").innerText = profile.displayName;
 
-                    // สั่งให้โหลดรายชื่อผู้บริหาร และสร้างปฏิทินทันที
                     fetchExecutives();
-                    renderCalendar();
+                    generateMockCalendarCards(); // รันฟังก์ชันวาดการ์ดปฏิทินแบบกางข้อมูลออกโชว์
                 } else {
                     liff.login();
                 }
@@ -106,52 +130,60 @@
             }
         }
 
-        // ฟังก์ชันไปเคาะประตู Firebase ขอรายชื่อผู้บริหาร
+        // ดึงรายชื่อผู้บริหารจากบ้านใหม่ Firebase
         async function fetchExecutives() {
             try {
                 let response = await fetch(FIREBASE_URL + "sadaoExecCalendar/executives.json");
                 let data = await response.json();
-                
                 let select = document.getElementById("execSelect");
-                select.innerHTML = '<option value="">-- กรุณาเลือกผู้บริหาร --</option>';
+                select.innerHTML = '<option value="">-- กรุณาระบุผู้บริหารเพื่อดูตารางงาน --</option>';
 
                 if(data) {
-                    // วนลูปเอารายชื่อมาใส่ใน Dropdown
                     for (let uid in data) {
                         let exec = data[uid];
                         let option = document.createElement("option");
                         option.value = uid;
-                        // แสดง ตำแหน่ง : ชื่อ-นามสกุล
-                        option.innerText = exec.position + " : " + exec.fullName; 
+                        option.innerText = exec.position + " ➔ " + exec.fullName; 
                         select.appendChild(option);
                     }
                 }
             } catch (error) {
-                console.error("Error fetching data:", error);
+                console.error("Error:", error);
             }
         }
 
-        // ฟังก์ชันวาดปฏิทิน
-        function renderCalendar() {
-            const grid = document.getElementById("calendarGrid");
-            grid.innerHTML = "";
-            
-            // เว้นช่องว่างให้ตรงกับวันแรกของเดือน (พ.ค. 2569 เริ่มวันศุกร์)
-            for(let i=0; i<5; i++) { 
-                grid.innerHTML += `<div class="p-2"></div>`;
-            }
-            
-            // สร้างวันที่ 1 ถึง 31
-            for(let day=1; day<=31; day++) {
-                let isToday = (day === 19); // ไฮไลท์วันที่ 19
-                let bgClass = isToday ? "bg-pink-400 text-white shadow-md font-bold" : "bg-white/40 text-gray-700 hover:bg-pink-100 cursor-pointer";
-                
-                grid.innerHTML += `
-                    <div class="aspect-square flex items-center justify-center rounded-lg ${bgClass} transition">
-                        ${day}
+        // 🛠️ ฟังก์ชันจำลองสร้างการ์ดกิจกรรมแยกตามวัน (สไตล์บอร์ด HR โชว์ข้อมูลให้เห็นทั้งหมดทันทีในหน้าเดียว)
+        function generateMockCalendarCards() {
+            const gridBox = document.getElementById("calendarGridBox");
+            gridBox.innerHTML = "";
+
+            // สมมุติตัวอย่างจำลองสถานการณ์สัปดาห์นี้ขึ้นมาโชว์ตัวอย่างการ์ดดีไซน์
+            const mockEvents = [
+                { date: "วันจันทร์ที่ 18 พ.ค.", title: "ประชุมบอร์ดบริหาร รพ. ประจำเดือน", time: "09:00 - 12:00 น.", room: "ห้องประชุมไพทูรย์", badge: "ประชุมด่วน", color: "border-t-pink-500 text-pink-600 bg-pink-50" },
+                { date: "วันอังคารที่ 19 พ.ค.", title: "ลงพื้นที่ตรวจเยี่ยมศูนย์แพทย์ชุมชนเมือง", time: "13:30 - 16:30 น.", room: "ศสม.เครือข่ายสะเดา", badge: "ตรวจราชการ", color: "border-t-purple-500 text-purple-600 bg-purple-50" },
+                { date: "วันพุธที่ 20 พ.ค.", title: "ต้อนรับคณะผู้ประเมินมาตรฐานโรงพยาบาล HA", time: "08:30 - 16:30 น.", room: "ตึกอำนวยการชั้น 2", badge: "รับการประเมิน", color: "border-t-amber-500 text-amber-600 bg-amber-50" },
+                { date: "วันพฤหัสฯที่ 21 พ.ค.", title: "งานสัมมนาทิศทางการแพทย์แผนไทยยุคใหม่", time: "09:00 - 15:00 น.", room: "โรงแรมในหาดใหญ่", badge: "อบรม/วิชาการ", color: "border-t-emerald-500 text-emerald-600 bg-emerald-50" },
+                { date: "วันศุกร์ที่ 22 พ.ค.", title: "เคลียร์เอกสารอนุมัติงบประมาณครุภัณฑ์", time: "10:00 - 12:00 น.", room: "ห้องทำงาน ผอ.", badge: "งานบริหาร", color: "border-t-blue-500 text-blue-600 bg-blue-50" },
+                { date: "วันเสาร์ที่ 23 พ.ค.", title: "ไม่มีตารางงานนัดหมายอย่างเป็นทางการ", time: "-", room: "-", badge: "วันหยุด", color: "border-t-gray-400 text-gray-500 bg-gray-50" }
+            ];
+
+            mockEvents.forEach(ev => {
+                gridBox.innerHTML += `
+                    <div class="glass-card rounded-2xl p-4 border-t-4 ${ev.color.split(' ')[0]} flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-black text-gray-500">${ev.date}</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${ev.color.split(' ')[1]} ${ev.color.split(' ')[2]}">${ev.badge}</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-gray-800 line-clamp-2 mb-3 leading-snug h-10">${ev.title}</h4>
+                        </div>
+                        <div class="pt-2 border-t border-gray-100 text-xs text-gray-500 space-y-1">
+                            <div class="flex items-center gap-1">⏰ <span>${ev.time}</span></div>
+                            <div class="flex items-center gap-1">📍 <span>${ev.room}</span></div>
+                        </div>
                     </div>
                 `;
-            }
+            });
         }
 
         window.onload = initializeLiff;
