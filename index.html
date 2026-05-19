@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ปฏิทินผู้บริหาร รพ.สะเดา</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        /* สไตล์ Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+        body {
+            /* พื้นหลังโทนสี Sakura */
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%);
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 text-gray-800 font-sans">
+
+    <div class="max-w-md mx-auto glass-panel rounded-3xl p-6 mt-4">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-pink-600 mb-1">🌸 ปฏิทินผู้บริหาร</h1>
+            <p class="text-sm text-gray-500 font-medium">โรงพยาบาลสะเดา</p>
+        </div>
+
+        <div id="loading" class="text-center py-8 animate-pulse text-pink-400 font-medium">
+            กำลังเชื่อมต่อกับ LINE...
+        </div>
+
+        <div id="profileBox" class="hidden flex items-center gap-4 p-4 bg-white/50 rounded-2xl mb-4 border border-white/60">
+            <img id="pictureUrl" src="" alt="Profile" class="w-14 h-14 rounded-full shadow-sm">
+            <div>
+                <p class="text-xs text-gray-500 mb-0.5">ยินดีต้อนรับ</p>
+                <p id="displayName" class="font-bold text-gray-800 text-lg leading-tight"></p>
+            </div>
+        </div>
+        
+        <div id="calendarArea" class="hidden text-center p-4">
+            <p class="text-gray-500 text-sm">ส่วนปฏิทินจะแสดงผลตรงนี้ครับ 📅</p>
+        </div>
+    </div>
+
+    <script>
+        // 🔑 รอใส่ LIFF ID ที่ได้จาก LINE Developers
+        const MY_LIFF_ID = "รอใส่_LIFF_ID_ตรงนี้"; 
+
+        async function initializeLiff() {
+            try {
+                await liff.init({ liffId: MY_LIFF_ID });
+                document.getElementById("loading").classList.add("hidden");
+
+                if (liff.isLoggedIn()) {
+                    // ถ้าล็อกอินแล้ว ให้ดึงข้อมูลโปรไฟล์มาแสดง
+                    const profile = await liff.getProfile();
+                    document.getElementById("profileBox").classList.remove("hidden");
+                    document.getElementById("calendarArea").classList.remove("hidden");
+                    
+                    document.getElementById("pictureUrl").src = profile.pictureUrl;
+                    document.getElementById("displayName").innerText = profile.displayName;
+                } else {
+                    // ถ้ายังไม่ล็อกอิน ให้เด้งหน้าล็อกอินของ LINE
+                    liff.login();
+                }
+            } catch (err) {
+                console.error("LIFF Initialization failed", err);
+                document.getElementById("loading").innerText = "เกิดข้อผิดพลาด: " + err.message;
+            }
+        }
+
+        // เริ่มการทำงานเมื่อโหลดหน้าเว็บเสร็จ
+        window.onload = function() {
+            initializeLiff();
+        };
+    </script>
+</body>
+</html>
