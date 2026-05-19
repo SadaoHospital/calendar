@@ -27,7 +27,6 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
             border: 1px solid #f3f4f6;
             transition: transform 0.2s, box-shadow 0.2s;
-            overflow: hidden;
         }
         .event-card:hover {
             transform: translateY(-3px);
@@ -41,37 +40,31 @@
         }
         .btn-3d:active { transform: scale(0.96); }
         .hide-scroll::-webkit-scrollbar { width: 4px; }
-        .hide-scroll::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        .hide-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
-        /* แอนิเมชันสำหรับ Modal ล้ำยุค */
-        .modal-enter { animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .modal-enter { animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes modalFadeIn {
             from { opacity: 0; transform: scale(0.9) translateY(20px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
         
-        /* สไตล์ช่องกรอกข้อมูลพรีเมียม */
         .modern-input {
             background: #f8fafc;
-            border: 1px solid #f1f5f9;
+            border: 1px solid #e2e8f0;
             transition: all 0.3s ease;
         }
-        .modern-input:focus {
+        .modern-input:focus, .modern-input.active {
             background: #ffffff;
-            border-color: #60a5fa;
-            box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.15);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
         }
-        /* Custom Browser Date/Time Icon */
+        
         input[type="date"]::-webkit-calendar-picker-indicator,
         input[type="time"]::-webkit-calendar-picker-indicator {
-            cursor: pointer;
-            opacity: 0.6;
-            transition: 0.2s;
+            cursor: pointer; opacity: 0.6; transition: 0.2s;
         }
         input[type="date"]::-webkit-calendar-picker-indicator:hover,
-        input[type="time"]::-webkit-calendar-picker-indicator:hover {
-            opacity: 1;
-        }
+        input[type="time"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
     </style>
 </head>
 <body class="p-3 md:p-6 text-gray-800 font-sans">
@@ -100,7 +93,7 @@
         <div id="dashboardArea" class="hidden">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 <div class="bg-white/80 p-4 rounded-2xl border border-gray-100 shadow-sm">
-                    <label class="block text-[11px] font-black text-gray-400 uppercase tracking-wider mb-1.5 pl-1">📌 ตัวกรองผู้บริหาร:</label>
+                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5 pl-1">📌 ตัวกรองผู้บริหาร:</label>
                     <select id="execSelect" class="w-full p-3.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-bold text-gray-700 focus:outline-none focus:border-blue-400 focus:bg-white transition-colors cursor-pointer appearance-none">
                         <option value="">-- แสดงตารางงานของผู้บริหารทั้งหมด --</option>
                     </select>
@@ -119,8 +112,7 @@
 
     <div id="eventModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         
-        <div class="bg-white/95 backdrop-blur-xl rounded-[32px] shadow-2xl border border-white w-full max-w-xl overflow-hidden modal-enter relative">
-            
+        <div class="bg-white/95 backdrop-blur-xl rounded-[32px] shadow-2xl border border-white w-full max-w-xl overflow-visible modal-enter relative">
             <svg class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 text-blue-50 opacity-50 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
 
             <form id="eventForm" onsubmit="saveEvent(event)" class="relative z-10 flex flex-col h-full">
@@ -142,56 +134,57 @@
 
                 <div class="px-8 py-2 space-y-5">
                     
-                    <div>
-                        <label class="block text-[11px] font-black text-gray-400 uppercase tracking-wider mb-1.5 pl-1">ผู้บริหารที่รับผิดชอบ <span class="text-red-400">*</span></label>
-                        <div class="relative relative group">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-blue-400 group-focus-within:text-blue-600 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            </div>
-                            <select id="modalExecSelect" required class="modern-input w-full pl-12 pr-4 py-3.5 rounded-2xl text-sm font-bold text-gray-700 outline-none appearance-none cursor-pointer">
-                                <option value="" disabled selected>-- เลือกผู้บริหาร --</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </div>
+                    <div class="relative" id="dropdownContainer">
+                        <label class="block text-[13px] font-bold text-slate-700 mb-1.5 pl-1">ผู้บริหารที่รับผิดชอบ <span class="text-red-500">*</span></label>
+                        
+                        <button type="button" id="dropdownTrigger" class="modern-input w-full pl-12 pr-4 py-3.5 rounded-2xl text-sm font-bold text-gray-700 outline-none text-left flex items-center justify-between shadow-sm">
+                            <span id="dropdownSelectedText" class="text-gray-400 font-medium">-- เลือกผู้บริหาร --</span>
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        
+                        <div class="absolute inset-y-0 left-0 top-[26px] flex items-center pl-4 pointer-events-none text-blue-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         </div>
+
+                        <div id="dropdownMenu" class="hidden absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl max-h-56 overflow-y-auto hide-scroll">
+                            </div>
                     </div>
 
                     <div>
-                        <label class="block text-[11px] font-black text-gray-400 uppercase tracking-wider mb-1.5 pl-1">หัวข้อภารกิจ/กิจกรรม <span class="text-red-400">*</span></label>
+                        <label class="block text-[13px] font-bold text-slate-700 mb-1.5 pl-1">หัวข้อภารกิจ/กิจกรรม <span class="text-red-500">*</span></label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-blue-400 group-focus-within:text-blue-600 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                             </div>
-                            <input type="text" id="eventTitle" required placeholder="ระบุชื่องาน (เช่น ประชุมบอร์ดบริหาร)" class="modern-input w-full pl-12 pr-4 py-3.5 rounded-2xl text-sm font-bold text-gray-700 outline-none placeholder-gray-300">
+                            <input type="text" id="eventTitle" required placeholder="ระบุชื่องาน (เช่น ประชุมบอร์ดบริหาร)" class="modern-input w-full pl-12 pr-4 py-3.5 rounded-2xl text-sm font-bold text-gray-800 outline-none placeholder-gray-300 shadow-sm">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[11px] font-black text-gray-400 uppercase tracking-wider mb-1.5 pl-1">วันที่ <span class="text-red-400">*</span></label>
-                            <input type="date" id="eventDate" required class="modern-input w-full px-4 py-3.5 rounded-2xl text-sm font-bold text-gray-700 outline-none">
+                            <label class="block text-[13px] font-bold text-slate-700 mb-1.5 pl-1">วันที่ <span class="text-red-500">*</span></label>
+                            <input type="date" id="eventDate" required class="modern-input w-full px-4 py-3.5 rounded-2xl text-sm font-bold text-gray-800 outline-none shadow-sm">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-black text-gray-400 uppercase tracking-wider mb-1.5 pl-1">เวลา (เริ่มต้น) <span class="text-red-400">*</span></label>
-                            <input type="time" id="eventTime" required class="modern-input w-full px-4 py-3.5 rounded-2xl text-sm font-bold text-gray-700 outline-none">
+                            <label class="block text-[13px] font-bold text-slate-700 mb-1.5 pl-1">เวลา (เริ่มต้น) <span class="text-red-500">*</span></label>
+                            <input type="time" id="eventTime" required class="modern-input w-full px-4 py-3.5 rounded-2xl text-sm font-bold text-gray-800 outline-none shadow-sm">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[11px] font-black text-gray-400 uppercase tracking-wider mb-1.5 pl-1">สถานที่ <span class="text-red-400">*</span></label>
+                            <label class="block text-[13px] font-bold text-slate-700 mb-1.5 pl-1">สถานที่ <span class="text-red-500">*</span></label>
                             <div class="relative group">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-blue-400 group-focus-within:text-blue-600 transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                 </div>
-                                <input type="text" id="eventRoom" required placeholder="ระบุสถานที่" class="modern-input w-full pl-10 pr-4 py-3.5 rounded-2xl text-sm font-bold text-gray-700 outline-none placeholder-gray-300">
+                                <input type="text" id="eventRoom" required placeholder="ระบุสถานที่" class="modern-input w-full pl-10 pr-4 py-3.5 rounded-2xl text-sm font-bold text-gray-800 outline-none placeholder-gray-300 shadow-sm">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-[11px] font-black text-gray-400 uppercase tracking-wider mb-1.5 pl-1">ระดับความสำคัญ <span class="text-red-400">*</span></label>
+                            <label class="block text-[13px] font-bold text-slate-700 mb-1.5 pl-1">ระดับความสำคัญ <span class="text-red-500">*</span></label>
                             <div class="relative group">
-                                <select id="eventPriority" required class="modern-input w-full pl-4 pr-10 py-3.5 rounded-2xl text-sm font-bold outline-none appearance-none cursor-pointer">
+                                <select id="eventPriority" required class="modern-input w-full pl-4 pr-10 py-3.5 rounded-2xl text-sm font-bold outline-none appearance-none cursor-pointer shadow-sm">
                                     <option value="ทั่วไป" class="text-gray-600">🟢 ทั่วไป</option>
                                     <option value="สำคัญ" class="text-orange-500">🟠 สำคัญ</option>
                                     <option value="ด่วนที่สุด" class="text-red-500">🔴 ด่วนที่สุด</option>
@@ -220,6 +213,8 @@
     <script>
         const MY_LIFF_ID = "2010128406-pWJYT2lK"; 
         const FIREBASE_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/";
+        
+        let selectedExecData = null; // ตัวแปรเก็บข้อมูลผู้บริหารที่ถูกเลือกจาก Custom Dropdown
 
         async function initializeLiff() {
             try {
@@ -252,22 +247,34 @@
                 let data = await response.json();
                 
                 let selectMain = document.getElementById("execSelect");
-                let selectModal = document.getElementById("modalExecSelect");
+                let dropdownMenu = document.getElementById("dropdownMenu");
 
                 if(data) {
+                    dropdownMenu.innerHTML = ''; // ล้างค่าเก่า
                     for (let uid in data) {
                         let exec = data[uid];
-                        let optionText = exec.position + " ➔ " + exec.fullName;
                         
+                        // 1. สร้าง Dropdown ธรรมดาหน้าแดชบอร์ด
                         let opt1 = document.createElement("option");
-                        opt1.value = uid; opt1.innerText = optionText;
+                        opt1.value = uid; opt1.innerText = exec.position + " ➔ " + exec.fullName;
                         selectMain.appendChild(opt1);
 
-                        let opt2 = document.createElement("option");
-                        opt2.value = uid; opt2.innerText = optionText;
-                        opt2.dataset.fullname = exec.fullName;
-                        opt2.dataset.position = exec.position;
-                        selectModal.appendChild(opt2);
+                        // 2. สร้าง Custom Dropdown พรีเมียมใน Modal
+                        // ใช้ API สร้างรูปโปรไฟล์จากชื่อแบบเนียนๆ
+                        let avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(exec.fullName)}&background=eff6ff&color=3b82f6&rounded=true&bold=true`;
+                        
+                        let item = document.createElement("div");
+                        item.className = "flex items-center gap-3 p-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0";
+                        item.innerHTML = `
+                            <img src="${avatarUrl}" class="w-9 h-9 rounded-full shadow-sm border border-white">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-gray-800">${exec.fullName}</span>
+                                <span class="text-[10px] font-bold text-blue-500">${exec.position}</span>
+                            </div>
+                        `;
+                        // ฝังคำสั่งเมื่อกดเลือกชื่อนี้
+                        item.onclick = () => selectExecutive(uid, exec.fullName, exec.position, avatarUrl);
+                        dropdownMenu.appendChild(item);
                     }
                 }
             } catch (error) {
@@ -275,7 +282,41 @@
             }
         }
 
-        // เปิด-ปิด Modal แบบสมูท
+        // ==========================================
+        // 🎛️ ระบบจัดการ Custom Dropdown
+        // ==========================================
+        document.getElementById('dropdownTrigger').addEventListener('click', function(e) {
+            document.getElementById('dropdownMenu').classList.toggle('hidden');
+            this.classList.toggle('border-blue-400');
+            this.classList.toggle('shadow-[0_0_0_4px_rgba(59,130,246,0.15)]');
+        });
+
+        // กดที่อื่นให้ Dropdown ปิด
+        document.addEventListener('click', function(e) {
+            if (!document.getElementById('dropdownContainer').contains(e.target)) {
+                document.getElementById('dropdownMenu').classList.add('hidden');
+                document.getElementById('dropdownTrigger').classList.remove('border-blue-400', 'shadow-[0_0_0_4px_rgba(59,130,246,0.15)]');
+            }
+        });
+
+        // เมื่อผู้ใช้เลือกรายชื่อ
+        function selectExecutive(uid, fullName, position, avatarUrl) {
+            selectedExecData = { uid, fullName, position, avatarUrl };
+            
+            // เปลี่ยนหน้าตาปุ่มให้โชว์รูปและชื่อที่เลือก
+            document.getElementById('dropdownSelectedText').innerHTML = `
+                <div class="flex items-center gap-2 -ml-1">
+                    <img src="${avatarUrl}" class="w-6 h-6 rounded-full border border-gray-200">
+                    <span class="text-gray-800 font-bold">${fullName}</span>
+                </div>
+            `;
+            document.getElementById('dropdownMenu').classList.add('hidden');
+            document.getElementById('dropdownTrigger').classList.remove('border-blue-400', 'shadow-[0_0_0_4px_rgba(59,130,246,0.15)]');
+        }
+
+        // ==========================================
+        // 🟢 ระบบ Modal และ บันทึกข้อมูล
+        // ==========================================
         function openModal() {
             document.getElementById('eventModal').classList.remove('hidden');
             document.getElementById('eventDate').valueAsDate = new Date();
@@ -283,25 +324,31 @@
         function closeModal() {
             document.getElementById('eventModal').classList.add('hidden');
             document.getElementById('eventForm').reset(); 
+            // รีเซ็ต Dropdown กลับเป็นค่าเริ่มต้น
+            selectedExecData = null;
+            document.getElementById('dropdownSelectedText').innerHTML = '-- เลือกผู้บริหาร --';
+            document.getElementById('dropdownSelectedText').className = 'text-gray-400 font-medium';
         }
 
-        // ส่งข้อมูลเข้า Firebase พร้อมเอฟเฟกต์ปุ่ม
         async function saveEvent(e) {
             e.preventDefault(); 
             
+            // เช็คก่อนว่าเลือกผู้บริหารหรือยัง
+            if(!selectedExecData) {
+                Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเลือกผู้บริหารที่รับผิดชอบก่อนบันทึกครับ', confirmButtonColor: '#3b82f6' });
+                return;
+            }
+
             const submitBtn = document.getElementById('submitBtn');
             const originalBtnText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> กำลังบันทึก...';
             submitBtn.disabled = true;
-            submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
 
-            const selectModal = document.getElementById('modalExecSelect');
-            const selectedOption = selectModal.options[selectModal.selectedIndex];
-            
             const newEvent = {
-                uid: selectModal.value,
-                execName: selectedOption.dataset.fullname,
-                execPosition: selectedOption.dataset.position,
+                uid: selectedExecData.uid,
+                execName: selectedExecData.fullName,
+                execPosition: selectedExecData.position,
+                avatar: selectedExecData.avatarUrl,
                 title: document.getElementById('eventTitle').value,
                 date: document.getElementById('eventDate').value,
                 time: document.getElementById('eventTime').value,
@@ -319,13 +366,7 @@
 
                 if (response.ok) {
                     closeModal();
-                    Swal.fire({
-                        title: 'บันทึกสำเร็จ!',
-                        text: 'เพิ่มตารางงานเข้าสู่ระบบเรียบร้อยแล้ว',
-                        icon: 'success',
-                        confirmButtonColor: '#3b82f6',
-                        shape: 'rounded-2xl'
-                    });
+                    Swal.fire({ title: 'บันทึกสำเร็จ!', text: 'เพิ่มตารางงานเข้าสู่ระบบเรียบร้อยแล้ว', icon: 'success', confirmButtonColor: '#3b82f6', shape: 'rounded-2xl' });
                 } else {
                     throw new Error("บันทึกไม่สำเร็จ");
                 }
@@ -334,11 +375,10 @@
             } finally {
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
             }
         }
 
-        // ฟังก์ชันวาดการ์ด (โครงเดิม)
+        // ฟังก์ชันวาดการ์ดจำลอง
         function generateMockCalendarCards() {
             const gridBox = document.getElementById("calendarGridBox");
             gridBox.innerHTML = "";
@@ -346,9 +386,7 @@
                 { 
                     dateNum: "18", monthYear: "พ.ค. 2569", dayName: "วันจันทร์", 
                     borderColor: "border-t-yellow-400", dateColor: "text-yellow-500", bgColor: "bg-yellow-50/50",
-                    events: [
-                        { time: "09:00", title: "ประชุมบอร์ดบริหาร รพ. ประจำเดือน", person: "นพ.ทดสอบ (ผอ.)", room: "ห้องประชุมไพทูรย์", priority: "ด่วนที่สุด", priorityClass: "bg-red-100 text-red-600", avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d" },
-                    ]
+                    events: [{ time: "09:00", title: "ประชุมบอร์ดบริหาร รพ. ประจำเดือน", person: "นพ.ทดสอบ (ผอ.)", room: "ห้องประชุมไพทูรย์", priority: "ด่วนที่สุด", priorityClass: "bg-red-100 text-red-600", avatar: "https://ui-avatars.com/api/?name=นพ.ทดสอบ&background=eff6ff&color=3b82f6&rounded=true&bold=true" }]
                 }
             ];
             mockDays.forEach(day => {
