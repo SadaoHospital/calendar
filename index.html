@@ -28,7 +28,7 @@
         }
         .event-card {
             background: #ffffff;
-            border-radius: 20px;
+            border-radius: 16px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
             border: 1px solid #f3f4f6;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -37,6 +37,18 @@
             transform: translateY(-3px);
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
         }
+        
+        /* ✨ สไตล์สำหรับไฮไลท์วันนี้ (สีทองวาวๆ) */
+        .today-card-glow {
+            ring-width: 3px;
+            --tw-ring-color: #fbbf24; /* สีเหลืองทอง */
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5), 0 10px 25px rgba(0,0,0,0.05);
+            z-index: 20;
+        }
+        @media (min-width: 1024px) {
+            .today-card-glow { transform: scale(1.03); }
+        }
+
         .btn-3d {
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
@@ -70,22 +82,23 @@
         }
     </style>
 </head>
-<body class="p-3 md:p-6 text-gray-800 font-sans">
+<body class="p-2 md:p-4 lg:p-6 text-gray-800 font-sans">
 
-    <div class="max-w-6xl mx-auto glass-master rounded-[32px] p-4 md:p-8 mt-2 relative">
+    <div class="max-w-[1400px] mx-auto glass-master rounded-[32px] p-4 md:p-6 lg:p-8 mt-2 relative">
+        
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 pb-6 border-b border-blue-100/50">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm overflow-hidden border border-gray-100 p-1">
+                <div class="w-14 h-14 md:w-16 md:h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm overflow-hidden border border-gray-100 p-1 shrink-0">
                     <img src="https://github.com/SadaoHospital/calendar/blob/Img/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%20%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B8%B2%20-%20Copy.png?raw=true" alt="Sadao Hospital Logo" class="w-full h-full object-contain">
                 </div>
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-black tracking-tight text-gray-800">ระบบปฏิทินผู้บริหาร</h1>
-                    <p class="text-xs md:text-sm font-bold text-blue-500 tracking-widest uppercase mt-0.5">Sadao Hospital Dashboard</p>
+                    <h1 class="text-xl md:text-3xl font-black tracking-tight text-gray-800">ระบบปฏิทินผู้บริหาร</h1>
+                    <p class="text-[10px] md:text-sm font-bold text-blue-500 tracking-widest uppercase mt-0.5">Sadao Hospital Dashboard</p>
                 </div>
             </div>
             <div id="profileBox" class="hidden items-center gap-3 bg-white p-2 pr-5 rounded-full border border-gray-100 shadow-sm">
-                <img id="pictureUrl" src="" alt="User Profile" class="w-10 h-10 rounded-full border-2 border-blue-100 shadow-sm object-cover">
-                <span id="displayName" class="text-sm font-bold text-gray-700">กำลังโหลด...</span>
+                <img id="pictureUrl" src="" alt="User Profile" class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-blue-100 shadow-sm object-cover">
+                <span id="displayName" class="text-xs md:text-sm font-bold text-gray-700">กำลังโหลด...</span>
             </div>
         </div>
 
@@ -94,38 +107,48 @@
         </div>
 
         <div id="dashboardArea" class="hidden">
-            <div class="flex flex-col md:flex-row gap-4 mb-8">
+            <div class="flex flex-col lg:flex-row gap-4 mb-6">
                 <div class="flex-1 bg-white/80 p-3 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
-                    <button onclick="changeMonth(-1)" class="w-12 h-12 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                    <button onclick="changeMonth(-1)" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
                     </button>
                     
-                    <div class="flex items-center gap-3">
-                        <h2 id="monthTitle" class="text-xl md:text-2xl font-black text-blue-900 tracking-tight">กำลังโหลดเดือน...</h2>
-                        <button onclick="goToToday()" class="px-3 py-1.5 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg text-xs font-bold transition-colors shadow-sm">
-                            กลับไปวันนี้
+                    <div class="flex flex-col items-center gap-1">
+                        <h2 id="monthTitle" class="text-lg md:text-2xl font-black text-blue-900 tracking-tight">กำลังโหลดเดือน...</h2>
+                        <button onclick="goToToday()" class="px-3 py-1 bg-gradient-to-r from-amber-400 to-yellow-500 text-white hover:from-amber-500 hover:to-yellow-600 rounded-lg text-[10px] font-bold transition-all shadow-sm flex items-center gap-1">
+                            🎯 กลับไปวันนี้
                         </button>
                     </div>
 
-                    <button onclick="changeMonth(1)" class="w-12 h-12 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                    <button onclick="changeMonth(1)" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                     </button>
                 </div>
 
-                <div class="bg-white/80 p-3 rounded-2xl border border-gray-100 shadow-sm md:w-1/3">
-                    <select id="execSelect" class="w-full h-full px-4 rounded-xl bg-gray-50 border border-gray-200 text-sm font-bold text-gray-700 focus:outline-none focus:border-blue-400 focus:bg-white cursor-pointer appearance-none">
+                <div class="bg-white/80 p-3 rounded-2xl border border-gray-100 shadow-sm lg:w-[350px]">
+                    <select id="execSelect" class="w-full h-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs md:text-sm font-bold text-gray-700 focus:outline-none focus:border-blue-400 focus:bg-white cursor-pointer appearance-none">
                         <option value="ALL">-- แสดงตารางของทุกคน --</option>
                     </select>
                 </div>
                 
                 <div class="flex items-center">
-                    <button onclick="openModal()" class="h-full px-6 rounded-2xl btn-3d text-white text-sm font-bold tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30">
+                    <button onclick="openModal()" class="w-full lg:w-auto h-full px-6 py-3 rounded-2xl btn-3d text-white text-xs md:text-sm font-bold tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30">
                         ➕ เพิ่มนัดหมาย
                     </button>
                 </div>
             </div>
 
-            <div id="calendarGridBox" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            <div class="hidden lg:grid grid-cols-7 gap-3 mb-2 text-center text-[13px] font-black bg-white/50 rounded-2xl p-3 border border-gray-100 shadow-sm">
+                <div class="text-red-500">อาทิตย์</div>
+                <div class="text-yellow-600">จันทร์</div>
+                <div class="text-pink-500">อังคาร</div>
+                <div class="text-green-600">พุธ</div>
+                <div class="text-orange-500">พฤหัสบดี</div>
+                <div class="text-blue-500">ศุกร์</div>
+                <div class="text-purple-500">เสาร์</div>
+            </div>
+
+            <div id="calendarGridBox" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3 md:gap-4"></div>
         </div>
     </div>
 
@@ -225,12 +248,11 @@
         let selectedExecData = null; 
         let allEventsData = []; 
         let fpDate, fpTimeStart, fpTimeEnd;
-        let currentDisplayDate = new Date(); // ตัวชี้เป้าว่ากำลังดูเดือนไหน
+        let currentDisplayDate = new Date(); 
 
         const thaiMonthsFull = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
         const thaiDays = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
         
-        // ข้อมูลวันหยุดราชการไทย (อัปเดต 2569)
         const thaiHolidays = {
             "2026-01-01": "วันขึ้นปีใหม่", "2026-03-02": "วันมาฆบูชา", "2026-04-06": "วันจักรี",
             "2026-04-13": "สงกรานต์", "2026-04-14": "สงกรานต์", "2026-04-15": "สงกรานต์",
@@ -327,7 +349,6 @@
             triggerRenderMonthlyGrid();
         }
         
-        // 🟢 ฟังก์ชันวาร์ปกลับไปเดือนปัจจุบัน
         function goToToday() {
             currentDisplayDate = new Date();
             triggerRenderMonthlyGrid();
@@ -346,6 +367,7 @@
             return new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
         }
 
+        // 🗓️ ระบบวาดการ์ด 7 คอลัมน์ (Sun-Sat)
         function renderMonthlyGrid(eventsArray) {
             const gridBox = document.getElementById("calendarGridBox");
             gridBox.innerHTML = "";
@@ -353,22 +375,29 @@
             const year = currentDisplayDate.getFullYear();
             const month = currentDisplayDate.getMonth();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay(); // 0(Sun) - 6(Sat)
 
             document.getElementById("monthTitle").innerText = `${thaiMonthsFull[month]} ${year + 543}`;
             
-            // ใช้เช็คว่าเป็นวันปัจจุบันเพื่อทำไฮไลท์
             let todayDate = new Date();
+            let htmlContent = "";
 
+            // 🟢 1. สร้างช่องว่างหลอก (Placeholder) สำหรับวันก่อนวันที่ 1 ให้ตรงกับวันในสัปดาห์
+            for(let i = 0; i < firstDay; i++) {
+                // แสดงผลช่องว่างเฉพาะในจอใหญ่ (lg) ที่เป็น Layout 7 คอลัมน์
+                htmlContent += `<div class="hidden lg:block rounded-2xl bg-white/30 border border-white/40"></div>`;
+            }
+
+            // 🟢 2. วนลูปสร้างการ์ดวันที่ 1 ถึงวันสุดท้าย
             for (let day = 1; day <= daysInMonth; day++) {
                 let targetDate = new Date(year, month, day);
                 let dateStr = getLocalISOString(targetDate);
                 let dayOfWeek = targetDate.getDay(); 
                 let theme = colorThemes[dayOfWeek];
                 
-                let monthYear = `${thaiMonthsFull[month]} ${year + 543}`;
                 let dayName = thaiDays[dayOfWeek];
 
-                // 🟢 เช็คว่าเป็นวันนี้หรือไม่
+                // เช็คว่าเป็นวันนี้หรือไม่
                 let isToday = (targetDate.getDate() === todayDate.getDate() && 
                                targetDate.getMonth() === todayDate.getMonth() && 
                                targetDate.getFullYear() === todayDate.getFullYear());
@@ -378,42 +407,45 @@
                 let todayBadgeSpan = "";
 
                 if (isToday) {
-                    todayBadgeSpan = `<span class="text-[9px] font-black px-2 py-0.5 rounded-md bg-blue-500 text-white shadow-sm ml-1 animate-pulse">🎯 วันนี้</span>`;
+                    todayBadgeSpan = `<span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-gradient-to-r from-amber-400 to-yellow-500 text-white shadow-sm ml-1 animate-pulse">วันนี้</span>`;
                 }
 
                 if (thaiHolidays[dateStr]) {
-                    holidayBadge = `<span class="text-[9px] font-black px-2 py-0.5 rounded-md bg-red-500 text-white shadow-sm ml-1">🎈 ${thaiHolidays[dateStr]}</span>`;
+                    holidayBadge = `<span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-red-500 text-white shadow-sm mt-0.5 truncate max-w-[90px]" title="${thaiHolidays[dateStr]}">🎈 ${thaiHolidays[dateStr]}</span>`;
                 } else if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    holidayBadge = `<span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-gray-400 text-white shadow-sm ml-1">💤 วันหยุด</span>`;
+                    holidayBadge = `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-gray-400 text-white shadow-sm mt-0.5">💤 วันหยุด</span>`;
                 }
 
                 let dayEvents = eventsArray.filter(e => e.date === dateStr);
                 dayEvents.sort((a,b) => (a.timeStart || "").localeCompare(b.timeStart || ""));
 
-                // 🟢 สไตล์ไฮไลท์กรอบเรืองแสงสำหรับ "วันนี้"
-                let todayHighlight = isToday ? "ring-2 ring-blue-500 shadow-xl relative z-10" : "";
-                let headerBg = isToday ? "bg-blue-50/80" : theme.bg;
-                let numColor = isToday ? "text-blue-600" : theme.text;
+                // 🌟 สไตล์ไฮไลท์กรอบทองวาวๆ สำหรับ "วันนี้"
+                let todayHighlight = isToday ? "today-card-glow ring-[3px]" : "";
+                let headerBg = isToday ? "bg-amber-50/90" : theme.bg;
+                let numColor = isToday ? "text-amber-600" : theme.text;
 
                 let cardHTML = `
-                    <div class="event-card border-t-[5px] ${theme.border} flex flex-col h-80 ${todayHighlight} transition-all duration-300">
-                        <div class="px-4 py-3 ${headerBg} border-b border-gray-100 flex items-center justify-between sticky top-0 z-10 rounded-t-2xl">
-                            <div class="flex items-baseline gap-2">
-                                <span class="text-3xl font-black ${numColor} tracking-tighter">${day}</span>
-                                <div class="flex flex-col">
-                                    <span class="text-[11px] font-bold text-gray-700">${monthYear}</span>
-                                    <span class="text-[10px] font-bold text-gray-400 flex items-center">${dayName} ${holidayBadge} ${todayBadgeSpan}</span>
+                    <div class="event-card border-t-[4px] ${theme.border} flex flex-col h-64 md:h-72 ${todayHighlight} transition-all duration-300 relative">
+                        <div class="px-3 py-2.5 ${headerBg} border-b border-gray-100 flex items-center justify-between sticky top-0 z-10 rounded-t-[15px]">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-2xl font-black ${numColor} tracking-tighter leading-none">${day}</span>
+                                <div class="flex flex-col justify-center">
+                                    <div class="flex items-center">
+                                        <span class="text-[10px] font-bold text-gray-400 lg:hidden mr-1">${dayName}</span>
+                                        ${todayBadgeSpan}
+                                    </div>
+                                    ${holidayBadge}
                                 </div>
                             </div>
-                            <span class="text-[10px] font-bold ${dayEvents.length > 0 ? 'text-blue-600 bg-white border-blue-100' : 'text-gray-400 bg-gray-100 border-gray-200'} px-2 py-1 rounded-lg shadow-sm border">${dayEvents.length} ภารกิจ</span>
+                            <span class="text-[9px] font-bold ${dayEvents.length > 0 ? 'text-blue-600 bg-white border-blue-100' : 'text-gray-400 bg-gray-100 border-gray-200'} px-1.5 py-0.5 rounded shadow-sm border">${dayEvents.length} งาน</span>
                         </div>
-                        <div class="p-2 overflow-y-auto hide-scroll flex-1 space-y-2 bg-gray-50/30">
+                        <div class="p-1.5 overflow-y-auto hide-scroll flex-1 space-y-1.5 bg-gray-50/40">
                 `;
 
                 if (dayEvents.length === 0) {
                     cardHTML += `
-                        <div class="flex items-center justify-center h-full text-xs font-bold text-gray-300 opacity-60">
-                            ไม่มีตารางนัดหมาย
+                        <div class="flex items-center justify-center h-full text-[10px] font-bold text-gray-300 opacity-60">
+                            ว่าง
                         </div>
                     `;
                 } else {
@@ -424,26 +456,27 @@
                         let avatar = ev.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(ev.execName)}&background=eff6ff&color=3b82f6&rounded=true&bold=true`;
 
                         cardHTML += `
-                            <div class="flex items-start gap-2 p-2 bg-white hover:bg-blue-50 border border-gray-100 rounded-xl transition-all shadow-sm">
-                                <div class="relative shrink-0 mt-0.5"><img src="${avatar}" class="w-8 h-8 rounded-full border border-gray-200 object-cover"></div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex flex-wrap justify-between items-start gap-1 mb-1">
-                                        <h5 class="text-xs font-bold text-gray-800 leading-tight truncate pr-1">${ev.title}</h5>
-                                        <span class="shrink-0 text-[8px] font-bold px-1.5 py-0.5 rounded ${pClass}">${ev.priority}</span>
+                            <div class="flex flex-col p-1.5 bg-white hover:bg-blue-50 border border-gray-100 rounded-lg transition-all shadow-sm relative group cursor-pointer" title="[${ev.timeStart}-${ev.timeEnd}] ${ev.title} @${ev.room}">
+                                <div class="flex justify-between items-start mb-0.5">
+                                    <div class="flex items-center gap-1 min-w-0 pr-1">
+                                        <img src="${avatar}" class="w-3.5 h-3.5 rounded-full object-cover shrink-0">
+                                        <span class="text-[9px] font-bold text-blue-600 truncate">${ev.execName}</span>
                                     </div>
-                                    <p class="text-[10px] font-semibold text-blue-600 mb-1 truncate">${ev.execName}</p>
-                                    <div class="flex flex-col gap-0.5 text-[9px] font-medium text-gray-500">
-                                        <span class="truncate">⏰ ${ev.timeStart}-${ev.timeEnd} น.</span>
-                                        <span class="truncate">📍 ${ev.room}</span>
-                                    </div>
+                                    <span class="shrink-0 text-[7px] font-bold px-1 py-0.5 rounded ${pClass} leading-none mt-0.5">${ev.priority}</span>
+                                </div>
+                                <h5 class="text-[10px] font-bold text-gray-800 leading-tight line-clamp-2 mb-1">${ev.title}</h5>
+                                <div class="flex items-center justify-between text-[8px] font-medium text-gray-500">
+                                    <span class="truncate bg-gray-50 px-1 rounded">⏰ ${ev.timeStart}-${ev.timeEnd}</span>
                                 </div>
                             </div>
                         `;
                     });
                 }
                 cardHTML += `</div></div>`;
-                gridBox.innerHTML += cardHTML;
+                htmlContent += cardHTML;
             }
+
+            gridBox.innerHTML = htmlContent;
         }
 
         document.getElementById('execSelect').addEventListener('change', triggerRenderMonthlyGrid);
