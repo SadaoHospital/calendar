@@ -20,22 +20,11 @@
             min-height: 100vh;
         }
         .glass-master {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.9);
             box-shadow: 0 20px 50px rgba(59, 130, 246, 0.08);
-        }
-        .event-card {
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-            border: 1px solid #f3f4f6;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .event-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
         }
         .btn-3d {
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
@@ -44,7 +33,7 @@
             transition: all 0.2s;
         }
         .btn-3d:active { transform: scale(0.96); }
-        .hide-scroll::-webkit-scrollbar { width: 4px; }
+        .hide-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
         .hide-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
         .modal-enter { animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -63,14 +52,33 @@
             border-color: #3b82f6;
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
         }
+
+        /* ตกแต่งตารางปฏิทินรายเดือน */
+        .calendar-cell {
+            min-height: 100px;
+            transition: all 0.2s;
+        }
+        @media (max-width: 768px) {
+            .calendar-cell { min-height: 80px; }
+        }
+        .calendar-cell:hover {
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+            border-color: #93c5fd;
+            z-index: 10;
+        }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            display: none; -webkit-appearance: none;
+        }
     </style>
 </head>
-<body class="p-3 md:p-6 text-gray-800 font-sans">
+<body class="p-2 md:p-6 text-gray-800 font-sans">
 
-    <div class="max-w-6xl mx-auto glass-master rounded-[32px] p-4 md:p-8 mt-2 relative">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 pb-6 border-b border-blue-100/50">
+    <div class="max-w-7xl mx-auto glass-master rounded-[32px] p-4 md:p-8 mt-2 relative overflow-hidden">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 pb-6 border-b border-blue-100/50">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm overflow-hidden border border-gray-100 p-1">
+                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm overflow-hidden border border-gray-100 p-1 shrink-0">
                     <img src="https://github.com/SadaoHospital/calendar/blob/Img/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%20%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B8%B2%20-%20Copy.png?raw=true" alt="Sadao Hospital Logo" class="w-full h-full object-contain">
                 </div>
                 <div>
@@ -78,7 +86,7 @@
                     <p class="text-xs md:text-sm font-bold text-blue-500 tracking-widest uppercase mt-0.5">Sadao Hospital Dashboard</p>
                 </div>
             </div>
-            <div id="profileBox" class="hidden items-center gap-3 bg-white p-2 pr-5 rounded-full border border-gray-100 shadow-sm">
+            <div id="profileBox" class="hidden items-center gap-3 bg-white p-2 pr-5 rounded-full border border-gray-100 shadow-sm shrink-0">
                 <img id="pictureUrl" src="" alt="User Profile" class="w-10 h-10 rounded-full border-2 border-blue-100 shadow-sm object-cover">
                 <span id="displayName" class="text-sm font-bold text-gray-700">กำลังโหลด...</span>
             </div>
@@ -89,22 +97,23 @@
         </div>
 
         <div id="dashboardArea" class="hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <div class="bg-white/80 p-4 rounded-2xl border border-gray-100 shadow-sm">
-                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5 pl-1">📌 ตัวกรองผู้บริหาร:</label>
-                    <select id="execSelect" class="w-full p-3.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-bold text-gray-700 focus:outline-none focus:border-blue-400 focus:bg-white transition-colors cursor-pointer appearance-none">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 items-end">
+                <div class="md:col-span-2 bg-white/80 p-3 md:p-4 rounded-2xl border border-gray-100 shadow-sm">
+                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1.5 pl-1">📌 ตัวกรองตารางงานผู้บริหาร:</label>
+                    <select id="execSelect" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 text-sm font-bold text-gray-700 focus:outline-none focus:border-blue-400 focus:bg-white transition-colors cursor-pointer appearance-none">
                         <option value="ALL">-- แสดงตารางงานของผู้บริหารทั้งหมด --</option>
                     </select>
                 </div>
-                <div class="flex items-center justify-end">
-                    <button onclick="openModal()" class="w-full md:w-auto px-8 py-4 rounded-2xl btn-3d text-white text-sm font-bold tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30">
+                <div class="flex items-center justify-end h-full">
+                    <button onclick="openModal()" class="w-full md:w-auto px-6 py-4 rounded-2xl btn-3d text-white text-sm font-bold tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
-                        บันทึกตารางงานใหม่
+                        เพิ่มตารางงาน
                     </button>
                 </div>
             </div>
 
-            <div id="calendarGridBox" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="monthlyCalendarContainer" class="bg-white/60 backdrop-blur-sm rounded-3xl p-3 md:p-6 border border-white shadow-sm overflow-hidden">
+                </div>
         </div>
     </div>
 
@@ -115,7 +124,7 @@
                 <div class="px-8 pt-6 pb-2 flex justify-between items-center">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-inner">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
                         <div>
                             <h3 class="text-xl font-black text-gray-800 tracking-tight">เพิ่มตารางงานใหม่</h3>
@@ -221,7 +230,7 @@
                             <div class="relative group">
                                 <select id="eventPriority" required class="modern-input w-full pl-4 pr-10 py-3 rounded-2xl text-sm font-bold outline-none appearance-none cursor-pointer shadow-sm">
                                     <option value="ทั่วไป">🟢 ทั่วไป</option>
-                                    <option value="สำคัญ">🟠 重要 สำคัญ</option>
+                                    <option value="สำคัญ">🟠 สำคัญ</option>
                                     <option value="ด่วนที่สุด">🔴 ด่วนที่สุด</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
@@ -250,40 +259,29 @@
         let selectedExecData = null; 
         let allEventsData = []; 
         let fpDate, fpTimeStart, fpTimeEnd;
+        let currentDisplayDate = new Date(); // ตัวแปรเก็บเดือนที่กำลังดูอยู่บนปฏิทิน
 
-        const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-        const thaiDays = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
+        const thaiMonthsFull = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
         
-        // ⚡ ฟังก์ชั่นอัปเกรด 4: ปฏิทินวันหยุดราชการไทยประจำปี พ.ศ. 2569 (2026)
         const thaiHolidays = {
-            "2026-01-01": "วันขึ้นปีใหม่",
-            "2026-03-02": "วันมาฆบูชา",
+            "2026-01-01": "ขึ้นปีใหม่",
+            "2026-03-02": "มาฆบูชา",
             "2026-04-06": "วันจักรี",
-            "2026-04-13": "วันสงกรานต์",
-            "2026-04-14": "วันสงกรานต์",
-            "2026-04-15": "วันสงกรานต์",
-            "2026-05-01": "วันแรงงานแห่งชาติ",
-            "2026-05-04": "วันฉัตรมงคล",
-            "2026-06-01": "วันวิสาขบูชา",
-            "2026-07-28": "วันเฉลิมพระชนมพรรษา ร.10",
-            "2026-07-29": "วันอาสาฬหบูชา",
-            "2026-08-12": "วันแม่แห่งชาติ",
-            "2026-10-13": "วันคล้ายวันสวรรคต ร.9",
-            "2026-10-23": "วันปิยมหาราช",
-            "2026-12-05": "วันพ่อแห่งชาติ",
-            "2026-12-10": "วันรัฐธรรมนูญ",
-            "2026-12-31": "วันสิ้นปี"
+            "2026-04-13": "สงกรานต์",
+            "2026-04-14": "สงกรานต์",
+            "2026-04-15": "สงกรานต์",
+            "2026-05-01": "วันแรงงาน",
+            "2026-05-04": "ฉัตรมงคล",
+            "2026-06-01": "วิสาขบูชา",
+            "2026-07-28": "เฉลิมพระชนมพรรษา",
+            "2026-07-29": "อาสาฬหบูชา",
+            "2026-08-12": "วันแม่",
+            "2026-10-13": "วันสวรรคต ร.9",
+            "2026-10-23": "ปิยมหาราช",
+            "2026-12-05": "วันพ่อ",
+            "2026-12-10": "รัฐธรรมนูญ",
+            "2026-12-31": "สิ้นปี"
         };
-
-        const colorThemes = [
-            { border: "border-t-red-400", text: "text-red-500", bg: "bg-red-50/50" },       
-            { border: "border-t-yellow-400", text: "text-yellow-500", bg: "bg-yellow-50/50" }, 
-            { border: "border-t-pink-400", text: "text-pink-500", bg: "bg-pink-50/50" },       
-            { border: "border-t-green-500", text: "text-green-600", bg: "bg-green-50/50" },    
-            { border: "border-t-orange-400", text: "text-orange-500", bg: "bg-orange-50/50" }, 
-            { border: "border-t-blue-400", text: "text-blue-500", bg: "bg-blue-50/50" },       
-            { border: "border-t-purple-400", text: "text-purple-500", bg: "bg-purple-50/50" }  
-        ];
 
         async function initializeLiff() {
             try {
@@ -323,7 +321,6 @@
             });
         }
 
-        // สลับโหมด เลือกวันเดียว หรือ ช่วงวันต่อเนื่อง
         function toggleDateMode(isMultiDay) {
             document.getElementById('eventDate').value = '';
             if(isMultiDay) {
@@ -339,7 +336,6 @@
             }
         }
 
-        // ระบบเลือกบล็อกเวลาทางลัดอัจฉริยะ
         function setTimeBlock(type) {
             document.querySelectorAll('.time-block-btn').forEach(b => {
                 b.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
@@ -348,7 +344,7 @@
             document.getElementById('tb-' + type).classList.add('bg-white', 'text-blue-600', 'shadow-sm');
 
             if(type === 'custom') {
-                fpTimeStart.setDate(''); fpTimeEnd.setDate('');
+                fpTimeStart.clear(); fpTimeEnd.clear();
             } else if (type === 'allday') {
                 fpTimeStart.setDate('08:30'); fpTimeEnd.setDate('16:30');
             } else if (type === 'morning') {
@@ -398,32 +394,50 @@
                 if(data) {
                     for(let key in data) { allEventsData.push({ ...data[key], id: key }); }
                 }
-                renderCalendarCards(allEventsData);
+                triggerRenderCalendar();
             } catch (error) { console.error("Error fetching events:", error); }
         }
 
-        // ตัวคำนวณกระจายวันที่ กรณีผู้ใช้ระบุช่วงวันแบบ Range
         function getDatesInRange(startDate, endDate) {
             const date = new Date(startDate);
             const dates = [];
             while (date <= new Date(endDate)) {
-                dates.push(date.toISOString().split('T')[0]);
+                // จัดการเรื่อง Timezone อัตโนมัติ เพื่อไม่ให้วันที่เพี้ยน
+                let isoDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                dates.push(isoDate);
                 date.setDate(date.getDate() + 1);
             }
             return dates;
         }
 
-        function renderCalendarCards(eventsArray) {
-            const gridBox = document.getElementById("calendarGridBox");
-            gridBox.innerHTML = "";
-            if(eventsArray.length === 0) {
-                gridBox.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-bold text-lg">ยังไม่มีตารางงานในระบบครับ 📭</div>`;
-                return;
-            }
+        function changeMonth(offset) {
+            currentDisplayDate.setMonth(currentDisplayDate.getMonth() + offset);
+            triggerRenderCalendar();
+        }
 
+        function triggerRenderCalendar() {
+            let selectedUid = document.getElementById("execSelect").value;
+            let eventsToRender = allEventsData;
+            if(selectedUid !== "ALL" && selectedUid) {
+                eventsToRender = allEventsData.filter(ev => ev.uid === selectedUid);
+            }
+            renderMonthlyCalendar(eventsToRender);
+        }
+
+        // ==========================================
+        // 🗓️ สมองกลวาดปฏิทินรายเดือนอัจฉริยะ
+        // ==========================================
+        function renderMonthlyCalendar(eventsArray) {
+            const container = document.getElementById("monthlyCalendarContainer");
+            const year = currentDisplayDate.getFullYear();
+            const month = currentDisplayDate.getMonth();
+
+            const firstDay = new Date(year, month, 1).getDay(); // 0(Sun) - 6(Sat)
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // จัดกลุ่มงานตามวันที่
             const grouped = {};
             eventsArray.forEach(ev => {
-                // ⚡ จัดการการกระจายตารางงานหลายวันแบบอัจฉริยะ
                 if(ev.isMultiDay && ev.startDate && ev.endDate) {
                     const rangeDates = getDatesInRange(ev.startDate, ev.endDate);
                     rangeDates.forEach(d => {
@@ -436,82 +450,98 @@
                 }
             });
 
-            // เรียงลำดับคีย์ของวันที่ในการ์ด
-            const sortedDates = Object.keys(grouped).sort((a,b) => new Date(a) - new Date(b));
-
-            sortedDates.forEach(dateStr => {
-                let dateObj = new Date(dateStr);
-                let dayOfWeek = dateObj.getDay(); 
-                let theme = colorThemes[dayOfWeek];
+            // ส่วนหัวปฏิทิน (ปุ่มเลื่อนเดือน)
+            let html = `
+                <div class="flex justify-between items-center mb-6 px-2">
+                    <button onclick="changeMonth(-1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <h2 class="text-xl md:text-2xl font-black text-blue-900 tracking-tight">${thaiMonthsFull[month]} ${year + 543}</h2>
+                    <button onclick="changeMonth(1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
                 
-                let dayNum = dateObj.getDate();
-                let monthYear = thaiMonths[dateObj.getMonth()] + " " + (dateObj.getFullYear() + 543);
-                let dayName = thaiDays[dayOfWeek];
+                <div class="grid grid-cols-7 gap-1 md:gap-2 text-center mb-2">
+                    <div class="text-[10px] md:text-xs font-black text-red-500 uppercase tracking-wider">อา.</div>
+                    <div class="text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-wider">จ.</div>
+                    <div class="text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-wider">อ.</div>
+                    <div class="text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-wider">พ.</div>
+                    <div class="text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-wider">พฤ.</div>
+                    <div class="text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-wider">ศ.</div>
+                    <div class="text-[10px] md:text-xs font-black text-purple-500 uppercase tracking-wider">ส.</div>
+                </div>
+                <div class="grid grid-cols-7 gap-1 md:gap-2">
+            `;
 
-                // ⚡ ระบบตรวจจับวันหยุดราชการหรือวันหยุดสุดสัปดาห์
-                let holidayBadge = "";
-                if (thaiHolidays[dateStr]) {
-                    holidayBadge = `<span class="text-[9px] font-black px-2 py-0.5 rounded-md bg-red-500 text-white animate-pulse">🎈 ${thaiHolidays[dateStr]}</span>`;
-                } else if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    holidayBadge = `<span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-gray-400 text-white">💤 วันหยุดทำการ</span>`;
+            // เติมช่องว่างก่อนวันที่ 1
+            for(let i = 0; i < firstDay; i++) {
+                html += `<div class="rounded-xl bg-gray-50/50 border border-transparent"></div>`;
+            }
+
+            // วนลูปสร้างช่องวันที่ 1 ถึง สิ้นเดือน
+            let todayStr = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+
+            for(let day = 1; day <= daysInMonth; day++) {
+                let dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                let dayEvents = grouped[dateStr] || [];
+                let isToday = dateStr === todayStr;
+                let isHoliday = thaiHolidays[dateStr] ? true : false;
+                
+                let currentDayOfWeek = new Date(year, month, day).getDay();
+                let isWeekend = currentDayOfWeek === 0 || currentDayOfWeek === 6;
+
+                // กำหนดคลาสช่องปฏิทิน
+                let cellClass = "calendar-cell p-1.5 md:p-2 rounded-xl border bg-white flex flex-col gap-1 overflow-hidden ";
+                
+                if (isToday) {
+                    cellClass += " border-blue-400 ring-2 ring-blue-100 bg-blue-50/20";
+                } else if (isHoliday || isWeekend) {
+                    cellClass += " border-red-100 bg-red-50/10";
+                } else {
+                    cellClass += " border-gray-200";
                 }
 
-                // เรียงเวลาภายในวันนั้นๆ จากเช้าไปเย็น
-                grouped[dateStr].sort((a,b) => (a.timeStart || "").localeCompare(b.timeStart || ""));
+                // สร้างป้ายสีของงานในแต่ละวัน
+                dayEvents.sort((a,b) => (a.timeStart || "").localeCompare(b.timeStart || ""));
+                
+                let eventsHtml = dayEvents.map(ev => {
+                    let color = "bg-blue-100 text-blue-700 border-blue-200"; // ทั่วไป
+                    if(ev.priority === 'สำคัญ') color = "bg-orange-100 text-orange-700 border-orange-200";
+                    if(ev.priority === 'ด่วนที่สุด') color = "bg-red-100 text-red-700 border-red-200";
 
-                let cardHTML = `
-                    <div class="event-card border-t-4 ${theme.border} flex flex-col max-h-[400px]">
-                        <div class="px-5 py-4 ${theme.bg} border-b border-gray-100 flex items-center justify-between sticky top-0 z-10">
-                            <div class="flex items-baseline gap-2">
-                                <span class="text-3xl font-black ${theme.text} tracking-tighter">${dayNum}</span>
-                                <div class="flex flex-col">
-                                    <span class="text-xs font-bold text-gray-700">${monthYear}</span>
-                                    <span class="text-[10px] font-bold text-gray-400">${dayName} ${holidayBadge}</span>
-                                </div>
-                            </div>
-                            <span class="text-xs font-bold text-gray-400 bg-white px-2 py-1 rounded-lg shadow-sm border border-gray-100">${grouped[dateStr].length} งาน</span>
-                        </div>
-                        <div class="p-3 overflow-y-auto hide-scroll flex-1 space-y-2">
-                `;
-
-                grouped[dateStr].forEach(ev => {
-                    let pClass = "bg-gray-100 text-gray-600";
-                    if(ev.priority === "สำคัญ") pClass = "bg-orange-100 text-orange-600";
-                    if(ev.priority === "ด่วนที่สุด") pClass = "bg-red-100 text-red-600";
-                    let avatar = ev.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(ev.execName)}&background=eff6ff&color=3b82f6&rounded=true&bold=true`;
-
-                    cardHTML += `
-                        <div class="flex items-start gap-3 p-3 bg-white hover:bg-gray-50 border border-gray-100 rounded-xl transition-all">
-                            <div class="relative shrink-0 mt-0.5"><img src="${avatar}" class="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover"></div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex flex-wrap justify-between items-start gap-1 mb-1">
-                                    <h5 class="text-[13px] font-bold text-gray-800 leading-tight truncate pr-2">${ev.title}</h5>
-                                    <span class="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded ${pClass}">${ev.priority}</span>
-                                </div>
-                                <p class="text-[11px] font-semibold text-blue-600 mb-1.5 truncate">${ev.execName}</p>
-                                <div class="flex items-center gap-2 text-[10px] font-medium text-gray-500">
-                                    <span class="bg-slate-100 px-1.5 py-0.5 rounded font-bold text-slate-700">⏰ ${ev.timeStart}-${ev.timeEnd} น.</span>
-                                    <span class="truncate">📍 ${ev.room}</span>
-                                </div>
-                            </div>
+                    return `
+                        <div class="text-[9px] md:text-[11px] leading-tight p-1 px-1.5 rounded-md border ${color} truncate cursor-pointer shadow-sm" title="[${ev.timeStart}-${ev.timeEnd} น.] ${ev.title} (${ev.execName}) @${ev.room}">
+                            <span class="font-black">${ev.timeStart}</span> ${ev.title}
                         </div>
                     `;
-                });
+                }).join('');
 
-                cardHTML += `</div></div>`;
-                gridBox.innerHTML += cardHTML;
-            });
+                // สร้างตัวเลขวันที่
+                let dateColor = isToday ? "text-white bg-blue-500 rounded-full w-6 h-6 flex items-center justify-center ml-auto shadow-sm" : 
+                               (isHoliday || isWeekend ? "text-red-500" : "text-slate-600");
+                
+                let holidayText = isHoliday ? `<span class="text-[8px] text-red-400 font-bold block text-right leading-none mb-1 truncate">${thaiHolidays[dateStr]}</span>` : "";
+
+                html += `
+                    <div class="${cellClass}">
+                        <div class="text-right text-xs md:text-sm font-black mb-1 ${dateColor} ${!isToday ? 'text-right block' : ''}">${day}</div>
+                        ${holidayText}
+                        <div class="flex-1 flex flex-col gap-1 overflow-y-auto hide-scroll">
+                            ${eventsHtml}
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `</div>`; 
+            container.innerHTML = html;
         }
 
-        // ระบบควบคุม Custom Dropdown และปุ่มปิดเปิด
-        document.getElementById('execSelect').addEventListener('change', function() {
-            if(this.value === "ALL" || !this.value) { renderCalendarCards(allEventsData); } 
-            else { renderCalendarCards(allEventsData.filter(ev => ev.uid === this.value || (ev.isMultiDay && checkInFilteredRange(ev, this.value)))); }
-        });
-
-        function checkInFilteredRange(ev, uid) {
-            return ev.uid === uid;
-        }
+        // ==========================================
+        // ส่วนจัดการ UI ย่อย
+        // ==========================================
+        document.getElementById('execSelect').addEventListener('change', triggerRenderCalendar);
 
         document.getElementById('dropdownTrigger').addEventListener('click', function() {
             document.getElementById('dropdownMenu').classList.toggle('hidden');
@@ -533,6 +563,10 @@
             document.getElementById('multiDayToggle').checked = false;
             toggleDateMode(false);
             setTimeBlock('custom');
+            
+            if(fpDate) fpDate.setDate(new Date()); // เริ่มต้นที่วันนี้
+            if(fpTimeStart) fpTimeStart.clear();
+            if(fpTimeEnd) fpTimeEnd.clear();
         }
         
         function closeModal() {
@@ -542,33 +576,44 @@
             document.getElementById('dropdownSelectedText').innerHTML = '-- เลือกผู้บริหาร --';
         }
 
+        // เซฟงานเข้า Firebase
         async function saveEvent(e) {
             e.preventDefault(); 
             if(!selectedExecData) {
                 Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเลือกผู้บริหารก่อนครับ' }); return;
             }
 
+            const timeStartVal = document.getElementById('eventTimeStart').value;
+            const timeEndVal = document.getElementById('eventTimeEnd').value;
+            if(!timeStartVal || !timeEndVal) {
+                Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาระบุเวลาเริ่มต้นและสิ้นสุดให้ครบถ้วนครับ' }); return;
+            }
+
             const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '⏳ กำลังบันทึก...';
             submitBtn.disabled = true;
 
             const dateValue = document.getElementById('eventDate').value;
             let finalEvent = {
                 uid: selectedExecData.uid, execName: selectedExecData.fullName, execPosition: selectedExecData.position, avatar: selectedExecData.avatarUrl,
                 title: document.getElementById('eventTitle').value,
-                timeStart: document.getElementById('eventTimeStart').value,
-                timeEnd: document.getElementById('eventTimeEnd').value,
+                timeStart: timeStartVal,
+                timeEnd: timeEndVal,
                 room: document.getElementById('eventRoom').value,
                 priority: document.getElementById('eventPriority').value,
                 isMultiDay: document.getElementById('multiDayToggle').checked,
                 timestamp: new Date().toISOString()
             };
 
-            // แยกข้อมูลช่วงวันที่ในกรณีกิจกรรมหลายวัน
-            if(finalEvent.isMultiDay) {
+            // ประมวลผล Range วันที่
+            if(finalEvent.isMultiDay && dateValue.includes("ถึง")) {
                 const dateParts = dateValue.split(" ถึง ");
                 finalEvent.startDate = dateParts[0];
                 finalEvent.endDate = dateParts[1] || dateParts[0];
                 finalEvent.date = dateParts[0];
+            } else if(finalEvent.isMultiDay && !dateValue.includes("ถึง")) {
+                finalEvent.startDate = dateValue; finalEvent.endDate = dateValue; finalEvent.date = dateValue;
             } else {
                 finalEvent.date = dateValue;
             }
@@ -581,11 +626,14 @@
                 });
                 if (response.ok) {
                     closeModal();
-                    Swal.fire({ title: 'บันทึกสำเร็จ!', text: 'อัปเดตปฏิทินผู้บริหารเรียบร้อย', icon: 'success', confirmButtonColor: '#3b82f6' });
+                    Swal.fire({ title: 'บันทึกสำเร็จ!', text: 'เพิ่มตารางงานลงปฏิทินเรียบร้อย', icon: 'success', confirmButtonColor: '#3b82f6' });
                     fetchEvents();
                 }
             } catch (error) { Swal.fire('ข้อผิดพลาด', error.message, 'error'); } 
-            finally { submitBtn.disabled = false; }
+            finally { 
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false; 
+            }
         }
 
         window.onload = initializeLiff;
