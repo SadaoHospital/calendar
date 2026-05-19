@@ -99,7 +99,14 @@
                     <button onclick="changeMonth(-1)" class="w-12 h-12 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
                     </button>
-                    <h2 id="monthTitle" class="text-xl md:text-2xl font-black text-blue-900 tracking-tight">กำลังโหลดเดือน...</h2>
+                    
+                    <div class="flex items-center gap-3">
+                        <h2 id="monthTitle" class="text-xl md:text-2xl font-black text-blue-900 tracking-tight">กำลังโหลดเดือน...</h2>
+                        <button onclick="goToToday()" class="px-3 py-1.5 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg text-xs font-bold transition-colors shadow-sm">
+                            กลับไปวันนี้
+                        </button>
+                    </div>
+
                     <button onclick="changeMonth(1)" class="w-12 h-12 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                     </button>
@@ -319,6 +326,12 @@
             currentDisplayDate.setMonth(currentDisplayDate.getMonth() + offset);
             triggerRenderMonthlyGrid();
         }
+        
+        // 🟢 ฟังก์ชันวาร์ปกลับไปเดือนปัจจุบัน
+        function goToToday() {
+            currentDisplayDate = new Date();
+            triggerRenderMonthlyGrid();
+        }
 
         function triggerRenderMonthlyGrid() {
             let selectedUid = document.getElementById("execSelect").value;
@@ -333,7 +346,6 @@
             return new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
         }
 
-        // 🗓️ ระบบวาดการ์ด 1 หน้าต่าง 1 เดือน (โชว์ทุกวัน)
         function renderMonthlyGrid(eventsArray) {
             const gridBox = document.getElementById("calendarGridBox");
             gridBox.innerHTML = "";
@@ -342,10 +354,11 @@
             const month = currentDisplayDate.getMonth();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // อัปเดตหัวข้อเดือนด้านบน
             document.getElementById("monthTitle").innerText = `${thaiMonthsFull[month]} ${year + 543}`;
+            
+            // ใช้เช็คว่าเป็นวันปัจจุบันเพื่อทำไฮไลท์
+            let todayDate = new Date();
 
-            // วนลูปสร้างการ์ดตั้งแต่วันที่ 1 ถึงวันสุดท้ายของเดือน
             for (let day = 1; day <= daysInMonth; day++) {
                 let targetDate = new Date(year, month, day);
                 let dateStr = getLocalISOString(targetDate);
@@ -355,26 +368,41 @@
                 let monthYear = `${thaiMonthsFull[month]} ${year + 543}`;
                 let dayName = thaiDays[dayOfWeek];
 
-                // เช็ควันหยุด
+                // 🟢 เช็คว่าเป็นวันนี้หรือไม่
+                let isToday = (targetDate.getDate() === todayDate.getDate() && 
+                               targetDate.getMonth() === todayDate.getMonth() && 
+                               targetDate.getFullYear() === todayDate.getFullYear());
+
+                // ป้ายแจ้งเตือนต่างๆ
                 let holidayBadge = "";
-                if (thaiHolidays[dateStr]) {
-                    holidayBadge = `<span class="text-[9px] font-black px-2 py-0.5 rounded-md bg-red-500 text-white animate-pulse shadow-sm">🎈 ${thaiHolidays[dateStr]}</span>`;
-                } else if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    holidayBadge = `<span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-gray-400 text-white shadow-sm">💤 วันหยุด</span>`;
+                let todayBadgeSpan = "";
+
+                if (isToday) {
+                    todayBadgeSpan = `<span class="text-[9px] font-black px-2 py-0.5 rounded-md bg-blue-500 text-white shadow-sm ml-1 animate-pulse">🎯 วันนี้</span>`;
                 }
 
-                // หางานของวันนี้
+                if (thaiHolidays[dateStr]) {
+                    holidayBadge = `<span class="text-[9px] font-black px-2 py-0.5 rounded-md bg-red-500 text-white shadow-sm ml-1">🎈 ${thaiHolidays[dateStr]}</span>`;
+                } else if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    holidayBadge = `<span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-gray-400 text-white shadow-sm ml-1">💤 วันหยุด</span>`;
+                }
+
                 let dayEvents = eventsArray.filter(e => e.date === dateStr);
                 dayEvents.sort((a,b) => (a.timeStart || "").localeCompare(b.timeStart || ""));
 
+                // 🟢 สไตล์ไฮไลท์กรอบเรืองแสงสำหรับ "วันนี้"
+                let todayHighlight = isToday ? "ring-2 ring-blue-500 shadow-xl relative z-10" : "";
+                let headerBg = isToday ? "bg-blue-50/80" : theme.bg;
+                let numColor = isToday ? "text-blue-600" : theme.text;
+
                 let cardHTML = `
-                    <div class="event-card border-t-[5px] ${theme.border} flex flex-col h-80">
-                        <div class="px-4 py-3 ${theme.bg} border-b border-gray-100 flex items-center justify-between sticky top-0 z-10 rounded-t-2xl">
+                    <div class="event-card border-t-[5px] ${theme.border} flex flex-col h-80 ${todayHighlight} transition-all duration-300">
+                        <div class="px-4 py-3 ${headerBg} border-b border-gray-100 flex items-center justify-between sticky top-0 z-10 rounded-t-2xl">
                             <div class="flex items-baseline gap-2">
-                                <span class="text-3xl font-black ${theme.text} tracking-tighter">${day}</span>
+                                <span class="text-3xl font-black ${numColor} tracking-tighter">${day}</span>
                                 <div class="flex flex-col">
                                     <span class="text-[11px] font-bold text-gray-700">${monthYear}</span>
-                                    <span class="text-[10px] font-bold text-gray-400 flex items-center gap-1">${dayName} ${holidayBadge}</span>
+                                    <span class="text-[10px] font-bold text-gray-400 flex items-center">${dayName} ${holidayBadge} ${todayBadgeSpan}</span>
                                 </div>
                             </div>
                             <span class="text-[10px] font-bold ${dayEvents.length > 0 ? 'text-blue-600 bg-white border-blue-100' : 'text-gray-400 bg-gray-100 border-gray-200'} px-2 py-1 rounded-lg shadow-sm border">${dayEvents.length} ภารกิจ</span>
@@ -382,7 +410,6 @@
                         <div class="p-2 overflow-y-auto hide-scroll flex-1 space-y-2 bg-gray-50/30">
                 `;
 
-                // ถ้าไม่มีงาน ให้โชว์คำว่า ไม่มีตารางนัดหมาย
                 if (dayEvents.length === 0) {
                     cardHTML += `
                         <div class="flex items-center justify-center h-full text-xs font-bold text-gray-300 opacity-60">
@@ -450,7 +477,6 @@
             document.getElementById('dropdownSelectedText').innerHTML = '-- เลือกผู้บริหาร --';
         }
 
-        // ⚡ ฟังก์ชั่นตัวช่วย: สร้างงานแบบทำซ้ำ 12 เดือนล่วงหน้า
         function generateRecurringEvents(baseEvent, recurType) {
             let events = [baseEvent];
             if (recurType === 'none') return events;
@@ -460,25 +486,21 @@
             let month = baseDate.getMonth();
             let date = baseDate.getDate();
             let dayOfWeek = baseDate.getDay();
-            let nth = Math.ceil(date / 7); // คำนวณว่าเป็นสัปดาห์ที่เท่าไหร่ของเดือน (เช่น สัปดาห์ที่ 1)
+            let nth = Math.ceil(date / 7); 
 
-            // สร้างสำหรับ 11 เดือนข้างหน้า (รวมเดือนแรกเป็น 12 เดือน)
             for (let i = 1; i < 12; i++) {
                 let nextMonth = month + i;
                 let newEvent = { ...baseEvent };
 
                 if (recurType === 'monthly_date') {
-                    // ทำซ้ำทุกวันที่ x ของทุกเดือน
                     let targetDate = new Date(year, nextMonth, date);
-                    // ดักเคสเดือนกุมภาพันธ์ (วันที่ 30 ไม่มี)
                     if (targetDate.getMonth() !== (nextMonth % 12)) {
-                        targetDate = new Date(year, nextMonth + 1, 0); // ปัดเป็นวันสุดท้ายของเดือนนั้นแทน
+                        targetDate = new Date(year, nextMonth + 1, 0); 
                     }
                     newEvent.date = getLocalISOString(targetDate);
                     events.push(newEvent);
 
                 } else if (recurType === 'monthly_weekday') {
-                    // ทำซ้ำทุกวันประจำสัปดาห์ (เช่น วันจันทร์แรกของทุกเดือน)
                     let firstDayOfNextMonth = new Date(year, nextMonth, 1);
                     let firstDayOfWeek = firstDayOfNextMonth.getDay();
                     let diff = dayOfWeek - firstDayOfWeek;
@@ -528,7 +550,6 @@
             const eventsToSave = generateRecurringEvents(baseEvent, recurType);
 
             try {
-                // ส่งข้อมูลเข้า Firebase พร้อมกันหลายๆ งาน (ถ้ามีการทำซ้ำ)
                 Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
                 
                 const promises = eventsToSave.map(ev => 
@@ -544,7 +565,6 @@
                 closeModal();
                 Swal.fire({ title: 'บันทึกสำเร็จ!', text: `เพิ่มตารางงานลงปฏิทินเรียบร้อย (${eventsToSave.length} รายการ)`, icon: 'success', confirmButtonColor: '#3b82f6' });
                 
-                // หลังจากบันทึกเสร็จ ให้ปฏิทินกระโดดไปที่เดือนที่เพิ่งบันทึกงานลงไป
                 currentDisplayDate = new Date(baseEvent.date);
                 fetchEvents();
 
