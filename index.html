@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* สไตล์ Glassmorphism */
         .glass-panel {
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(12px);
@@ -16,13 +15,20 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
         }
         body {
-            /* พื้นหลังโทนสี Sakura */
             background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%);
             background-attachment: fixed;
         }
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 182, 193, 0.5);
+            transition: all 0.2s;
+        }
+        .glass-btn:active {
+            background: rgba(255, 105, 180, 0.2);
+        }
     </style>
 </head>
-<body class="min-h-screen p-4 text-gray-800 font-sans">
+<body class="min-h-screen p-4 text-gray-800 font-sans pb-20">
 
     <div class="max-w-md mx-auto glass-panel rounded-3xl p-6 mt-4">
         <div class="text-center mb-6">
@@ -31,10 +37,10 @@
         </div>
 
         <div id="loading" class="text-center py-8 animate-pulse text-pink-400 font-medium">
-            กำลังเชื่อมต่อกับ LINE...
+            กำลังเชื่อมต่อระบบ...
         </div>
 
-        <div id="profileBox" class="hidden flex items-center gap-4 p-4 bg-white/50 rounded-2xl mb-4 border border-white/60">
+        <div id="profileBox" class="hidden flex items-center gap-4 p-4 bg-white/50 rounded-2xl mb-4 border border-white/60 shadow-sm">
             <img id="pictureUrl" src="" alt="Profile" class="w-14 h-14 rounded-full shadow-sm">
             <div>
                 <p class="text-xs text-gray-500 mb-0.5">ยินดีต้อนรับ</p>
@@ -42,14 +48,38 @@
             </div>
         </div>
         
-        <div id="calendarArea" class="hidden text-center p-4">
-            <p class="text-gray-500 text-sm">ส่วนปฏิทินจะแสดงผลตรงนี้ครับ 📅</p>
+        <div id="calendarArea" class="hidden">
+            
+            <div class="mb-4">
+                <label class="block text-xs font-bold text-gray-500 mb-1 pl-1">เลือกผู้บริหารที่ต้องการดูตารางงาน:</label>
+                <select id="execSelect" class="w-full p-3 rounded-xl bg-white/70 border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm font-medium shadow-sm appearance-none">
+                    <option value="">กำลังดึงรายชื่อจากฐานข้อมูล...</option>
+                </select>
+            </div>
+
+            <div class="bg-white/60 rounded-2xl p-4 shadow-sm border border-white/50">
+                <div class="flex justify-between items-center mb-4 px-2">
+                    <button class="text-pink-500 font-bold hover:bg-pink-100 p-2 rounded-lg transition">&lt;</button>
+                    <h2 id="monthYearDisplay" class="font-bold text-gray-700">พฤษภาคม 2569</h2>
+                    <button class="text-pink-500 font-bold hover:bg-pink-100 p-2 rounded-lg transition">&gt;</button>
+                </div>
+                <div class="grid grid-cols-7 gap-1 text-center text-xs font-bold text-gray-400 mb-2">
+                    <div class="text-red-400">อา</div><div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div class="text-pink-500">ส</div>
+                </div>
+                <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-center text-sm">
+                    </div>
+            </div>
+
+            <button class="mt-6 w-full glass-btn text-pink-600 font-bold py-3 rounded-xl shadow-sm hover:shadow-md">
+                + เพิ่มตารางงาน/นัดหมาย
+            </button>
         </div>
     </div>
 
     <script>
-        // 🔑 รอใส่ LIFF ID ที่ได้จาก LINE Developers
         const MY_LIFF_ID = "2010128406-pWJYT2lK"; 
+        // ลิงก์ Firebase ของระบบเรา
+        const FIREBASE_URL = "https://sadao-queue-999c3-default-rtdb.asia-southeast1.firebasedatabase.app/";
 
         async function initializeLiff() {
             try {
@@ -57,27 +87,74 @@
                 document.getElementById("loading").classList.add("hidden");
 
                 if (liff.isLoggedIn()) {
-                    // ถ้าล็อกอินแล้ว ให้ดึงข้อมูลโปรไฟล์มาแสดง
                     const profile = await liff.getProfile();
                     document.getElementById("profileBox").classList.remove("hidden");
                     document.getElementById("calendarArea").classList.remove("hidden");
                     
                     document.getElementById("pictureUrl").src = profile.pictureUrl;
                     document.getElementById("displayName").innerText = profile.displayName;
+
+                    // สั่งให้โหลดรายชื่อผู้บริหาร และสร้างปฏิทินทันที
+                    fetchExecutives();
+                    renderCalendar();
                 } else {
-                    // ถ้ายังไม่ล็อกอิน ให้เด้งหน้าล็อกอินของ LINE
                     liff.login();
                 }
             } catch (err) {
-                console.error("LIFF Initialization failed", err);
+                console.error("LIFF Init Error", err);
                 document.getElementById("loading").innerText = "เกิดข้อผิดพลาด: " + err.message;
             }
         }
 
-        // เริ่มการทำงานเมื่อโหลดหน้าเว็บเสร็จ
-        window.onload = function() {
-            initializeLiff();
-        };
+        // ฟังก์ชันไปเคาะประตู Firebase ขอรายชื่อผู้บริหาร
+        async function fetchExecutives() {
+            try {
+                let response = await fetch(FIREBASE_URL + "sadaoExecCalendar/executives.json");
+                let data = await response.json();
+                
+                let select = document.getElementById("execSelect");
+                select.innerHTML = '<option value="">-- กรุณาเลือกผู้บริหาร --</option>';
+
+                if(data) {
+                    // วนลูปเอารายชื่อมาใส่ใน Dropdown
+                    for (let uid in data) {
+                        let exec = data[uid];
+                        let option = document.createElement("option");
+                        option.value = uid;
+                        // แสดง ตำแหน่ง : ชื่อ-นามสกุล
+                        option.innerText = exec.position + " : " + exec.fullName; 
+                        select.appendChild(option);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        // ฟังก์ชันวาดปฏิทิน
+        function renderCalendar() {
+            const grid = document.getElementById("calendarGrid");
+            grid.innerHTML = "";
+            
+            // เว้นช่องว่างให้ตรงกับวันแรกของเดือน (พ.ค. 2569 เริ่มวันศุกร์)
+            for(let i=0; i<5; i++) { 
+                grid.innerHTML += `<div class="p-2"></div>`;
+            }
+            
+            // สร้างวันที่ 1 ถึง 31
+            for(let day=1; day<=31; day++) {
+                let isToday = (day === 19); // ไฮไลท์วันที่ 19
+                let bgClass = isToday ? "bg-pink-400 text-white shadow-md font-bold" : "bg-white/40 text-gray-700 hover:bg-pink-100 cursor-pointer";
+                
+                grid.innerHTML += `
+                    <div class="aspect-square flex items-center justify-center rounded-lg ${bgClass} transition">
+                        ${day}
+                    </div>
+                `;
+            }
+        }
+
+        window.onload = initializeLiff;
     </script>
 </body>
 </html>
