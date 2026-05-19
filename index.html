@@ -38,7 +38,6 @@
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
         }
         
-        /* ✨ สไตล์สำหรับไฮไลท์วันนี้ (สีทองวาวๆ) */
         .today-card-glow {
             ring-width: 3px;
             --tw-ring-color: #fbbf24;
@@ -222,10 +221,19 @@
                         </select>
                     </div>
 
+                    <div class="mb-2">
+                        <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1">สถานที่ <span class="text-red-500">*</span></label>
+                        <input type="text" id="eventRoom" required placeholder="ระบุสถานที่" class="modern-input w-full px-4 py-3 rounded-2xl text-sm font-bold text-gray-800 outline-none shadow-sm">
+                    </div>
+
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1">สถานที่ <span class="text-red-500">*</span></label>
-                            <input type="text" id="eventRoom" required placeholder="ระบุสถานที่" class="modern-input w-full px-4 py-3 rounded-2xl text-sm font-bold text-gray-800 outline-none shadow-sm">
+                            <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1">ระดับการมองเห็น <span class="text-red-500">*</span></label>
+                            <select id="eventVisibility" required class="modern-input w-full px-4 py-3 rounded-2xl text-sm font-bold outline-none cursor-pointer shadow-sm text-gray-700">
+                                <option value="public">🌐 สาธารณะ (เห็นทุกคน)</option>
+                                <option value="board">👥 เฉพาะกรรมการ</option>
+                                <option value="private">🔒 ส่วนตัว</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-[13px] font-bold text-slate-700 mb-1 pl-1">ระดับความสำคัญ <span class="text-red-500">*</span></label>
@@ -306,7 +314,6 @@
             }
         }
 
-        // ⚡ อัปเกรด: เปิดโหมด range ให้ลากคลุมเลือกวันได้เลย
         function initFlatpickr() {
             fpDate = flatpickr("#eventDate", { 
                 locale: "th", 
@@ -320,7 +327,6 @@
             fpTimeEnd = flatpickr("#eventTimeEnd", { enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true, disableMobile: "true" });
         }
 
-        // ⚡ ระบบคีย์ลัดเวลา
         function setTimeBlock(type) {
             document.querySelectorAll('.time-block-btn').forEach(b => {
                 b.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
@@ -348,10 +354,20 @@
 
             if(data) {
                 dropdownMenu.innerHTML = ''; 
-                for (let uid in data) {
-                    let exec = data[uid];
+                
+                // แปลง Object เป็น Array เพื่อให้ Sort ได้
+                let execArray = Object.keys(data).map(uid => {
+                    return { uid: uid, ...data[uid] };
+                });
+                
+                // เรียงลำดับตาม sortOrder (น้อยไปมาก)
+                execArray.sort((a, b) => (a.sortOrder || 999) - (b.sortOrder || 999));
+
+                execArray.forEach(exec => {
                     let opt1 = document.createElement("option");
-                    opt1.value = uid; opt1.innerText = exec.position + " ➔ " + exec.fullName;
+                    opt1.value = exec.uid; 
+                    // แสดงลำดับด้านหน้า ถ้ามี
+                    opt1.innerText = `${exec.sortOrder && exec.sortOrder !== 999 ? '['+exec.sortOrder+'] ' : ''}${exec.position} ➔ ${exec.fullName}`;
                     selectMain.appendChild(opt1);
 
                     let avatarUrl = exec.picUrl ? exec.picUrl : `https://ui-avatars.com/api/?name=${encodeURIComponent(exec.fullName)}&background=eff6ff&color=3b82f6&rounded=true&bold=true`;
@@ -364,9 +380,9 @@
                             <span class="text-[10px] font-bold text-blue-500">${exec.position}</span>
                         </div>
                     `;
-                    item.onclick = () => selectExecutive(uid, exec.fullName, exec.position, avatarUrl);
+                    item.onclick = () => selectExecutive(exec.uid, exec.fullName, exec.position, avatarUrl);
                     dropdownMenu.appendChild(item);
-                }
+                });
             }
         }
 
@@ -483,9 +499,14 @@
                         if(ev.priority === "สำคัญ") pClass = "bg-orange-100 text-orange-600";
                         if(ev.priority === "ด่วนที่สุด") pClass = "bg-red-100 text-red-600";
                         let avatar = ev.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(ev.execName)}&background=eff6ff&color=3b82f6&rounded=true&bold=true`;
+                        
+                        // แสดงไอคอนล็อคหากเป็นกิจกรรมแบบส่วนตัวหรือเฉพาะบอร์ด
+                        let privacyIcon = "";
+                        if(ev.visibility === "private") privacyIcon = "🔒";
+                        else if(ev.visibility === "board") privacyIcon = "👥";
 
                         cardHTML += `
-                            <div class="flex flex-col p-1.5 bg-white hover:bg-blue-50 border border-gray-100 rounded-lg transition-all shadow-sm relative group cursor-pointer" title="[${ev.timeStart}-${ev.timeEnd}] ${ev.title} @${ev.room}">
+                            <div class="flex flex-col p-1.5 bg-white hover:bg-blue-50 border border-gray-100 rounded-lg transition-all shadow-sm relative group cursor-pointer" title="${privacyIcon} [${ev.timeStart}-${ev.timeEnd}] ${ev.title} @${ev.room}">
                                 <div class="flex justify-between items-start mb-0.5">
                                     <div class="flex items-center gap-1 min-w-0 pr-1">
                                         <img src="${avatar}" class="w-3.5 h-3.5 rounded-full object-cover shrink-0">
@@ -493,7 +514,7 @@
                                     </div>
                                     <span class="shrink-0 text-[7px] font-bold px-1 py-0.5 rounded ${pClass} leading-none mt-0.5">${ev.priority}</span>
                                 </div>
-                                <h5 class="text-[10px] font-bold text-gray-800 leading-tight line-clamp-2 mb-1">${ev.title}</h5>
+                                <h5 class="text-[10px] font-bold text-gray-800 leading-tight line-clamp-2 mb-1">${privacyIcon} ${ev.title}</h5>
                                 <div class="flex items-center justify-between text-[8px] font-medium text-gray-500">
                                     <span class="truncate bg-gray-50 px-1 rounded">⏰ ${ev.timeStart}-${ev.timeEnd}</span>
                                 </div>
@@ -527,8 +548,8 @@
 
         function openModal() {
             document.getElementById('eventModal').classList.remove('hidden');
-            if(fpDate) fpDate.clear(); // ล้างค่าวันให้โล่งๆ พร้อมใช้งาน
-            setTimeBlock('custom'); // รีเซ็ตปุ่มคีย์ลัดเวลา
+            if(fpDate) fpDate.clear(); 
+            setTimeBlock('custom'); 
         }
         
         function closeModal() {
@@ -538,7 +559,6 @@
             document.getElementById('dropdownSelectedText').innerHTML = '-- เลือกผู้บริหาร --';
         }
 
-        // ตัวช่วยสร้าง Array วันที่กรณีลากคลุมหลายวัน
         function getDatesInRange(startDate, endDate) {
             const date = new Date(startDate);
             const dates = [];
@@ -609,8 +629,11 @@
 
             const dateValue = document.getElementById('eventDate').value;
             const recurType = document.getElementById('eventRecurrence').value;
+            const visibilityVal = document.getElementById('eventVisibility').value; // สิทธิ์การมองเห็น
             
-            // ⚡ จัดการการลากคลุมหลายวัน (เช่น 19 ถึง 21)
+            // สร้าง Group ID สำหรับกิจกรรมทำซ้ำหรือลากคลุม
+            const groupId = 'GRP_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+            
             let datesToProcess = [];
             if (dateValue.includes(" ถึง ")) {
                 let parts = dateValue.split(" ถึง ");
@@ -626,17 +649,21 @@
             
             datesToProcess.forEach(baseDateStr => {
                 let baseEvent = {
-                    uid: selectedExecData.uid, execName: selectedExecData.fullName, execPosition: selectedExecData.position, avatar: selectedExecData.avatarUrl,
+                    groupId: groupId,
+                    uid: selectedExecData.uid, 
+                    execName: selectedExecData.fullName, 
+                    execPosition: selectedExecData.position, 
+                    avatar: selectedExecData.avatarUrl,
                     title: document.getElementById('eventTitle').value,
                     date: baseDateStr,
                     timeStart: timeStartVal,
                     timeEnd: timeEndVal,
                     room: document.getElementById('eventRoom').value,
                     priority: document.getElementById('eventPriority').value,
+                    visibility: visibilityVal,
                     timestamp: new Date().toISOString()
                 };
                 
-                // ต่อยอดให้รองรับการทำซ้ำในแต่ละวันที่ลากคลุมด้วย
                 let recurred = generateRecurringEvents(baseEvent, recurType);
                 allEventsToSave.push(...recurred);
             });
