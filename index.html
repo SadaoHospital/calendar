@@ -17,7 +17,7 @@
             background-color: #eef2f6;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            overflow-x: hidden; /* ป้องกันไม่ให้หน้าหลักเลื่อนแนวนอน */
         }
 
         /* 🎨 3D Background Shapes */
@@ -87,7 +87,16 @@
         .border-top-5 { border-top: 5px solid #3b82f6; } 
         .border-top-6 { border-top: 5px solid #a855f7; } 
 
-        ::-webkit-scrollbar { width: 4px; }
+        /* 📱 ปรับแต่ง Scrollbar ซ่อนสำหรับมือถือ แต่เลื่อนได้ */
+        .hide-scroll {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .hide-scroll::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+        
+        ::-webkit-scrollbar { width: 4px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
@@ -99,31 +108,29 @@
         <div class="shape-2"></div>
     </div>
 
-    <div class="max-w-[1500px] mx-auto px-4 pb-12 relative">
-        
-        <div class="sticky top-0 z-50 pt-4 pb-2 bg-gradient-to-b from-[#eef2f6] via-[#eef2f6]/90 to-transparent">
-            
-            <header class="glass-nav rounded-2xl px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="sticky top-0 z-50 pt-3 pb-2 bg-gradient-to-b from-[#eef2f6] via-[#eef2f6]/95 to-transparent px-2 md:px-4">
+        <div class="max-w-[1500px] mx-auto">
+            <header class="glass-nav rounded-2xl px-4 md:px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
                 
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-full bg-white shadow-md flex items-center justify-center p-1.5 border border-gray-100">
+                <div class="flex items-center gap-3 md:gap-4 w-full md:w-auto justify-center md:justify-start">
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white shadow-md flex items-center justify-center p-1.5 border border-gray-100 flex-shrink-0">
                         <img src="https://github.com/SadaoHospital/calendar/blob/Img/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%20%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B8%B2%20-%20Copy.png?raw=true" class="w-full h-full object-contain drop-shadow-sm" alt="Sadao Hospital Logo">
                     </div>
-                    <div>
-                        <h1 class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600 drop-shadow-sm">ปฏิทินผู้บริหาร</h1>
-                        <p class="text-sm text-gray-500 font-medium tracking-wide">โรงพยาบาลสะเดา</p>
+                    <div class="text-center md:text-left">
+                        <h1 class="text-xl md:text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600 drop-shadow-sm">ปฏิทินผู้บริหาร</h1>
+                        <p class="text-xs md:text-sm text-gray-500 font-medium tracking-wide">โรงพยาบาลสะเดา</p>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 bg-white/50 p-1.5 rounded-full shadow-inner border border-gray-200/60">
+                <div class="flex items-center gap-2 bg-white/50 p-1.5 rounded-full shadow-inner border border-gray-200/60 w-full md:w-auto justify-between md:justify-center">
                     <button onclick="loadPreviousMonth()" class="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm hover:bg-blue-50 text-gray-600 transition"><i class="fa-solid fa-chevron-left"></i></button>
-                    <span id="current-month-display" class="px-4 font-bold text-gray-700 min-w-[160px] text-center">กำลังโหลด...</span>
+                    <span id="current-month-display" class="px-2 md:px-4 font-bold text-gray-700 min-w-[140px] md:min-w-[160px] text-center text-sm md:text-base">กำลังโหลด...</span>
                     <button onclick="resetToToday()" class="px-3 py-1 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-bold transition">วันนี้</button>
                     <button onclick="loadNextMonth()" class="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm hover:bg-blue-50 text-gray-600 transition"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
 
-                <div class="flex items-center gap-3 pl-0 md:pl-6 border-l-0 md:border-l border-gray-300/50">
-                    <div class="text-right hidden md:block">
+                <div class="flex items-center gap-3 pl-0 md:pl-6 border-l-0 md:border-l border-gray-300/50 w-full md:w-auto justify-center md:justify-end">
+                    <div class="text-right">
                         <p id="user-display-name" class="text-sm font-bold text-gray-800">กำลังโหลดข้อมูล...</p>
                         <p class="text-[10px] text-gray-600 font-bold bg-gray-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5 border border-gray-200" id="login-status-box">
                             <span id="login-status-dot" class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span> 
@@ -131,14 +138,24 @@
                         </p>
                     </div>
                     <div class="relative">
-                        <img id="user-profile-img" src="https://ui-avatars.com/api/?name=User&background=e5e7eb&color=9ca3af" class="w-11 h-11 rounded-full border-2 border-white shadow-lg object-cover" alt="Profile">
+                        <img id="user-profile-img" src="https://ui-avatars.com/api/?name=User&background=e5e7eb&color=9ca3af" class="w-10 h-10 md:w-11 md:h-11 rounded-full border-2 border-white shadow-lg object-cover" alt="Profile">
                         <div id="status-indicator" class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full"></div>
                     </div>
                 </div>
 
             </header>
+        </div>
+    </div>
 
-            <div class="glass-nav rounded-xl mt-3 px-4 py-2 grid grid-cols-7 gap-4 text-center font-bold text-sm shadow-sm">
+    <div class="md:hidden text-center text-xs text-blue-600 font-medium mb-2 animate-pulse">
+        <i class="fa-solid fa-hand-pointer mr-1"></i> ปัดซ้าย-ขวา เพื่อดูตารางปฏิทิน
+    </div>
+
+    <div class="w-full overflow-x-auto hide-scroll px-2 md:px-4 pb-12">
+        
+        <div class="min-w-[1000px] max-w-[1500px] mx-auto">
+            
+            <div class="sticky top-0 z-40 glass-nav rounded-xl px-4 py-2 grid grid-cols-7 gap-3 md:gap-4 text-center font-bold text-sm shadow-sm">
                 <div class="text-red-500">อา.</div>
                 <div class="text-yellow-600">จ.</div>
                 <div class="text-pink-500">อ.</div>
@@ -147,18 +164,18 @@
                 <div class="text-blue-500">ศ.</div>
                 <div class="text-purple-500">ส.</div>
             </div>
-        </div>
 
-        <div id="calendar-grid" class="grid grid-cols-7 gap-4 pt-4">
-            <div class="col-span-7 text-center py-32 text-gray-400">
-                <div class="relative inline-block">
-                    <i class="fa-solid fa-circle-notch fa-spin text-5xl text-blue-500"></i>
-                    <i class="fa-solid fa-calendar-check absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl text-blue-700"></i>
+            <div id="calendar-grid" class="grid grid-cols-7 gap-3 md:gap-4 pt-3 md:pt-4">
+                <div class="col-span-7 text-center py-32 text-gray-400">
+                    <div class="relative inline-block">
+                        <i class="fa-solid fa-circle-notch fa-spin text-5xl text-blue-500"></i>
+                        <i class="fa-solid fa-calendar-check absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl text-blue-700"></i>
+                    </div>
+                    <p class="mt-4 font-medium text-lg">กำลังซิงค์ข้อมูลจากฐานข้อมูล...</p>
                 </div>
-                <p class="mt-4 font-medium text-lg">กำลังซิงค์ข้อมูลจากฐานข้อมูล...</p>
             </div>
-        </div>
 
+        </div>
     </div>
 
     <script>
@@ -168,14 +185,13 @@
         const FIREBASE_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP";
         
         // ⚠️ สำคัญ: ใส่รหัส LIFF ID ของคุณพิงตรงนี้ (ได้จาก LINE Developers)
-        const LIFF_ID = "2010128406-pWJYT2lK"; // ตัวอย่างเช่น "1234567890-AbCdEfGh"
+        const LIFF_ID = "2010128406-pWJYT2lK"; 
 
         let currentDate = new Date();
         let eventsData = {};
 
-        // เริ่มทำงานเมื่อโหลดหน้าเว็บเสร็จ
         window.onload = async () => {
-            initializeLiff(); // เรียกใช้งานระบบ Login LINE
+            initializeLiff(); 
             await fetchEvents();
             renderCalendar();
         };
@@ -185,7 +201,6 @@
         // ==========================================
         async function initializeLiff() {
             if (!LIFF_ID) {
-                // กรณีที่ยังไม่ได้ใส่ LIFF ID ให้แสดงหน้าโปรไฟล์จำลองไปก่อน
                 document.getElementById('user-display-name').innerText = "ผู้บริหาร รพ.สะเดา";
                 document.getElementById('login-status-dot').className = "w-1.5 h-1.5 bg-yellow-500 rounded-full";
                 document.getElementById('login-status-text').innerText = "ใช้งานบนเบราว์เซอร์ปกติ";
@@ -198,19 +213,15 @@
                 await liff.init({ liffId: LIFF_ID });
                 
                 if (liff.isLoggedIn()) {
-                    // ถ้าผู้ใช้ล็อกอิน LINE แล้ว ให้ดึงข้อมูลมาแสดง
                     const profile = await liff.getProfile();
-                    
                     document.getElementById('user-display-name').innerText = profile.displayName;
                     document.getElementById('user-profile-img').src = profile.pictureUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.displayName)}&background=0D8ABC&color=fff`;
                     
-                    // เปลี่ยนปุ่มสถานะเป็นสีเขียว
                     document.getElementById('login-status-box').className = "text-[10px] text-green-700 font-bold bg-green-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5 border border-green-200";
                     document.getElementById('login-status-dot').className = "w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse";
                     document.getElementById('login-status-text').innerText = "เชื่อมต่อ LINE สำเร็จ";
                     document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full";
                 } else {
-                    // ถ้ายังไม่ล็อกอิน ให้เด้งหน้าต่างล็อกอินของ LINE
                     liff.login();
                 }
             } catch (err) {
@@ -268,23 +279,23 @@
                 
                 let statusBadge = "";
                 if (isToday) {
-                    statusBadge = `<span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-md shadow-orange-200 border border-orange-300">วันนี้</span>`;
+                    statusBadge = `<span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-md shadow-orange-200 border border-orange-300 whitespace-nowrap">วันนี้</span>`;
                 } else if (isWeekend) {
-                    statusBadge = `<span class="bg-gradient-to-r from-blue-400 to-indigo-400 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-md shadow-blue-200 border border-blue-300"><i class="fa-solid fa-bed text-[8px]"></i> วันหยุด</span>`;
+                    statusBadge = `<span class="bg-gradient-to-r from-blue-400 to-indigo-400 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-md shadow-blue-200 border border-blue-300 whitespace-nowrap"><i class="fa-solid fa-bed text-[8px]"></i> วันหยุด</span>`;
                 }
 
                 let countBadge = dailyEvents.length > 0 
-                    ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-md font-extrabold shadow-inner border border-blue-200">${dailyEvents.length} งาน</span>`
-                    : `<span class="bg-gray-100 text-gray-400 text-[10px] px-2 py-0.5 rounded-md font-medium border border-gray-200 shadow-inner">ว่าง</span>`;
+                    ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-md font-extrabold shadow-inner border border-blue-200 whitespace-nowrap">${dailyEvents.length} งาน</span>`
+                    : `<span class="bg-gray-100 text-gray-400 text-[10px] px-2 py-0.5 rounded-md font-medium border border-gray-200 shadow-inner whitespace-nowrap">ว่าง</span>`;
 
                 const textColors = ['text-red-500', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-purple-500'];
 
                 let dayHTML = `
                     <div class="card-3d border-top-${dayOfWeek}">
-                        <div class="p-3 pb-1 flex justify-between items-start">
+                        <div class="p-3 pb-1 flex justify-between items-start gap-2">
                             <div class="flex flex-col gap-1 relative">
                                 <span class="text-3xl font-extrabold ${textColors[dayOfWeek]} leading-none drop-shadow-sm">${day}</span>
-                                <div class="absolute -top-1 -right-14 z-10">${statusBadge}</div>
+                                <div class="absolute -top-1 -right-[60px] md:-right-14 z-10">${statusBadge}</div>
                             </div>
                             ${countBadge}
                         </div>
