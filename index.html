@@ -33,11 +33,15 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        /* 🔥 สไตล์สำหรับ Popup Modal */
+        /* Styles สำหรับ Modal */
         .modal-overlay { background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-content { transform: scale(0.95) translateY(10px); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-overlay.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
+        
+        /* สไตล์ Form */
+        .input-field { w-full; bg-gray-50; border; border-gray-200; text-gray-800; text-sm; rounded-lg; px-3; py-2; outline-none; transition: all 0.2s; }
+        .input-field:focus { bg-white; border-blue-400; ring-2; ring-blue-100; }
     </style>
 </head>
 <body>
@@ -47,7 +51,6 @@
     <div class="sticky top-0 z-40 pt-3 pb-2 bg-gradient-to-b from-[#eef2f6] via-[#eef2f6]/95 to-transparent px-2 md:px-4">
         <div class="max-w-[1600px] mx-auto">
             <header class="glass-nav rounded-2xl px-4 md:px-6 py-3 flex flex-col gap-3">
-                
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                     <div class="flex items-center gap-3 md:gap-4 w-full md:w-auto justify-center md:justify-start">
                         <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white shadow-md flex items-center justify-center p-1.5 border border-gray-100 flex-shrink-0">
@@ -91,18 +94,12 @@
                         <option value="ROLE:ผู้อำนวยการ">🎯 เฉพาะผู้อำนวยการ</option>
                     </select>
                 </div>
-
             </header>
         </div>
     </div>
 
-    <div class="md:hidden text-center text-[10px] text-blue-500 font-medium mb-1 animate-pulse">
-        <i class="fa-solid fa-magnifying-glass-plus mr-1"></i> ใช้ 2 นิ้วถ่างเพื่อซูมดูรายละเอียด หรือปัดซ้าย-ขวา
-    </div>
-
     <div class="w-full overflow-x-auto hide-scroll px-1 md:px-4 pb-12">
         <div class="min-w-[650px] max-w-[1600px] mx-auto relative z-10">
-            
             <div class="sticky top-0 z-30 glass-nav rounded-xl px-1.5 md:px-4 py-2 grid grid-cols-7 gap-1.5 md:gap-4 text-center font-bold text-[10px] md:text-sm shadow-sm">
                 <div class="text-red-500">อา.</div><div class="text-yellow-600">จ.</div><div class="text-pink-500">อ.</div>
                 <div class="text-green-600">พ.</div><div class="text-orange-500">พฤ.</div><div class="text-blue-500">ศ.</div><div class="text-purple-500">ส.</div>
@@ -110,26 +107,21 @@
 
             <div id="calendar-grid" class="grid grid-cols-7 gap-1.5 md:gap-4 pt-2 md:pt-4">
                 <div class="col-span-7 text-center py-32 text-gray-400">
-                    <div class="relative inline-block">
-                        <i class="fa-solid fa-circle-notch fa-spin text-5xl text-blue-500"></i>
-                        <i class="fa-solid fa-calendar-check absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl text-blue-700"></i>
-                    </div>
-                    <p class="mt-4 font-medium text-lg">กำลังซิงค์ข้อมูลและตรวจสอบสิทธิ์...</p>
+                    <i class="fa-solid fa-circle-notch fa-spin text-5xl text-blue-500"></i>
+                    <p class="mt-4 font-medium text-lg">กำลังซิงค์ข้อมูล...</p>
                 </div>
             </div>
-
         </div>
     </div>
 
+    <button id="fab-add-event" onclick="openAddEventModal()" class="hidden fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-lg hover:shadow-2xl hover:scale-105 transition-all z-50 flex items-center justify-center text-2xl border-2 border-white">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+
     <div id="eventModal" class="fixed inset-0 z-[100] flex items-center justify-center modal-overlay p-4">
         <div class="modal-content glass-nav rounded-2xl w-full max-w-md overflow-hidden relative">
-            
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            
+            <button onclick="closeModal('eventModal')" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50"><i class="fa-solid fa-xmark text-xl"></i></button>
             <div id="modal-color-bar" class="h-2 w-full bg-blue-500"></div>
-            
             <div class="p-6">
                 <div class="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
                     <img id="modal-avatar" src="" class="w-12 h-12 rounded-full border-2 border-white shadow-md object-cover">
@@ -138,43 +130,99 @@
                         <p id="modal-exec-position" class="text-xs text-gray-500 font-medium">ตำแหน่ง</p>
                     </div>
                 </div>
-                
                 <div class="space-y-4">
                     <div>
                         <span id="modal-priority-badge" class="text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold"></span>
                         <h2 id="modal-title" class="text-xl font-extrabold text-gray-800 leading-snug">ชื่องาน</h2>
                     </div>
-                    
                     <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 space-y-3">
-                        <div class="flex items-start gap-3">
-                            <div class="w-6 text-center text-blue-500 mt-0.5"><i class="fa-solid fa-calendar-day"></i></div>
-                            <div>
-                                <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">วันที่</p>
-                                <p id="modal-date" class="text-sm font-bold text-gray-700"></p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <div class="w-6 text-center text-amber-500 mt-0.5"><i class="fa-solid fa-clock"></i></div>
-                            <div>
-                                <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">เวลา</p>
-                                <p id="modal-time" class="text-sm font-bold text-gray-700"></p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <div class="w-6 text-center text-green-500 mt-0.5"><i class="fa-solid fa-location-dot"></i></div>
-                            <div>
-                                <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">สถานที่</p>
-                                <p id="modal-room" class="text-sm font-bold text-gray-700"></p>
-                            </div>
-                        </div>
+                        <div class="flex items-start gap-3"><div class="w-6 text-center text-blue-500 mt-0.5"><i class="fa-solid fa-calendar-day"></i></div><div><p class="text-[10px] text-gray-400 font-semibold uppercase">วันที่</p><p id="modal-date" class="text-sm font-bold text-gray-700"></p></div></div>
+                        <div class="flex items-start gap-3"><div class="w-6 text-center text-amber-500 mt-0.5"><i class="fa-solid fa-clock"></i></div><div><p class="text-[10px] text-gray-400 font-semibold uppercase">เวลา</p><p id="modal-time" class="text-sm font-bold text-gray-700"></p></div></div>
+                        <div class="flex items-start gap-3"><div class="w-6 text-center text-green-500 mt-0.5"><i class="fa-solid fa-location-dot"></i></div><div><p class="text-[10px] text-gray-400 font-semibold uppercase">สถานที่</p><p id="modal-room" class="text-sm font-bold text-gray-700"></p></div></div>
                     </div>
                 </div>
-                
                 <div id="modal-actions" class="mt-6 pt-4 border-t border-gray-100 flex justify-end gap-2 hidden">
-                    <button onclick="deleteCurrentEvent()" class="px-4 py-2 bg-red-50 hover:bg-red-500 hover:text-white text-red-600 text-sm font-bold rounded-lg transition shadow-sm border border-red-200 hover:border-red-500 flex items-center gap-2">
-                        <i class="fa-solid fa-trash-can"></i> ลบข้อมูล
-                    </button>
+                    <button onclick="deleteCurrentEvent()" class="px-4 py-2 bg-red-50 hover:bg-red-500 hover:text-white text-red-600 text-sm font-bold rounded-lg transition shadow-sm border border-red-200 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> ลบข้อมูล</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addEventModal" class="fixed inset-0 z-[100] flex items-center justify-center modal-overlay p-4 overflow-y-auto">
+        <div class="modal-content glass-nav rounded-2xl w-full max-w-lg overflow-hidden relative my-auto">
+            <div class="h-2 w-full bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+            <div class="p-5 md:p-6">
+                <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
+                    <h2 class="text-lg font-bold text-blue-700"><i class="fa-solid fa-calendar-plus mr-2"></i>เพิ่มนัดหมายใหม่</h2>
+                    <button onclick="closeModal('addEventModal')" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                
+                <form id="addEventForm" onsubmit="submitAddEvent(event)" class="space-y-3">
+                    
+                    <div id="form-role-target" class="hidden bg-blue-50 p-3 rounded-lg border border-blue-200 mb-2">
+                        <label class="block text-xs font-semibold text-blue-700 mb-1">ลงตารางงานให้ (สำหรับหัวหน้าบริหาร)</label>
+                        <select id="input-target-user" class="w-full bg-white border border-blue-300 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400">
+                            </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">หัวข้อกิจกรรม / นัดหมาย <span class="text-red-500">*</span></label>
+                        <input type="text" id="input-title" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100" placeholder="ระบุชื่องาน">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">ตั้งแต่วันที่ <span class="text-red-500">*</span></label>
+                            <input type="date" id="input-date-start" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">ถึงวันที่ <span class="text-red-500">*</span></label>
+                            <input type="date" id="input-date-end" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">เวลาเริ่ม (น.)</label>
+                            <input type="time" id="input-time-start" value="08:30" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">เวลาสิ้นสุด (น.)</label>
+                            <input type="time" id="input-time-end" value="16:30" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">สถานที่</label>
+                        <input type="text" id="input-room" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400" placeholder="เช่น ห้องประชุม 1, โรงแรม...">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pb-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">ความสำคัญ</label>
+                            <select id="input-priority" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400">
+                                <option value="ทั่วไป">ทั่วไป</option>
+                                <option value="สำคัญ">สำคัญ</option>
+                                <option value="ด่วนที่สุด">ด่วนที่สุด</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">สิทธิ์การมองเห็น</label>
+                            <select id="input-visibility" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400">
+                                <option value="public">🌐 สาธารณะ (ทุกคนเห็นได้)</option>
+                                <option value="committee">👥 เฉพาะคณะกรรมการ</option>
+                                <option value="private">🔒 ส่วนตัว (เห็นเฉพาะตนเอง)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-200 flex justify-end gap-2">
+                        <button type="button" onclick="closeModal('addEventModal')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-lg transition">ยกเลิก</button>
+                        <button type="submit" id="btn-submit-event" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition shadow-md flex items-center gap-2">
+                            <i class="fa-solid fa-save"></i> บันทึกข้อมูล
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -188,8 +236,7 @@
         let eventsData = {};
         let executivesData = {};
         let currentUserData = null; 
-        
-        let currentEditingEventKey = null; // เก็บค่า Key ของงานที่กำลังเปิด Popup อยู่
+        let currentEditingEventKey = null; 
 
         window.onload = async () => {
             await fetchDatabase();
@@ -203,11 +250,7 @@
                 const [evRes, exRes] = await Promise.all([ fetch(FIREBASE_URL), fetch(EXECS_URL) ]);
                 eventsData = await evRes.json() || {};
                 executivesData = await exRes.json() || {};
-                
-                // ฝัง Key เข้าไปใน Data แต่ละก้อนเพื่อให้เอาไปใช้เวลาลบ/แก้ไขได้
-                for (let key in eventsData) {
-                    eventsData[key].firebaseKey = key;
-                }
+                for (let key in eventsData) eventsData[key].firebaseKey = key;
             } catch (error) {
                 document.getElementById('calendar-grid').innerHTML = `<div class="col-span-7 text-center py-20 text-red-500">ไม่สามารถเชื่อมต่อฐานข้อมูลได้</div>`;
             }
@@ -227,6 +270,9 @@
                         document.getElementById('login-status-dot').className = "w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse";
                         document.getElementById('login-status-text').innerText = "สิทธิ์: " + currentUserData.role;
                         document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full";
+                        
+                        // 🔥 เปิดใช้งานปุ่ม "+ เพิ่มคิวงาน" เฉพาะคนที่มีสิทธิ์
+                        document.getElementById('fab-add-event').classList.remove('hidden');
                     } else { setAsGuest(profile); }
                 } else {
                     if(liff.isInClient()) liff.login(); else setAsGuest();
@@ -249,36 +295,32 @@
             for(let key in executivesData) {
                 if(executivesData[key].fullName && executivesData[key].isActive) names.add(executivesData[key].fullName);
             }
-            Array.from(names).sort().forEach(name => {
-                select.innerHTML += `<option value="NAME:${name}">👤 ${name}</option>`;
-            });
+            Array.from(names).sort().forEach(name => { select.innerHTML += `<option value="NAME:${name}">👤 ${name}</option>`; });
         }
 
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = ''; 
-            
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
             document.getElementById('current-month-display').innerText = `${monthNames[month]} ${year + 543}`;
-
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const today = new Date();
             const currentFilter = document.getElementById('filter-select').value;
-
             const eventsByDate = {};
+
             for (let key in eventsData) {
                 const ev = eventsData[key];
-                
                 let canView = false;
                 if (!currentUserData || currentUserData.role === "บุคคลทั่วไป") {
                     canView = (ev.visibility === "public" || !ev.visibility); 
                 } else if (currentUserData.role === "หัวหน้าบริหาร") {
                     canView = true; 
-                } else {
-                    canView = (ev.visibility === "public" || !ev.visibility || ev.uid === currentUserData.uid);
+                } else if (currentUserData.role === "คณะกรรมการ" || currentUserData.role === "ผู้อำนวยการ" || currentUserData.role === "ทีมนำ") {
+                    // ถ้าเซ็ตเป็น committee เฉพาะคนล็อกอิน(ที่ไม่ใช่ guest) ถึงเห็นได้
+                    canView = (ev.visibility === "public" || !ev.visibility || ev.visibility === "committee" || ev.uid === currentUserData.uid);
                 }
 
                 if(canView) {
@@ -294,7 +336,6 @@
                 const dayOfWeek = new Date(year, month, day).getDay();
                 const isToday = (day === today.getDate() && month === today.getMonth() && year === today.getFullYear());
                 const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-                
                 let dailyEvents = eventsByDate[dateString] || [];
 
                 dailyEvents = dailyEvents.filter(ev => {
@@ -312,8 +353,7 @@
                     return (a.timeStart || "00:00").localeCompare(b.timeStart || "00:00");
                 });
                 
-                let statusBadge = isToday ? `<span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold shadow-md shadow-orange-200 border border-orange-300 whitespace-nowrap">วันนี้</span>` 
-                                          : (isWeekend ? `<span class="bg-gradient-to-r from-blue-400 to-indigo-400 text-white text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold shadow-md shadow-blue-200 border border-blue-300 whitespace-nowrap"><i class="fa-solid fa-bed text-[6px] md:text-[8px]"></i> วันหยุด</span>` : "");
+                let statusBadge = isToday ? `<span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold shadow-md shadow-orange-200 border border-orange-300 whitespace-nowrap">วันนี้</span>` : (isWeekend ? `<span class="bg-gradient-to-r from-blue-400 to-indigo-400 text-white text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold shadow-md shadow-blue-200 border border-blue-300 whitespace-nowrap"><i class="fa-solid fa-bed text-[6px] md:text-[8px]"></i> วันหยุด</span>` : "");
                 let countBadge = dailyEvents.length > 0 ? `<span class="bg-blue-100 text-blue-700 text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-md font-extrabold shadow-inner border border-blue-200 whitespace-nowrap hidden sm:inline-block">${dailyEvents.length} งาน</span>` : `<span class="bg-gray-100 text-gray-400 text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-md font-medium border border-gray-200 shadow-inner whitespace-nowrap hidden sm:inline-block">ว่าง</span>`;
                 const textColors = ['text-red-500', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-purple-500'];
 
@@ -336,9 +376,12 @@
                         if(ev.priority === "สำคัญ") { borderClass = "border-l-amber-400"; priorityBadge = `<span class="text-[7px] md:text-[8px] bg-amber-100 text-amber-700 px-1 rounded font-bold border border-amber-200">สำคัญ</span>`; }
                         if(ev.priority === "ด่วนที่สุด") { borderClass = "border-l-red-500"; priorityBadge = `<span class="text-[7px] md:text-[8px] bg-red-100 text-red-700 px-1 rounded font-bold border border-red-200">ด่วนที่สุด</span>`; }
 
-                        // 🔥 เพิ่ม onclick ตรงนี้ เพื่อเรียกฟังก์ชันเปิด Popup
+                        let visibilityIcon = "";
+                        if(ev.visibility === "private") visibilityIcon = `<i class="fa-solid fa-lock text-gray-400" title="ส่วนตัว"></i> `;
+                        else if(ev.visibility === "committee") visibilityIcon = `<i class="fa-solid fa-users text-gray-400" title="เฉพาะกรรมการ"></i> `;
+
                         dayHTML += `
-                            <div onclick="openModal('${ev.firebaseKey}')" class="event-item rounded-md md:rounded-lg p-1 md:p-2 border-l-[3px] md:border-l-4 ${borderClass} relative group cursor-pointer">
+                            <div onclick="openEventModal('${ev.firebaseKey}')" class="event-item rounded-md md:rounded-lg p-1 md:p-2 border-l-[3px] md:border-l-4 ${borderClass} relative group cursor-pointer">
                                 <div class="flex items-center gap-1.5 md:gap-2 mb-1">
                                     <img src="${ev.avatar}" class="w-4 h-4 md:w-5 md:h-5 rounded-full shadow-sm ring-1 ring-gray-200">
                                     <div class="font-bold text-gray-800 text-[9px] md:text-xs truncate w-full flex justify-between items-center gap-1">
@@ -346,7 +389,7 @@
                                         ${priorityBadge}
                                     </div>
                                 </div>
-                                <div class="text-gray-600 font-medium text-[9px] md:text-xs leading-snug mb-1 line-clamp-2 md:line-clamp-3">${ev.title}</div>
+                                <div class="text-gray-600 font-medium text-[9px] md:text-xs leading-snug mb-1 line-clamp-2 md:line-clamp-3">${visibilityIcon}${ev.title}</div>
                                 <div class="text-gray-400 text-[8px] md:text-[10px] flex items-center gap-1 font-medium bg-gray-50/50 rounded py-0.5 px-1 w-max border border-gray-100">
                                     <i class="fa-regular fa-clock text-blue-400"></i> ${ev.timeStart} - ${ev.timeEnd}
                                 </div>
@@ -363,88 +406,167 @@
         }
 
         // ==========================================
-        // 🚨 5. ระบบ Popup Modal (สไตล์ Glassmorphism)
+        // 🚨 5. ฟังก์ชัน Popup ดูและลบงาน
         // ==========================================
-        function openModal(firebaseKey) {
+        function openEventModal(firebaseKey) {
             const ev = eventsData[firebaseKey];
             if(!ev) return;
-            
-            currentEditingEventKey = firebaseKey; // จำไว้ว่ากำลังเปิดงานชิ้นไหนอยู่
+            currentEditingEventKey = firebaseKey; 
 
-            // ตกแต่งสีบาร์ด้านบนตามความสำคัญ
             const colorBar = document.getElementById('modal-color-bar');
             const badge = document.getElementById('modal-priority-badge');
-            if (ev.priority === "สำคัญ") {
-                colorBar.className = "h-2 w-full bg-amber-400";
-                badge.className = "text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold bg-amber-100 text-amber-700 border-amber-200";
-                badge.innerText = "สำคัญ";
-            } else if (ev.priority === "ด่วนที่สุด") {
-                colorBar.className = "h-2 w-full bg-red-500";
-                badge.className = "text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold bg-red-100 text-red-700 border-red-200";
-                badge.innerText = "ด่วนที่สุด";
-            } else {
-                colorBar.className = "h-2 w-full bg-blue-500";
-                badge.className = "text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold bg-blue-50 text-blue-600 border-blue-200";
-                badge.innerText = "ทั่วไป";
-            }
+            if (ev.priority === "สำคัญ") { colorBar.className = "h-2 w-full bg-amber-400"; badge.className = "text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold bg-amber-100 text-amber-700 border-amber-200"; badge.innerText = "สำคัญ"; } 
+            else if (ev.priority === "ด่วนที่สุด") { colorBar.className = "h-2 w-full bg-red-500"; badge.className = "text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold bg-red-100 text-red-700 border-red-200"; badge.innerText = "ด่วนที่สุด"; } 
+            else { colorBar.className = "h-2 w-full bg-blue-500"; badge.className = "text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold bg-blue-50 text-blue-600 border-blue-200"; badge.innerText = "ทั่วไป"; }
 
-            // ใส่ข้อมูลลงในหน้าต่าง
+            let visText = ev.visibility === 'private' ? ' (ส่วนตัว)' : (ev.visibility === 'committee' ? ' (เฉพาะกรรมการ)' : '');
+            
             document.getElementById('modal-avatar').src = ev.avatar;
             document.getElementById('modal-exec-name').innerText = ev.execName;
             document.getElementById('modal-exec-position').innerText = ev.execPosition || "คณะกรรมการ";
-            document.getElementById('modal-title').innerText = ev.title;
+            document.getElementById('modal-title').innerText = ev.title + visText;
             document.getElementById('modal-date').innerText = ev.date;
             document.getElementById('modal-time').innerText = `${ev.timeStart} - ${ev.timeEnd} น.`;
             document.getElementById('modal-room').innerText = ev.room || "ไม่ระบุสถานที่";
 
-            // 🔐 เช็คสิทธิ์ว่ามีปุ่มให้ "ลบ" ไหม (ต้องเป็นหัวหน้าบริหาร หรือ เป็นเจ้าของคิวงานนี้เท่านั้น)
             const actionsDiv = document.getElementById('modal-actions');
             if (currentUserData && (currentUserData.role === "หัวหน้าบริหาร" || currentUserData.uid === ev.uid)) {
                 actionsDiv.classList.remove('hidden');
             } else {
                 actionsDiv.classList.add('hidden');
             }
-
-            // โชว์หน้าต่างขึ้นมา
             document.getElementById('eventModal').classList.add('active');
         }
 
-        function closeModal() {
-            document.getElementById('eventModal').classList.remove('active');
-            currentEditingEventKey = null;
-        }
-
-        // ==========================================
-        // 🗑️ 6. ฟังก์ชันลบข้อมูล (เชื่อมต่อ Firebase แบบ Real-time)
-        // ==========================================
         async function deleteCurrentEvent() {
             if (!currentEditingEventKey) return;
-            
-            // ยืนยันการลบ
-            if (confirm("⚠️ ยืนยันการยกเลิก/ลบนัดหมายนี้ใช่หรือไม่?\n(ข้อมูลจะถูกลบออกจากปฏิทินทันที)")) {
-                
-                // เปลี่ยนปุ่มเป็นกำลังโหลด
+            if (confirm("⚠️ ยืนยันการยกเลิก/ลบนัดหมายนี้ใช่หรือไม่?")) {
                 const actionsDiv = document.getElementById('modal-actions');
                 actionsDiv.innerHTML = `<span class="text-sm font-bold text-gray-500"><i class="fa-solid fa-spinner fa-spin"></i> กำลังลบข้อมูล...</span>`;
-
                 try {
-                    // ยิงคำสั่ง DELETE ไปที่ Firebase
-                    const deleteUrl = `https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events/${currentEditingEventKey}.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP`;
-                    await fetch(deleteUrl, { method: 'DELETE' });
-
-                    closeModal(); // ปิดหน้าต่าง
-                    
-                    // รีเฟรชปฏิทินใหม่เพื่อโชว์ผลลัพธ์
+                    await fetch(`https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events/${currentEditingEventKey}.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP`, { method: 'DELETE' });
+                    closeModal('eventModal'); 
                     await fetchDatabase(); 
                     renderCalendar();
-                    
-                } catch (error) {
-                    alert("เกิดข้อผิดพลาดในการลบข้อมูล กรุณาลองใหม่อีกครั้ง");
-                    closeModal();
-                }
+                } catch (error) { alert("เกิดข้อผิดพลาด"); closeModal('eventModal'); }
             }
         }
 
+        // ==========================================
+        // ✍️ 6. ฟังก์ชันฟอร์มเพิ่มงานใหม่
+        // ==========================================
+        function openAddEventModal() {
+            if(!currentUserData || currentUserData.uid === "GUEST") return;
+            
+            // ตั้งค่าวันที่เริ่มต้นในฟอร์มเป็นวันนี้
+            document.getElementById('input-date-start').valueAsDate = new Date();
+            document.getElementById('input-date-end').valueAsDate = new Date();
+
+            // 🌟 ระบบสวมสิทธิ์: ถ้าเป็น "หัวหน้าบริหาร" ให้ดึงรายชื่อผู้อำนวยการมาให้เลือก
+            const roleTargetDiv = document.getElementById('form-role-target');
+            const targetSelect = document.getElementById('input-target-user');
+            targetSelect.innerHTML = '';
+
+            if (currentUserData.role === "หัวหน้าบริหาร") {
+                roleTargetDiv.classList.remove('hidden');
+                // ตัวเลือกแรกคือตัวเอง
+                targetSelect.innerHTML += `<option value="${currentUserData.uid}">ลงให้ตนเอง (${currentUserData.fullName})</option>`;
+                // ค้นหาผู้อำนวยการ
+                for(let uid in executivesData) {
+                    if(executivesData[uid].role === "ผู้อำนวยการ" && executivesData[uid].isActive) {
+                        targetSelect.innerHTML += `<option value="${uid}">👉 สวมสิทธิ์ลงให้: ${executivesData[uid].fullName} (ผู้อำนวยการ)</option>`;
+                    }
+                }
+            } else {
+                roleTargetDiv.classList.add('hidden');
+                targetSelect.innerHTML = `<option value="${currentUserData.uid}">${currentUserData.fullName}</option>`;
+            }
+
+            document.getElementById('addEventModal').classList.add('active');
+        }
+
+        async function submitAddEvent(e) {
+            e.preventDefault(); // ป้องกันเว็บรีเฟรช
+            
+            const btn = document.getElementById('btn-submit-event');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...`;
+            btn.disabled = true;
+
+            // 1. ดึงข้อมูลว่าเลือกลงคิวให้ใคร (ดึงสิทธิ์จาก UID นั้นๆ)
+            const targetUid = document.getElementById('input-target-user').value;
+            const targetUser = executivesData[targetUid] || currentUserData;
+
+            const title = document.getElementById('input-title').value;
+            const startDate = document.getElementById('input-date-start').value;
+            const endDate = document.getElementById('input-date-end').value;
+            const timeStart = document.getElementById('input-time-start').value;
+            const timeEnd = document.getElementById('input-time-end').value;
+            const room = document.getElementById('input-room').value;
+            const priority = document.getElementById('input-priority').value;
+            const visibility = document.getElementById('input-visibility').value;
+
+            // 2. คำนวณวันที่ (รองรับลงคิวหลายวัน)
+            let currD = new Date(startDate);
+            let endD = new Date(endDate);
+            let datesArray = [];
+            while(currD <= endD) {
+                datesArray.push(currD.toISOString().split('T')[0]);
+                currD.setDate(currD.getDate() + 1);
+            }
+
+            if(datesArray.length === 0) { alert("กรุณาเลือกวันที่ให้ถูกต้อง"); btn.innerHTML = `บันทึกข้อมูล`; btn.disabled=false; return; }
+
+            // 3. วนลูปบันทึกข้อมูลลง Firebase ทีละวัน
+            const groupId = 'GRP_WEB_' + new Date().getTime();
+            let promises = [];
+
+            datesArray.forEach(singleDate => {
+                const newEventId = "EVT_WEB_" + new Date().getTime() + "_" + Math.floor(Math.random() * 1000);
+                const finalEvent = {
+                    groupId: groupId,
+                    uid: targetUser.uid, 
+                    execName: targetUser.fullName, 
+                    execPosition: targetUser.position,
+                    role: targetUser.role,
+                    sortOrder: targetUser.sortOrder || 999,
+                    avatar: targetUser.picUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(targetUser.fullName)}`,
+                    title: title, 
+                    date: singleDate, 
+                    timeStart: timeStart || "08:30", 
+                    timeEnd: timeEnd || "16:30",
+                    room: room || "ไม่ระบุ", 
+                    priority: priority, 
+                    visibility: visibility,
+                    timestamp: new Date().toISOString()
+                };
+
+                const p = fetch(`https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events/${newEventId}.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP`, {
+                    method: "PUT", contentType: "application/json", body: JSON.stringify(finalEvent)
+                });
+                promises.push(p);
+            });
+
+            try {
+                await Promise.all(promises);
+                closeModal('addEventModal');
+                
+                // คืนค่าปุ่ม
+                btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`;
+                btn.disabled = false;
+                document.getElementById('addEventForm').reset();
+                
+                // รีเฟรชปฏิทิน
+                await fetchDatabase();
+                renderCalendar();
+
+            } catch(e) {
+                alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+                btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`;
+                btn.disabled = false;
+            }
+        }
+
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
         function loadPreviousMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
         function loadNextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); }
         function resetToToday() { currentDate = new Date(); renderCalendar(); }
