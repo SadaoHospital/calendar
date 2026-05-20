@@ -12,130 +12,130 @@
     <style>
         body {
             font-family: 'Prompt', sans-serif;
-            background-color: #f4f7f6;
-            background-image: radial-gradient(circle at top right, #e0f2fe 0%, #f4f7f6 40%);
-            background-attachment: fixed;
+            background-color: #f8fafc; /* สีพื้นหลังสว่างสบายตา */
         }
 
-        /* 🌟 เอฟเฟกต์กระจก (Glassmorphism) */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-            transition: all 0.2s ease-in-out;
-        }
-        
-        .glass-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-        }
-
-        /* 📌 หัวใจสำคัญ: แถบเดือนติดหนึบ (Sticky Header) */
+        /* 📌 พระเอกของเรา: แถบติดหนึบ */
         .sticky-header {
             position: sticky;
             top: 0;
-            z-index: 50; /* ให้อยู่บนสุดเสมอ */
-            /* ทำให้พื้นหลังส่วนหัวเป็นกระจกเบลอๆ เวลาเลื่อนทับการ์ดจะได้สวยๆ */
-            background: rgba(244, 247, 246, 0.85); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            z-index: 50;
+            background-color: #f8fafc; /* สีเดียวกับพื้นหลัง เพื่อบังการ์ดที่เลื่อนผ่าน */
             padding-top: 1rem;
             padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(200, 200, 200, 0.2);
-            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* เงาบางๆ ใต้แถบ */
         }
 
-        /* ตกแต่งแถบสีด้านบนของการ์ดแต่ละวัน */
-        .day-border-0 { border-top: 4px solid #ef4444; } /* อาทิตย์ - แดง */
-        .day-border-1 { border-top: 4px solid #f59e0b; } /* จันทร์ - เหลือง */
-        .day-border-2 { border-top: 4px solid #ec4899; } /* อังคาร - ชมพู */
-        .day-border-3 { border-top: 4px solid #10b981; } /* พุธ - เขียว */
-        .day-border-4 { border-top: 4px solid #f97316; } /* พฤหัส - ส้ม */
-        .day-border-5 { border-top: 4px solid #3b82f6; } /* ศุกร์ - ฟ้า */
-        .day-border-6 { border-top: 4px solid #8b5cf6; } /* เสาร์ - ม่วง */
+        /* ตกแต่งการ์ดปฏิทิน */
+        .calendar-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid #f1f5f9;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.2s;
+        }
+        .calendar-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        }
 
-        /* ซ่อน Scrollbar แต่ยังเลื่อนได้ */
-        ::-webkit-scrollbar { width: 6px; }
+        /* ขอบสีด้านบนของการ์ดแต่ละวัน (แกะจากรูปคุณพิง) */
+        .border-top-0 { border-top: 5px solid #ef4444; } /* อา - แดง */
+        .border-top-1 { border-top: 5px solid #eab308; } /* จ - เหลือง */
+        .border-top-2 { border-top: 5px solid #ec4899; } /* อ - ชมพู */
+        .border-top-3 { border-top: 5px solid #22c55e; } /* พ - เขียว */
+        .border-top-4 { border-top: 5px solid #f97316; } /* พฤ - ส้ม */
+        .border-top-5 { border-top: 5px solid #3b82f6; } /* ศ - ฟ้า */
+        .border-top-6 { border-top: 5px solid #a855f7; } /* ส - ม่วง */
+
+        /* สีตัวเลขวันที่ */
+        .text-day-0 { color: #ef4444; }
+        .text-day-1 { color: #475569; }
+        .text-day-2 { color: #475569; }
+        .text-day-3 { color: #475569; }
+        .text-day-4 { color: #475569; }
+        .text-day-5 { color: #475569; }
+        .text-day-6 { color: #a855f7; }
+
+        /* ปรับแต่ง Scrollbar ในการ์ด */
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="text-gray-800">
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    <div class="max-w-[1400px] mx-auto px-4 pb-12">
         
-        <div class="sticky-header rounded-b-xl">
-            <div class="flex justify-between items-center mb-4 px-2">
+        <div class="sticky-header">
+            <div class="flex justify-between items-center mb-6 px-2">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
-                        <i class="fa-regular fa-calendar-days text-blue-500"></i>
-                        ปฏิทินผู้บริหาร
+                    <h1 class="text-2xl font-bold text-blue-700 flex items-center gap-2">
+                        <i class="fa-solid fa-table-cells-large"></i> ปฏิทินผู้บริหาร
                     </h1>
-                    <p class="text-gray-500 text-sm mt-1" id="current-month-display">กำลังโหลดข้อมูลเดือน...</p>
+                    <p class="text-gray-500 font-medium mt-1" id="current-month-display">กำลังโหลด...</p>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="loadPreviousMonth()" class="p-2 rounded-full hover:bg-white/50 text-gray-600 transition"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button onclick="resetToToday()" class="px-4 py-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 text-sm font-medium transition">วันนี้</button>
-                    <button onclick="loadNextMonth()" class="p-2 rounded-full hover:bg-white/50 text-gray-600 transition"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="flex items-center gap-3">
+                    <button onclick="loadPreviousMonth()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-200 text-gray-600 transition"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button onclick="resetToToday()" class="px-4 py-1.5 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 text-sm font-semibold transition">วันนี้</button>
+                    <button onclick="loadNextMonth()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-200 text-gray-600 transition"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
 
-            <div class="grid grid-cols-7 gap-4 text-center font-semibold text-gray-500 text-sm">
+            <div class="grid grid-cols-7 gap-4 text-center font-bold text-sm pb-2">
                 <div class="text-red-500">อา.</div>
-                <div class="text-yellow-600">จ.</div>
+                <div class="text-yellow-500">จ.</div>
                 <div class="text-pink-500">อ.</div>
-                <div class="text-green-600">พ.</div>
+                <div class="text-green-500">พ.</div>
                 <div class="text-orange-500">พฤ.</div>
                 <div class="text-blue-500">ศ.</div>
                 <div class="text-purple-500">ส.</div>
             </div>
         </div>
 
-        <div id="calendar-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+        <div id="calendar-grid" class="grid grid-cols-7 gap-4 pt-2">
             <div class="col-span-7 text-center py-20 text-gray-400">
                 <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-blue-400"></i>
-                <p>กำลังเชื่อมต่อฐานข้อมูล...</p>
+                <p>กำลังโหลดข้อมูลปฏิทิน...</p>
             </div>
         </div>
 
     </div>
 
     <script>
-        // ใส่ URL Firebase ของคุณพิง
+        // URL ฐานข้อมูล Firebase
         const FIREBASE_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP";
         
         let currentDate = new Date();
         let eventsData = {};
 
-        // ฟังก์ชันเริ่มทำงานเมื่อโหลดหน้าเว็บ
+        // เริ่มทำงานเมื่อเปิดเว็บ
         window.onload = async () => {
             await fetchEvents();
             renderCalendar();
         };
 
-        // 1. ดึงข้อมูลจาก Firebase
+        // ดึงข้อมูลจาก Firebase
         async function fetchEvents() {
             try {
                 const response = await fetch(FIREBASE_URL);
                 eventsData = await response.json() || {};
             } catch (error) {
-                console.error("Error fetching data:", error);
-                document.getElementById('calendar-grid').innerHTML = `<div class="col-span-7 text-center py-20 text-red-500"><i class="fa-solid fa-triangle-exclamation text-3xl mb-3"></i><p>ไม่สามารถเชื่อมต่อฐานข้อมูลได้</p></div>`;
+                console.error("Error:", error);
+                document.getElementById('calendar-grid').innerHTML = `<div class="col-span-7 text-center py-20 text-red-500">ไม่สามารถเชื่อมต่อฐานข้อมูลได้</div>`;
             }
         }
 
-        // 2. สร้างหน้าปฏิทิน
+        // สร้างตารางปฏิทิน
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid');
-            grid.innerHTML = ''; // ล้างข้อมูลเก่า
+            grid.innerHTML = ''; 
             
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             
-            // แสดงชื่อเดือนภาษาไทย
             const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
             document.getElementById('current-month-display').innerText = `เดือน ${monthNames[month]} ${year + 543}`;
 
@@ -151,64 +151,72 @@
                 eventsByDate[ev.date].push(ev);
             }
 
-            // สร้างช่องว่างสำหรับวันก่อนหน้าของเดือน (ให้ตรงกับวัน จ.-อา.)
+            // สร้างช่องว่างก่อนเริ่มวันที่ 1
             for (let i = 0; i < firstDay; i++) {
                 grid.innerHTML += `<div class="p-2"></div>`;
             }
 
-            // สร้างการ์ดแต่ละวัน
+            // สร้างการ์ดของแต่ละวัน
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const dayOfWeek = new Date(year, month, day).getDay();
                 
-                // ตรวจสอบว่าเป็นวันนี้หรือไม่
                 const isToday = (day === today.getDate() && month === today.getMonth() && year === today.getFullYear());
                 
-                // ดึงงานของวันนี้มาเรียงตามเวลา
                 let dailyEvents = eventsByDate[dateString] || [];
                 dailyEvents.sort((a, b) => a.timeStart.localeCompare(b.timeStart));
                 
                 const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-                let dayBadge = isWeekend ? `<span class="bg-blue-400 text-white text-[10px] px-2 py-0.5 rounded shadow-sm"><i class="fa-solid fa-bed"></i> วันหยุด</span>` : '';
-                if(isToday) dayBadge = `<span class="bg-amber-400 text-white text-[10px] px-2 py-0.5 rounded shadow-sm">วันนี้</span>`;
+                
+                // ป้ายกำกับ (Badge) วันหยุด / วันนี้
+                let statusBadge = "";
+                if (isToday) {
+                    statusBadge = `<span class="bg-amber-400 text-white text-[10px] px-2 py-0.5 rounded-full font-medium">วันนี้</span>`;
+                } else if (isWeekend) {
+                    statusBadge = `<span class="bg-blue-400 text-white text-[10px] px-2 py-0.5 rounded-full font-medium"><i class="fa-solid fa-bed"></i> วันหยุด</span>`;
+                }
 
-                // โครงสร้างกล่องของแต่วัน
+                // ป้ายนับจำนวนงาน
+                let countBadge = dailyEvents.length > 0 
+                    ? `<span class="bg-blue-50 text-blue-600 border border-blue-200 text-[10px] px-2 py-0.5 rounded-full font-bold">${dailyEvents.length} งาน</span>`
+                    : `<span class="bg-gray-100 text-gray-400 border border-gray-200 text-[10px] px-2 py-0.5 rounded-full font-medium">0 งาน</span>`;
+
+                // โครงสร้างกล่อง 1 วัน
                 let dayHTML = `
-                    <div class="glass-card rounded-xl flex flex-col day-border-${dayOfWeek} min-h-[160px]">
-                        <div class="p-3 flex justify-between items-start border-b border-gray-100/50">
+                    <div class="calendar-card border-top-${dayOfWeek}">
+                        <div class="p-3 flex justify-between items-start">
                             <div class="flex items-center gap-2">
-                                <span class="text-2xl font-bold ${isWeekend ? 'text-red-500' : 'text-gray-700'}">${day}</span>
-                                ${dayBadge}
+                                <span class="text-2xl font-bold text-day-${dayOfWeek}">${day}</span>
+                                ${statusBadge}
                             </div>
-                            <span class="bg-gray-100/80 text-gray-500 text-[10px] px-2 py-1 rounded-md font-medium border border-gray-200">${dailyEvents.length} งาน</span>
+                            ${countBadge}
                         </div>
                         <div class="p-2 flex-1 flex flex-col gap-2 overflow-y-auto max-h-[300px]">
                 `;
 
-                // ถ้ามีงาน ให้วนลูปสร้างการ์ดงาน
+                // ถัามีงาน ให้วนลูปแสดง
                 if (dailyEvents.length > 0) {
                     dailyEvents.forEach(ev => {
-                        // รูปแบบสีตามความสำคัญ
-                        let priorityStyle = "bg-green-50 text-green-600 border-green-100";
-                        if(ev.priority === "สำคัญ") priorityStyle = "bg-amber-50 text-amber-600 border-amber-100";
-                        if(ev.priority === "ด่วนที่สุด") priorityStyle = "bg-red-50 text-red-600 border-red-100";
+                        let borderColor = "border-gray-200";
+                        if(ev.priority === "สำคัญ") borderColor = "border-amber-400";
+                        if(ev.priority === "ด่วนที่สุด") borderColor = "border-red-500";
 
                         dayHTML += `
-                            <div class="bg-white/80 rounded-lg p-2 border border-white/60 shadow-sm text-xs relative group cursor-pointer hover:bg-blue-50 transition">
+                            <div class="bg-white rounded-lg p-2 border-l-4 ${borderColor} shadow-sm text-xs relative group cursor-pointer hover:shadow-md transition border border-gray-100">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <img src="${ev.avatar}" class="w-5 h-5 rounded-full border border-gray-200">
-                                    <span class="font-medium text-blue-700 truncate w-full">${ev.execName}</span>
-                                    <span class="${priorityStyle} text-[8px] px-1.5 py-0.5 rounded border whitespace-nowrap">${ev.priority || 'ทั่วไป'}</span>
+                                    <img src="${ev.avatar}" class="w-5 h-5 rounded-full border border-gray-200 bg-gray-50">
+                                    <span class="font-medium text-gray-800 truncate">${ev.execName}</span>
                                 </div>
-                                <div class="text-gray-700 font-medium leading-tight mb-1 pl-7 line-clamp-2">${ev.title}</div>
-                                <div class="text-gray-400 text-[10px] pl-7 flex items-center gap-1">
+                                <div class="text-gray-600 font-medium leading-tight mb-1 line-clamp-2">${ev.title}</div>
+                                <div class="text-gray-400 text-[10px] flex items-center gap-1">
                                     <i class="fa-regular fa-clock"></i> ${ev.timeStart} - ${ev.timeEnd}
                                 </div>
                             </div>
                         `;
                     });
                 } else {
-                    dayHTML += `<div class="flex-1 flex items-center justify-center text-gray-300 text-xs py-4">ว่าง</div>`;
+                    // ถ้าไม่มีงาน
+                    dayHTML += `<div class="flex-1 flex items-center justify-center text-gray-300 text-sm font-medium py-6">ว่าง</div>`;
                 }
 
                 dayHTML += `</div></div>`;
