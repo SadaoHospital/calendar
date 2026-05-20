@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>ปฏิทินผู้บริหาร - รพ.สะเดา</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,7 +17,7 @@
             background-color: #eef2f6;
             margin: 0;
             padding: 0;
-            overflow-x: hidden; /* ป้องกันไม่ให้หน้าหลักเลื่อนแนวนอน */
+            overflow-x: hidden;
         }
 
         /* 🎨 3D Background Shapes */
@@ -52,13 +52,12 @@
         .card-3d {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
-            border-radius: 16px;
+            border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 1);
             box-shadow: 
                 0 4px 6px -1px rgba(0, 0, 0, 0.03),
                 0 2px 4px -1px rgba(0, 0, 0, 0.02),
                 inset 0 2px 4px rgba(255, 255, 255, 0.8);
-            min-height: 180px;
             display: flex;
             flex-direction: column;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -79,21 +78,20 @@
         }
         .event-item:hover { transform: scale(1.02); }
 
-        .border-top-0 { border-top: 5px solid #ef4444; } 
-        .border-top-1 { border-top: 5px solid #eab308; } 
-        .border-top-2 { border-top: 5px solid #ec4899; } 
-        .border-top-3 { border-top: 5px solid #22c55e; } 
-        .border-top-4 { border-top: 5px solid #f97316; } 
-        .border-top-5 { border-top: 5px solid #3b82f6; } 
-        .border-top-6 { border-top: 5px solid #a855f7; } 
+        .border-top-0 { border-top: 4px solid #ef4444; } 
+        .border-top-1 { border-top: 4px solid #eab308; } 
+        .border-top-2 { border-top: 4px solid #ec4899; } 
+        .border-top-3 { border-top: 4px solid #22c55e; } 
+        .border-top-4 { border-top: 4px solid #f97316; } 
+        .border-top-5 { border-top: 4px solid #3b82f6; } 
+        .border-top-6 { border-top: 4px solid #a855f7; } 
 
-        /* 📱 ปรับแต่ง Scrollbar ซ่อนสำหรับมือถือ แต่เลื่อนได้ */
         .hide-scroll {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         .hide-scroll::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
+            display: none;
         }
         
         ::-webkit-scrollbar { width: 4px; height: 6px; }
@@ -109,7 +107,7 @@
     </div>
 
     <div class="sticky top-0 z-50 pt-3 pb-2 bg-gradient-to-b from-[#eef2f6] via-[#eef2f6]/95 to-transparent px-2 md:px-4">
-        <div class="max-w-[1500px] mx-auto">
+        <div class="max-w-[1600px] mx-auto">
             <header class="glass-nav rounded-2xl px-4 md:px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
                 
                 <div class="flex items-center gap-3 md:gap-4 w-full md:w-auto justify-center md:justify-start">
@@ -147,15 +145,14 @@
         </div>
     </div>
 
-    <div class="md:hidden text-center text-xs text-blue-600 font-medium mb-2 animate-pulse">
-        <i class="fa-solid fa-hand-pointer mr-1"></i> ปัดซ้าย-ขวา เพื่อดูตารางปฏิทิน
+    <div class="md:hidden text-center text-[10px] text-blue-500 font-medium mb-1 animate-pulse">
+        <i class="fa-solid fa-magnifying-glass-plus mr-1"></i> ใช้ 2 นิ้วถ่างเพื่อซูมดูรายละเอียด หรือปัดซ้าย-ขวา
     </div>
 
-    <div class="w-full overflow-x-auto hide-scroll px-2 md:px-4 pb-12">
-        
-        <div class="min-w-[1000px] max-w-[1500px] mx-auto">
+    <div class="w-full overflow-x-auto hide-scroll px-1 md:px-4 pb-12">
+        <div class="min-w-[650px] max-w-[1600px] mx-auto">
             
-            <div class="sticky top-0 z-40 glass-nav rounded-xl px-4 py-2 grid grid-cols-7 gap-3 md:gap-4 text-center font-bold text-sm shadow-sm">
+            <div class="sticky top-0 z-40 glass-nav rounded-xl px-1.5 md:px-4 py-2 grid grid-cols-7 gap-1.5 md:gap-4 text-center font-bold text-[10px] md:text-sm shadow-sm">
                 <div class="text-red-500">อา.</div>
                 <div class="text-yellow-600">จ.</div>
                 <div class="text-pink-500">อ.</div>
@@ -165,7 +162,7 @@
                 <div class="text-purple-500">ส.</div>
             </div>
 
-            <div id="calendar-grid" class="grid grid-cols-7 gap-3 md:gap-4 pt-3 md:pt-4">
+            <div id="calendar-grid" class="grid grid-cols-7 gap-1.5 md:gap-4 pt-2 md:pt-4">
                 <div class="col-span-7 text-center py-32 text-gray-400">
                     <div class="relative inline-block">
                         <i class="fa-solid fa-circle-notch fa-spin text-5xl text-blue-500"></i>
@@ -184,7 +181,7 @@
         // ==========================================
         const FIREBASE_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP";
         
-        // ⚠️ สำคัญ: ใส่รหัส LIFF ID ของคุณพิงตรงนี้ (ได้จาก LINE Developers)
+        // ✅ อัปเดต LIFF ID ของคุณพิง
         const LIFF_ID = "2010128406-pWJYT2lK"; 
 
         let currentDate = new Date();
@@ -200,14 +197,7 @@
         // 🟢 ระบบเชื่อมต่อ LINE Profile (LIFF)
         // ==========================================
         async function initializeLiff() {
-            if (!LIFF_ID) {
-                document.getElementById('user-display-name').innerText = "ผู้บริหาร รพ.สะเดา";
-                document.getElementById('login-status-dot').className = "w-1.5 h-1.5 bg-yellow-500 rounded-full";
-                document.getElementById('login-status-text').innerText = "ใช้งานบนเบราว์เซอร์ปกติ";
-                document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-yellow-500 border-2 border-white rounded-full";
-                document.getElementById('user-profile-img').src = "https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff";
-                return;
-            }
+            if (!LIFF_ID) return;
 
             try {
                 await liff.init({ liffId: LIFF_ID });
@@ -222,7 +212,12 @@
                     document.getElementById('login-status-text').innerText = "เชื่อมต่อ LINE สำเร็จ";
                     document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full";
                 } else {
-                    liff.login();
+                    if(liff.isInClient()) {
+                        liff.login();
+                    } else {
+                        document.getElementById('user-display-name').innerText = "บุคคลภายนอก";
+                        document.getElementById('login-status-text').innerText = "ไม่ได้ล็อกอินผ่าน LINE";
+                    }
                 }
             } catch (err) {
                 console.error("LIFF Error:", err);
@@ -265,7 +260,7 @@
             }
 
             for (let i = 0; i < firstDay; i++) {
-                grid.innerHTML += `<div class="p-2"></div>`;
+                grid.innerHTML += `<div class="p-1 md:p-2"></div>`;
             }
 
             for (let day = 1; day <= daysInMonth; day++) {
@@ -277,29 +272,30 @@
                 dailyEvents.sort((a, b) => a.timeStart.localeCompare(b.timeStart));
                 const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
                 
+                // 🎨 ปรับขนาดป้ายให้ยืดหยุ่น ย่อเล็กลงเมื่ออยู่บนจอมือถือ
                 let statusBadge = "";
                 if (isToday) {
-                    statusBadge = `<span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-md shadow-orange-200 border border-orange-300 whitespace-nowrap">วันนี้</span>`;
+                    statusBadge = `<span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold shadow-md shadow-orange-200 border border-orange-300 whitespace-nowrap">วันนี้</span>`;
                 } else if (isWeekend) {
-                    statusBadge = `<span class="bg-gradient-to-r from-blue-400 to-indigo-400 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-md shadow-blue-200 border border-blue-300 whitespace-nowrap"><i class="fa-solid fa-bed text-[8px]"></i> วันหยุด</span>`;
+                    statusBadge = `<span class="bg-gradient-to-r from-blue-400 to-indigo-400 text-white text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold shadow-md shadow-blue-200 border border-blue-300 whitespace-nowrap"><i class="fa-solid fa-bed text-[6px] md:text-[8px]"></i> วันหยุด</span>`;
                 }
 
                 let countBadge = dailyEvents.length > 0 
-                    ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-md font-extrabold shadow-inner border border-blue-200 whitespace-nowrap">${dailyEvents.length} งาน</span>`
-                    : `<span class="bg-gray-100 text-gray-400 text-[10px] px-2 py-0.5 rounded-md font-medium border border-gray-200 shadow-inner whitespace-nowrap">ว่าง</span>`;
+                    ? `<span class="bg-blue-100 text-blue-700 text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-md font-extrabold shadow-inner border border-blue-200 whitespace-nowrap hidden sm:inline-block">${dailyEvents.length} งาน</span>`
+                    : `<span class="bg-gray-100 text-gray-400 text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-md font-medium border border-gray-200 shadow-inner whitespace-nowrap hidden sm:inline-block">ว่าง</span>`;
 
                 const textColors = ['text-red-500', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-purple-500'];
 
                 let dayHTML = `
-                    <div class="card-3d border-top-${dayOfWeek}">
-                        <div class="p-3 pb-1 flex justify-between items-start gap-2">
-                            <div class="flex flex-col gap-1 relative">
-                                <span class="text-3xl font-extrabold ${textColors[dayOfWeek]} leading-none drop-shadow-sm">${day}</span>
-                                <div class="absolute -top-1 -right-[60px] md:-right-14 z-10">${statusBadge}</div>
+                    <div class="card-3d border-top-${dayOfWeek} min-h-[120px] md:min-h-[180px]">
+                        <div class="p-1.5 md:p-3 pb-1 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-1">
+                            <div class="flex items-center gap-1.5 md:gap-2">
+                                <span class="text-lg md:text-3xl font-extrabold ${textColors[dayOfWeek]} leading-none drop-shadow-sm">${day}</span>
+                                ${statusBadge}
                             </div>
                             ${countBadge}
                         </div>
-                        <div class="p-2 pt-3 flex-1 flex flex-col gap-2 overflow-y-auto max-h-[350px]">
+                        <div class="p-1 md:p-2 pt-1 md:pt-3 flex-1 flex flex-col gap-1.5 overflow-y-auto max-h-[250px] md:max-h-[350px] hide-scroll">
                 `;
 
                 if (dailyEvents.length > 0) {
@@ -308,30 +304,31 @@
                         let priorityBadge = "";
                         if(ev.priority === "สำคัญ") {
                             borderClass = "border-l-amber-400";
-                            priorityBadge = `<span class="text-[8px] bg-amber-100 text-amber-700 px-1 rounded font-bold border border-amber-200">สำคัญ</span>`;
+                            priorityBadge = `<span class="text-[7px] md:text-[8px] bg-amber-100 text-amber-700 px-1 rounded font-bold border border-amber-200">สำคัญ</span>`;
                         }
                         if(ev.priority === "ด่วนที่สุด") {
                             borderClass = "border-l-red-500";
-                            priorityBadge = `<span class="text-[8px] bg-red-100 text-red-700 px-1 rounded font-bold border border-red-200">ด่วนที่สุด</span>`;
+                            priorityBadge = `<span class="text-[7px] md:text-[8px] bg-red-100 text-red-700 px-1 rounded font-bold border border-red-200">ด่วนที่สุด</span>`;
                         }
 
                         dayHTML += `
-                            <div class="event-item rounded-lg p-2 border-l-4 ${borderClass} relative group cursor-pointer">
-                                <div class="flex items-center gap-2 mb-1.5">
-                                    <img src="${ev.avatar}" class="w-5 h-5 rounded-full shadow-sm ring-1 ring-gray-200">
-                                    <span class="font-bold text-gray-800 text-xs truncate w-full flex justify-between items-center">
-                                        ${ev.execName} ${priorityBadge}
-                                    </span>
+                            <div class="event-item rounded-md md:rounded-lg p-1 md:p-2 border-l-[3px] md:border-l-4 ${borderClass} relative group cursor-pointer">
+                                <div class="flex items-center gap-1.5 md:gap-2 mb-1">
+                                    <img src="${ev.avatar}" class="w-4 h-4 md:w-5 md:h-5 rounded-full shadow-sm ring-1 ring-gray-200">
+                                    <div class="font-bold text-gray-800 text-[9px] md:text-xs truncate w-full flex justify-between items-center gap-1">
+                                        <span class="truncate">${ev.execName}</span>
+                                        ${priorityBadge}
+                                    </div>
                                 </div>
-                                <div class="text-gray-600 font-medium text-xs leading-snug mb-1 line-clamp-2">${ev.title}</div>
-                                <div class="text-gray-400 text-[10px] flex items-center gap-1 font-medium bg-gray-50/50 rounded py-0.5 px-1 w-max border border-gray-100">
+                                <div class="text-gray-600 font-medium text-[9px] md:text-xs leading-snug mb-1 line-clamp-2 md:line-clamp-3">${ev.title}</div>
+                                <div class="text-gray-400 text-[8px] md:text-[10px] flex items-center gap-1 font-medium bg-gray-50/50 rounded py-0.5 px-1 w-max border border-gray-100">
                                     <i class="fa-regular fa-clock text-blue-400"></i> ${ev.timeStart} - ${ev.timeEnd}
                                 </div>
                             </div>
                         `;
                     });
                 } else {
-                    dayHTML += `<div class="flex-1 flex items-center justify-center opacity-40"><i class="fa-solid fa-mug-hot text-2xl text-gray-300"></i></div>`;
+                    dayHTML += `<div class="flex-1 flex items-center justify-center opacity-40"><i class="fa-solid fa-mug-hot text-xl md:text-2xl text-gray-300"></i></div>`;
                 }
 
                 dayHTML += `</div></div>`;
