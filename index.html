@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
     <style>
         body {
@@ -37,7 +39,7 @@
 
         /* 📌 Navbar แบบกระจกลอยตัว 3D */
         .glass-nav {
-            background: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.9);
@@ -48,7 +50,7 @@
 
         /* 🗂️ การ์ดวันที่แบบ 3D Neumorphism */
         .card-3d {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 1);
@@ -69,18 +71,14 @@
                 inset 0 2px 5px rgba(255, 255, 255, 1);
         }
 
-        /* กล่องเหตุการณ์ย่อยให้ดูลอยขึ้นมา */
         .event-item {
             background: linear-gradient(145deg, #ffffff, #f9fafb);
             box-shadow: 2px 2px 6px rgba(0,0,0,0.04), -2px -2px 6px rgba(255,255,255,0.8);
             border: 1px solid rgba(255,255,255,1);
             transition: transform 0.2s;
         }
-        .event-item:hover {
-            transform: scale(1.02);
-        }
+        .event-item:hover { transform: scale(1.02); }
 
-        /* ขอบสีด้านบนของการ์ดแต่ละวัน */
         .border-top-0 { border-top: 5px solid #ef4444; } 
         .border-top-1 { border-top: 5px solid #eab308; } 
         .border-top-2 { border-top: 5px solid #ec4899; } 
@@ -89,7 +87,6 @@
         .border-top-5 { border-top: 5px solid #3b82f6; } 
         .border-top-6 { border-top: 5px solid #a855f7; } 
 
-        /* ปรับแต่ง Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -109,8 +106,8 @@
             <header class="glass-nav rounded-2xl px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
                 
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center p-1 border border-gray-100">
-                        <img src="https://upload.wikimedia.org/wikipedia/th/thumb/e/e4/Moph-logo.svg/1200px-Moph-logo.svg.png" class="w-full h-full object-contain" alt="Logo">
+                    <div class="w-14 h-14 rounded-full bg-white shadow-md flex items-center justify-center p-1.5 border border-gray-100">
+                        <img src="https://github.com/SadaoHospital/calendar/blob/Img/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%20%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B8%B2%20-%20Copy.png?raw=true" class="w-full h-full object-contain drop-shadow-sm" alt="Sadao Hospital Logo">
                     </div>
                     <div>
                         <h1 class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600 drop-shadow-sm">ปฏิทินผู้บริหาร</h1>
@@ -127,14 +124,15 @@
 
                 <div class="flex items-center gap-3 pl-0 md:pl-6 border-l-0 md:border-l border-gray-300/50">
                     <div class="text-right hidden md:block">
-                        <p class="text-sm font-bold text-gray-800">ทศพร คงสุขนิรันดร์</p>
-                        <p class="text-[10px] text-green-600 font-bold bg-green-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5">
-                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> เชื่อมต่อ LINE แล้ว
+                        <p id="user-display-name" class="text-sm font-bold text-gray-800">กำลังโหลดข้อมูล...</p>
+                        <p class="text-[10px] text-gray-600 font-bold bg-gray-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5 border border-gray-200" id="login-status-box">
+                            <span id="login-status-dot" class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span> 
+                            <span id="login-status-text">รอการเชื่อมต่อ LINE</span>
                         </p>
                     </div>
                     <div class="relative">
-                        <img src="https://ui-avatars.com/api/?name=Thodsaporn&background=0D8ABC&color=fff&bold=true" class="w-11 h-11 rounded-full border-2 border-white shadow-lg" alt="Profile">
-                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                        <img id="user-profile-img" src="https://ui-avatars.com/api/?name=User&background=e5e7eb&color=9ca3af" class="w-11 h-11 rounded-full border-2 border-white shadow-lg object-cover" alt="Profile">
+                        <div id="status-indicator" class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full"></div>
                     </div>
                 </div>
 
@@ -164,19 +162,67 @@
     </div>
 
     <script>
-        // URL ฐานข้อมูล Firebase
+        // ==========================================
+        // ⚙️ ตั้งค่าระบบ
+        // ==========================================
         const FIREBASE_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP";
         
+        // ⚠️ สำคัญ: ใส่รหัส LIFF ID ของคุณพิงตรงนี้ (ได้จาก LINE Developers)
+        const LIFF_ID = ""; // ตัวอย่างเช่น "1234567890-AbCdEfGh"
+
         let currentDate = new Date();
         let eventsData = {};
 
-        // เริ่มทำงานเมื่อเปิดเว็บ
+        // เริ่มทำงานเมื่อโหลดหน้าเว็บเสร็จ
         window.onload = async () => {
+            initializeLiff(); // เรียกใช้งานระบบ Login LINE
             await fetchEvents();
             renderCalendar();
         };
 
-        // ดึงข้อมูลจาก Firebase
+        // ==========================================
+        // 🟢 ระบบเชื่อมต่อ LINE Profile (LIFF)
+        // ==========================================
+        async function initializeLiff() {
+            if (!LIFF_ID) {
+                // กรณีที่ยังไม่ได้ใส่ LIFF ID ให้แสดงหน้าโปรไฟล์จำลองไปก่อน
+                document.getElementById('user-display-name').innerText = "ผู้บริหาร รพ.สะเดา";
+                document.getElementById('login-status-dot').className = "w-1.5 h-1.5 bg-yellow-500 rounded-full";
+                document.getElementById('login-status-text').innerText = "ใช้งานบนเบราว์เซอร์ปกติ";
+                document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-yellow-500 border-2 border-white rounded-full";
+                document.getElementById('user-profile-img').src = "https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff";
+                return;
+            }
+
+            try {
+                await liff.init({ liffId: LIFF_ID });
+                
+                if (liff.isLoggedIn()) {
+                    // ถ้าผู้ใช้ล็อกอิน LINE แล้ว ให้ดึงข้อมูลมาแสดง
+                    const profile = await liff.getProfile();
+                    
+                    document.getElementById('user-display-name').innerText = profile.displayName;
+                    document.getElementById('user-profile-img').src = profile.pictureUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.displayName)}&background=0D8ABC&color=fff`;
+                    
+                    // เปลี่ยนปุ่มสถานะเป็นสีเขียว
+                    document.getElementById('login-status-box').className = "text-[10px] text-green-700 font-bold bg-green-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5 border border-green-200";
+                    document.getElementById('login-status-dot').className = "w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse";
+                    document.getElementById('login-status-text').innerText = "เชื่อมต่อ LINE สำเร็จ";
+                    document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full";
+                } else {
+                    // ถ้ายังไม่ล็อกอิน ให้เด้งหน้าต่างล็อกอินของ LINE
+                    liff.login();
+                }
+            } catch (err) {
+                console.error("LIFF Error:", err);
+                document.getElementById('user-display-name').innerText = "ระบบขัดข้อง";
+                document.getElementById('login-status-text').innerText = "เชื่อมต่อ LINE ไม่สำเร็จ";
+            }
+        }
+
+        // ==========================================
+        // 📅 ระบบดึงข้อมูลและสร้างปฏิทิน
+        // ==========================================
         async function fetchEvents() {
             try {
                 const response = await fetch(FIREBASE_URL);
@@ -187,14 +233,12 @@
             }
         }
 
-        // สร้างตารางปฏิทิน
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = ''; 
             
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            
             const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
             document.getElementById('current-month-display').innerText = `${monthNames[month]} ${year + 543}`;
 
@@ -202,7 +246,6 @@
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const today = new Date();
 
-            // จัดกลุ่มงานตามวันที่
             const eventsByDate = {};
             for (let key in eventsData) {
                 const ev = eventsData[key];
@@ -210,12 +253,10 @@
                 eventsByDate[ev.date].push(ev);
             }
 
-            // สร้างช่องว่างก่อนเริ่มวันที่ 1
             for (let i = 0; i < firstDay; i++) {
                 grid.innerHTML += `<div class="p-2"></div>`;
             }
 
-            // สร้างการ์ดของแต่ละวัน
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const dayOfWeek = new Date(year, month, day).getDay();
@@ -225,7 +266,6 @@
                 dailyEvents.sort((a, b) => a.timeStart.localeCompare(b.timeStart));
                 const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
                 
-                // ป้ายกำกับ (Badge) วันหยุด / วันนี้ (แบบ 3D)
                 let statusBadge = "";
                 if (isToday) {
                     statusBadge = `<span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-md shadow-orange-200 border border-orange-300">วันนี้</span>`;
@@ -233,31 +273,26 @@
                     statusBadge = `<span class="bg-gradient-to-r from-blue-400 to-indigo-400 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-md shadow-blue-200 border border-blue-300"><i class="fa-solid fa-bed text-[8px]"></i> วันหยุด</span>`;
                 }
 
-                // ป้ายนับจำนวนงาน
                 let countBadge = dailyEvents.length > 0 
                     ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-md font-extrabold shadow-inner border border-blue-200">${dailyEvents.length} งาน</span>`
                     : `<span class="bg-gray-100 text-gray-400 text-[10px] px-2 py-0.5 rounded-md font-medium border border-gray-200 shadow-inner">ว่าง</span>`;
 
-                // สีตัวเลขวันที่
                 const textColors = ['text-red-500', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-purple-500'];
 
-                // โครงสร้างกล่อง 1 วัน
                 let dayHTML = `
                     <div class="card-3d border-top-${dayOfWeek}">
                         <div class="p-3 pb-1 flex justify-between items-start">
                             <div class="flex flex-col gap-1 relative">
                                 <span class="text-3xl font-extrabold ${textColors[dayOfWeek]} leading-none drop-shadow-sm">${day}</span>
-                                <div class="absolute -top-1 -right-14">${statusBadge}</div>
+                                <div class="absolute -top-1 -right-14 z-10">${statusBadge}</div>
                             </div>
                             ${countBadge}
                         </div>
                         <div class="p-2 pt-3 flex-1 flex flex-col gap-2 overflow-y-auto max-h-[350px]">
                 `;
 
-                // ถัามีงาน ให้วนลูปแสดง
                 if (dailyEvents.length > 0) {
                     dailyEvents.forEach(ev => {
-                        // แยกสีตามความสำคัญ
                         let borderClass = "border-l-gray-300";
                         let priorityBadge = "";
                         if(ev.priority === "สำคัญ") {
