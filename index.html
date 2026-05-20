@@ -12,93 +12,152 @@
     <style>
         body {
             font-family: 'Prompt', sans-serif;
-            background-color: #f8fafc; /* สีพื้นหลังสว่างสบายตา */
+            background-color: #eef2f6;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
 
-        /* 📌 พระเอกของเรา: แถบติดหนึบ */
-        .sticky-header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background-color: #f8fafc; /* สีเดียวกับพื้นหลัง เพื่อบังการ์ดที่เลื่อนผ่าน */
-            padding-top: 1rem;
-            padding-bottom: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* เงาบางๆ ใต้แถบ */
+        /* 🎨 3D Background Shapes */
+        .bg-shapes {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+            overflow: hidden;
+            background: linear-gradient(135deg, #eef2f6 0%, #f8fafc 100%);
+        }
+        .shape-1 {
+            position: absolute; top: -10%; left: -5%; width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+        }
+        .shape-2 {
+            position: absolute; bottom: -20%; right: -10%; width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(168,85,247,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
         }
 
-        /* ตกแต่งการ์ดปฏิทิน */
-        .calendar-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            border: 1px solid #f1f5f9;
+        /* 📌 Navbar แบบกระจกลอยตัว 3D */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 
+                0 10px 25px -5px rgba(0, 0, 0, 0.05),
+                inset 0 1px 2px rgba(255, 255, 255, 0.9);
+        }
+
+        /* 🗂️ การ์ดวันที่แบบ 3D Neumorphism */
+        .card-3d {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.03),
+                0 2px 4px -1px rgba(0, 0, 0, 0.02),
+                inset 0 2px 4px rgba(255, 255, 255, 0.8);
             min-height: 180px;
             display: flex;
             flex-direction: column;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        .calendar-card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        .card-3d:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.04),
+                inset 0 2px 5px rgba(255, 255, 255, 1);
         }
 
-        /* ขอบสีด้านบนของการ์ดแต่ละวัน (แกะจากรูปคุณพิง) */
-        .border-top-0 { border-top: 5px solid #ef4444; } /* อา - แดง */
-        .border-top-1 { border-top: 5px solid #eab308; } /* จ - เหลือง */
-        .border-top-2 { border-top: 5px solid #ec4899; } /* อ - ชมพู */
-        .border-top-3 { border-top: 5px solid #22c55e; } /* พ - เขียว */
-        .border-top-4 { border-top: 5px solid #f97316; } /* พฤ - ส้ม */
-        .border-top-5 { border-top: 5px solid #3b82f6; } /* ศ - ฟ้า */
-        .border-top-6 { border-top: 5px solid #a855f7; } /* ส - ม่วง */
+        /* กล่องเหตุการณ์ย่อยให้ดูลอยขึ้นมา */
+        .event-item {
+            background: linear-gradient(145deg, #ffffff, #f9fafb);
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.04), -2px -2px 6px rgba(255,255,255,0.8);
+            border: 1px solid rgba(255,255,255,1);
+            transition: transform 0.2s;
+        }
+        .event-item:hover {
+            transform: scale(1.02);
+        }
 
-        /* สีตัวเลขวันที่ */
-        .text-day-0 { color: #ef4444; }
-        .text-day-1 { color: #475569; }
-        .text-day-2 { color: #475569; }
-        .text-day-3 { color: #475569; }
-        .text-day-4 { color: #475569; }
-        .text-day-5 { color: #475569; }
-        .text-day-6 { color: #a855f7; }
+        /* ขอบสีด้านบนของการ์ดแต่ละวัน */
+        .border-top-0 { border-top: 5px solid #ef4444; } 
+        .border-top-1 { border-top: 5px solid #eab308; } 
+        .border-top-2 { border-top: 5px solid #ec4899; } 
+        .border-top-3 { border-top: 5px solid #22c55e; } 
+        .border-top-4 { border-top: 5px solid #f97316; } 
+        .border-top-5 { border-top: 5px solid #3b82f6; } 
+        .border-top-6 { border-top: 5px solid #a855f7; } 
 
-        /* ปรับแต่ง Scrollbar ในการ์ด */
+        /* ปรับแต่ง Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="text-gray-800">
+<body>
 
-    <div class="max-w-[1400px] mx-auto px-4 pb-12">
+    <div class="bg-shapes">
+        <div class="shape-1"></div>
+        <div class="shape-2"></div>
+    </div>
+
+    <div class="max-w-[1500px] mx-auto px-4 pb-12 relative">
         
-        <div class="sticky-header">
-            <div class="flex justify-between items-center mb-6 px-2">
-                <div>
-                    <h1 class="text-2xl font-bold text-blue-700 flex items-center gap-2">
-                        <i class="fa-solid fa-table-cells-large"></i> ปฏิทินผู้บริหาร
-                    </h1>
-                    <p class="text-gray-500 font-medium mt-1" id="current-month-display">กำลังโหลด...</p>
+        <div class="sticky top-0 z-50 pt-4 pb-2 bg-gradient-to-b from-[#eef2f6] via-[#eef2f6]/90 to-transparent">
+            
+            <header class="glass-nav rounded-2xl px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+                
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center p-1 border border-gray-100">
+                        <img src="https://upload.wikimedia.org/wikipedia/th/thumb/e/e4/Moph-logo.svg/1200px-Moph-logo.svg.png" class="w-full h-full object-contain" alt="Logo">
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600 drop-shadow-sm">ปฏิทินผู้บริหาร</h1>
+                        <p class="text-sm text-gray-500 font-medium tracking-wide">โรงพยาบาลสะเดา</p>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="loadPreviousMonth()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-200 text-gray-600 transition"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button onclick="resetToToday()" class="px-4 py-1.5 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 text-sm font-semibold transition">วันนี้</button>
-                    <button onclick="loadNextMonth()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-200 text-gray-600 transition"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-            </div>
 
-            <div class="grid grid-cols-7 gap-4 text-center font-bold text-sm pb-2">
+                <div class="flex items-center gap-2 bg-white/50 p-1.5 rounded-full shadow-inner border border-gray-200/60">
+                    <button onclick="loadPreviousMonth()" class="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm hover:bg-blue-50 text-gray-600 transition"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span id="current-month-display" class="px-4 font-bold text-gray-700 min-w-[160px] text-center">กำลังโหลด...</span>
+                    <button onclick="resetToToday()" class="px-3 py-1 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-bold transition">วันนี้</button>
+                    <button onclick="loadNextMonth()" class="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm hover:bg-blue-50 text-gray-600 transition"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+
+                <div class="flex items-center gap-3 pl-0 md:pl-6 border-l-0 md:border-l border-gray-300/50">
+                    <div class="text-right hidden md:block">
+                        <p class="text-sm font-bold text-gray-800">ทศพร คงสุขนิรันดร์</p>
+                        <p class="text-[10px] text-green-600 font-bold bg-green-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5">
+                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> เชื่อมต่อ LINE แล้ว
+                        </p>
+                    </div>
+                    <div class="relative">
+                        <img src="https://ui-avatars.com/api/?name=Thodsaporn&background=0D8ABC&color=fff&bold=true" class="w-11 h-11 rounded-full border-2 border-white shadow-lg" alt="Profile">
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                    </div>
+                </div>
+
+            </header>
+
+            <div class="glass-nav rounded-xl mt-3 px-4 py-2 grid grid-cols-7 gap-4 text-center font-bold text-sm shadow-sm">
                 <div class="text-red-500">อา.</div>
-                <div class="text-yellow-500">จ.</div>
+                <div class="text-yellow-600">จ.</div>
                 <div class="text-pink-500">อ.</div>
-                <div class="text-green-500">พ.</div>
+                <div class="text-green-600">พ.</div>
                 <div class="text-orange-500">พฤ.</div>
                 <div class="text-blue-500">ศ.</div>
                 <div class="text-purple-500">ส.</div>
             </div>
         </div>
 
-        <div id="calendar-grid" class="grid grid-cols-7 gap-4 pt-2">
-            <div class="col-span-7 text-center py-20 text-gray-400">
-                <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-blue-400"></i>
-                <p>กำลังโหลดข้อมูลปฏิทิน...</p>
+        <div id="calendar-grid" class="grid grid-cols-7 gap-4 pt-4">
+            <div class="col-span-7 text-center py-32 text-gray-400">
+                <div class="relative inline-block">
+                    <i class="fa-solid fa-circle-notch fa-spin text-5xl text-blue-500"></i>
+                    <i class="fa-solid fa-calendar-check absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl text-blue-700"></i>
+                </div>
+                <p class="mt-4 font-medium text-lg">กำลังซิงค์ข้อมูลจากฐานข้อมูล...</p>
             </div>
         </div>
 
@@ -137,7 +196,7 @@
             const month = currentDate.getMonth();
             
             const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-            document.getElementById('current-month-display').innerText = `เดือน ${monthNames[month]} ${year + 543}`;
+            document.getElementById('current-month-display').innerText = `${monthNames[month]} ${year + 543}`;
 
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -160,63 +219,73 @@
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const dayOfWeek = new Date(year, month, day).getDay();
-                
                 const isToday = (day === today.getDate() && month === today.getMonth() && year === today.getFullYear());
                 
                 let dailyEvents = eventsByDate[dateString] || [];
                 dailyEvents.sort((a, b) => a.timeStart.localeCompare(b.timeStart));
-                
                 const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
                 
-                // ป้ายกำกับ (Badge) วันหยุด / วันนี้
+                // ป้ายกำกับ (Badge) วันหยุด / วันนี้ (แบบ 3D)
                 let statusBadge = "";
                 if (isToday) {
-                    statusBadge = `<span class="bg-amber-400 text-white text-[10px] px-2 py-0.5 rounded-full font-medium">วันนี้</span>`;
+                    statusBadge = `<span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-md shadow-orange-200 border border-orange-300">วันนี้</span>`;
                 } else if (isWeekend) {
-                    statusBadge = `<span class="bg-blue-400 text-white text-[10px] px-2 py-0.5 rounded-full font-medium"><i class="fa-solid fa-bed"></i> วันหยุด</span>`;
+                    statusBadge = `<span class="bg-gradient-to-r from-blue-400 to-indigo-400 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-md shadow-blue-200 border border-blue-300"><i class="fa-solid fa-bed text-[8px]"></i> วันหยุด</span>`;
                 }
 
                 // ป้ายนับจำนวนงาน
                 let countBadge = dailyEvents.length > 0 
-                    ? `<span class="bg-blue-50 text-blue-600 border border-blue-200 text-[10px] px-2 py-0.5 rounded-full font-bold">${dailyEvents.length} งาน</span>`
-                    : `<span class="bg-gray-100 text-gray-400 border border-gray-200 text-[10px] px-2 py-0.5 rounded-full font-medium">0 งาน</span>`;
+                    ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-md font-extrabold shadow-inner border border-blue-200">${dailyEvents.length} งาน</span>`
+                    : `<span class="bg-gray-100 text-gray-400 text-[10px] px-2 py-0.5 rounded-md font-medium border border-gray-200 shadow-inner">ว่าง</span>`;
+
+                // สีตัวเลขวันที่
+                const textColors = ['text-red-500', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-purple-500'];
 
                 // โครงสร้างกล่อง 1 วัน
                 let dayHTML = `
-                    <div class="calendar-card border-top-${dayOfWeek}">
-                        <div class="p-3 flex justify-between items-start">
-                            <div class="flex items-center gap-2">
-                                <span class="text-2xl font-bold text-day-${dayOfWeek}">${day}</span>
-                                ${statusBadge}
+                    <div class="card-3d border-top-${dayOfWeek}">
+                        <div class="p-3 pb-1 flex justify-between items-start">
+                            <div class="flex flex-col gap-1 relative">
+                                <span class="text-3xl font-extrabold ${textColors[dayOfWeek]} leading-none drop-shadow-sm">${day}</span>
+                                <div class="absolute -top-1 -right-14">${statusBadge}</div>
                             </div>
                             ${countBadge}
                         </div>
-                        <div class="p-2 flex-1 flex flex-col gap-2 overflow-y-auto max-h-[300px]">
+                        <div class="p-2 pt-3 flex-1 flex flex-col gap-2 overflow-y-auto max-h-[350px]">
                 `;
 
                 // ถัามีงาน ให้วนลูปแสดง
                 if (dailyEvents.length > 0) {
                     dailyEvents.forEach(ev => {
-                        let borderColor = "border-gray-200";
-                        if(ev.priority === "สำคัญ") borderColor = "border-amber-400";
-                        if(ev.priority === "ด่วนที่สุด") borderColor = "border-red-500";
+                        // แยกสีตามความสำคัญ
+                        let borderClass = "border-l-gray-300";
+                        let priorityBadge = "";
+                        if(ev.priority === "สำคัญ") {
+                            borderClass = "border-l-amber-400";
+                            priorityBadge = `<span class="text-[8px] bg-amber-100 text-amber-700 px-1 rounded font-bold border border-amber-200">สำคัญ</span>`;
+                        }
+                        if(ev.priority === "ด่วนที่สุด") {
+                            borderClass = "border-l-red-500";
+                            priorityBadge = `<span class="text-[8px] bg-red-100 text-red-700 px-1 rounded font-bold border border-red-200">ด่วนที่สุด</span>`;
+                        }
 
                         dayHTML += `
-                            <div class="bg-white rounded-lg p-2 border-l-4 ${borderColor} shadow-sm text-xs relative group cursor-pointer hover:shadow-md transition border border-gray-100">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <img src="${ev.avatar}" class="w-5 h-5 rounded-full border border-gray-200 bg-gray-50">
-                                    <span class="font-medium text-gray-800 truncate">${ev.execName}</span>
+                            <div class="event-item rounded-lg p-2 border-l-4 ${borderClass} relative group cursor-pointer">
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <img src="${ev.avatar}" class="w-5 h-5 rounded-full shadow-sm ring-1 ring-gray-200">
+                                    <span class="font-bold text-gray-800 text-xs truncate w-full flex justify-between items-center">
+                                        ${ev.execName} ${priorityBadge}
+                                    </span>
                                 </div>
-                                <div class="text-gray-600 font-medium leading-tight mb-1 line-clamp-2">${ev.title}</div>
-                                <div class="text-gray-400 text-[10px] flex items-center gap-1">
-                                    <i class="fa-regular fa-clock"></i> ${ev.timeStart} - ${ev.timeEnd}
+                                <div class="text-gray-600 font-medium text-xs leading-snug mb-1 line-clamp-2">${ev.title}</div>
+                                <div class="text-gray-400 text-[10px] flex items-center gap-1 font-medium bg-gray-50/50 rounded py-0.5 px-1 w-max border border-gray-100">
+                                    <i class="fa-regular fa-clock text-blue-400"></i> ${ev.timeStart} - ${ev.timeEnd}
                                 </div>
                             </div>
                         `;
                     });
                 } else {
-                    // ถ้าไม่มีงาน
-                    dayHTML += `<div class="flex-1 flex items-center justify-center text-gray-300 text-sm font-medium py-6">ว่าง</div>`;
+                    dayHTML += `<div class="flex-1 flex items-center justify-center opacity-40"><i class="fa-solid fa-mug-hot text-2xl text-gray-300"></i></div>`;
                 }
 
                 dayHTML += `</div></div>`;
@@ -224,21 +293,9 @@
             }
         }
 
-        // ฟังก์ชันเปลี่ยนเดือน
-        function loadPreviousMonth() {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar();
-        }
-
-        function loadNextMonth() {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            renderCalendar();
-        }
-
-        function resetToToday() {
-            currentDate = new Date();
-            renderCalendar();
-        }
+        function loadPreviousMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
+        function loadNextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); }
+        function resetToToday() { currentDate = new Date(); renderCalendar(); }
     </script>
 </body>
 </html>
