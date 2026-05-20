@@ -8,92 +8,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
     <style>
-        body {
-            font-family: 'Prompt', sans-serif;
-            background-color: #eef2f6;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-        }
+        @media (min-width: 1024px) { html { font-size: 85%; } }
+        body { font-family: 'Prompt', sans-serif; background-color: #eef2f6; margin: 0; padding: 0; overflow-x: hidden; }
 
-        /* 🎨 3D Background Shapes */
-        .bg-shapes {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            overflow: hidden;
-            background: linear-gradient(135deg, #eef2f6 0%, #f8fafc 100%);
-        }
-        .shape-1 {
-            position: absolute; top: -10%; left: -5%; width: 50vw; height: 50vw;
-            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%;
-        }
-        .shape-2 {
-            position: absolute; bottom: -20%; right: -10%; width: 60vw; height: 60vw;
-            background: radial-gradient(circle, rgba(168,85,247,0.1) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%;
-        }
+        .bg-shapes { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: linear-gradient(135deg, #eef2f6 0%, #f8fafc 100%); }
+        .shape-1 { position: absolute; top: -10%; left: -5%; width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; }
+        .shape-2 { position: absolute; bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(168,85,247,0.1) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; }
 
-        /* 📌 Navbar แบบกระจกลอยตัว 3D */
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 
-                0 10px 25px -5px rgba(0, 0, 0, 0.05),
-                inset 0 1px 2px rgba(255, 255, 255, 0.9);
-        }
-
-        /* 🗂️ การ์ดวันที่แบบ 3D Neumorphism */
-        .card-3d {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 1);
-            box-shadow: 
-                0 4px 6px -1px rgba(0, 0, 0, 0.03),
-                0 2px 4px -1px rgba(0, 0, 0, 0.02),
-                inset 0 2px 4px rgba(255, 255, 255, 0.8);
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        .card-3d:hover {
-            transform: translateY(-5px);
-            box-shadow: 
-                0 20px 25px -5px rgba(0, 0, 0, 0.1),
-                0 10px 10px -5px rgba(0, 0, 0, 0.04),
-                inset 0 2px 5px rgba(255, 255, 255, 1);
-        }
-
-        .event-item {
-            background: linear-gradient(145deg, #ffffff, #f9fafb);
-            box-shadow: 2px 2px 6px rgba(0,0,0,0.04), -2px -2px 6px rgba(255,255,255,0.8);
-            border: 1px solid rgba(255,255,255,1);
-            transition: transform 0.2s;
-        }
+        .glass-nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), inset 0 1px 2px rgba(255, 255, 255, 0.9); }
+        .card-3d { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 1); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02), inset 0 2px 4px rgba(255, 255, 255, 0.8); display: flex; flex-direction: column; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .card-3d:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), inset 0 2px 5px rgba(255, 255, 255, 1); }
+        
+        .event-item { background: linear-gradient(145deg, #ffffff, #f9fafb); box-shadow: 2px 2px 6px rgba(0,0,0,0.04), -2px -2px 6px rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,1); transition: transform 0.2s; }
         .event-item:hover { transform: scale(1.02); }
 
-        .border-top-0 { border-top: 4px solid #ef4444; } 
-        .border-top-1 { border-top: 4px solid #eab308; } 
-        .border-top-2 { border-top: 4px solid #ec4899; } 
-        .border-top-3 { border-top: 4px solid #22c55e; } 
-        .border-top-4 { border-top: 4px solid #f97316; } 
-        .border-top-5 { border-top: 4px solid #3b82f6; } 
-        .border-top-6 { border-top: 4px solid #a855f7; } 
+        .border-top-0 { border-top: 4px solid #ef4444; } .border-top-1 { border-top: 4px solid #eab308; } .border-top-2 { border-top: 4px solid #ec4899; } .border-top-3 { border-top: 4px solid #22c55e; } .border-top-4 { border-top: 4px solid #f97316; } .border-top-5 { border-top: 4px solid #3b82f6; } .border-top-6 { border-top: 4px solid #a855f7; } 
 
-        .hide-scroll {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .hide-scroll::-webkit-scrollbar {
-            display: none;
-        }
-        
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
         ::-webkit-scrollbar { width: 4px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -101,44 +36,54 @@
 </head>
 <body>
 
-    <div class="bg-shapes">
-        <div class="shape-1"></div>
-        <div class="shape-2"></div>
-    </div>
+    <div class="bg-shapes"><div class="shape-1"></div><div class="shape-2"></div></div>
 
     <div class="sticky top-0 z-50 pt-3 pb-2 bg-gradient-to-b from-[#eef2f6] via-[#eef2f6]/95 to-transparent px-2 md:px-4">
         <div class="max-w-[1600px] mx-auto">
-            <header class="glass-nav rounded-2xl px-4 md:px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+            <header class="glass-nav rounded-2xl px-4 md:px-6 py-3 flex flex-col gap-3">
                 
-                <div class="flex items-center gap-3 md:gap-4 w-full md:w-auto justify-center md:justify-start">
-                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white shadow-md flex items-center justify-center p-1.5 border border-gray-100 flex-shrink-0">
-                        <img src="https://github.com/SadaoHospital/calendar/blob/Img/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%20%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B8%B2%20-%20Copy.png?raw=true" class="w-full h-full object-contain drop-shadow-sm" alt="Sadao Hospital Logo">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-3 md:gap-4 w-full md:w-auto justify-center md:justify-start">
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white shadow-md flex items-center justify-center p-1.5 border border-gray-100 flex-shrink-0">
+                            <img src="https://github.com/SadaoHospital/calendar/blob/Img/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%20%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B8%B2%20-%20Copy.png?raw=true" class="w-full h-full object-contain drop-shadow-sm">
+                        </div>
+                        <div class="text-center md:text-left">
+                            <h1 class="text-xl md:text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600 drop-shadow-sm">ปฏิทินผู้บริหาร</h1>
+                            <p class="text-xs md:text-sm text-gray-500 font-medium tracking-wide">โรงพยาบาลสะเดา</p>
+                        </div>
                     </div>
-                    <div class="text-center md:text-left">
-                        <h1 class="text-xl md:text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600 drop-shadow-sm">ปฏิทินผู้บริหาร</h1>
-                        <p class="text-xs md:text-sm text-gray-500 font-medium tracking-wide">โรงพยาบาลสะเดา</p>
+
+                    <div class="flex items-center gap-2 bg-white/50 p-1.5 rounded-full shadow-inner border border-gray-200/60 w-full md:w-auto justify-between md:justify-center">
+                        <button onclick="loadPreviousMonth()" class="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm hover:bg-blue-50 text-gray-600 transition"><i class="fa-solid fa-chevron-left"></i></button>
+                        <span id="current-month-display" class="px-2 md:px-4 font-bold text-gray-700 min-w-[140px] md:min-w-[160px] text-center text-sm md:text-base">กำลังโหลด...</span>
+                        <button onclick="resetToToday()" class="px-3 py-1 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-bold transition">วันนี้</button>
+                        <button onclick="loadNextMonth()" class="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm hover:bg-blue-50 text-gray-600 transition"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+
+                    <div class="flex items-center gap-3 pl-0 md:pl-6 border-l-0 md:border-l border-gray-300/50 w-full md:w-auto justify-center md:justify-end">
+                        <div class="text-right">
+                            <p id="user-display-name" class="text-sm font-bold text-gray-800">กำลังตรวจสอบสิทธิ์...</p>
+                            <p class="text-[10px] text-gray-600 font-bold bg-gray-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5 border border-gray-200" id="login-status-box">
+                                <span id="login-status-dot" class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span> 
+                                <span id="login-status-text">รอการเชื่อมต่อ</span>
+                            </p>
+                        </div>
+                        <div class="relative">
+                            <img id="user-profile-img" src="https://ui-avatars.com/api/?name=User&background=e5e7eb&color=9ca3af" class="w-10 h-10 md:w-11 md:h-11 rounded-full border-2 border-white shadow-lg object-cover">
+                            <div id="status-indicator" class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full"></div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 bg-white/50 p-1.5 rounded-full shadow-inner border border-gray-200/60 w-full md:w-auto justify-between md:justify-center">
-                    <button onclick="loadPreviousMonth()" class="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm hover:bg-blue-50 text-gray-600 transition"><i class="fa-solid fa-chevron-left"></i></button>
-                    <span id="current-month-display" class="px-2 md:px-4 font-bold text-gray-700 min-w-[140px] md:min-w-[160px] text-center text-sm md:text-base">กำลังโหลด...</span>
-                    <button onclick="resetToToday()" class="px-3 py-1 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-bold transition">วันนี้</button>
-                    <button onclick="loadNextMonth()" class="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm hover:bg-blue-50 text-gray-600 transition"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-
-                <div class="flex items-center gap-3 pl-0 md:pl-6 border-l-0 md:border-l border-gray-300/50 w-full md:w-auto justify-center md:justify-end">
-                    <div class="text-right">
-                        <p id="user-display-name" class="text-sm font-bold text-gray-800">กำลังโหลดข้อมูล...</p>
-                        <p class="text-[10px] text-gray-600 font-bold bg-gray-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5 border border-gray-200" id="login-status-box">
-                            <span id="login-status-dot" class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span> 
-                            <span id="login-status-text">รอการเชื่อมต่อ LINE</span>
-                        </p>
+                <div class="flex flex-col sm:flex-row justify-between items-center w-full gap-3 pt-3 border-t border-gray-200/50">
+                    <div class="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-700">
+                        <i class="fa-solid fa-filter"></i> ตัวกรองข้อมูลผู้บริหาร
                     </div>
-                    <div class="relative">
-                        <img id="user-profile-img" src="https://ui-avatars.com/api/?name=User&background=e5e7eb&color=9ca3af" class="w-10 h-10 md:w-11 md:h-11 rounded-full border-2 border-white shadow-lg object-cover" alt="Profile">
-                        <div id="status-indicator" class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full"></div>
-                    </div>
+                    <select id="filter-select" onchange="renderCalendar()" class="w-full sm:w-auto bg-white/90 border border-gray-300 text-gray-700 text-xs md:text-sm rounded-full px-4 py-1.5 shadow-sm outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer font-medium transition">
+                        <option value="ALL">📋 แสดงทุกรายการ (ตามสิทธิ์)</option>
+                        <option value="ROLE:ทีมนำ">⭐ เฉพาะทีมนำ</option>
+                        <option value="ROLE:ผู้อำนวยการ">🎯 เฉพาะผู้อำนวยการ</option>
+                        </select>
                 </div>
 
             </header>
@@ -153,13 +98,8 @@
         <div class="min-w-[650px] max-w-[1600px] mx-auto">
             
             <div class="sticky top-0 z-40 glass-nav rounded-xl px-1.5 md:px-4 py-2 grid grid-cols-7 gap-1.5 md:gap-4 text-center font-bold text-[10px] md:text-sm shadow-sm">
-                <div class="text-red-500">อา.</div>
-                <div class="text-yellow-600">จ.</div>
-                <div class="text-pink-500">อ.</div>
-                <div class="text-green-600">พ.</div>
-                <div class="text-orange-500">พฤ.</div>
-                <div class="text-blue-500">ศ.</div>
-                <div class="text-purple-500">ส.</div>
+                <div class="text-red-500">อา.</div><div class="text-yellow-600">จ.</div><div class="text-pink-500">อ.</div>
+                <div class="text-green-600">พ.</div><div class="text-orange-500">พฤ.</div><div class="text-blue-500">ศ.</div><div class="text-purple-500">ส.</div>
             </div>
 
             <div id="calendar-grid" class="grid grid-cols-7 gap-1.5 md:gap-4 pt-2 md:pt-4">
@@ -168,7 +108,7 @@
                         <i class="fa-solid fa-circle-notch fa-spin text-5xl text-blue-500"></i>
                         <i class="fa-solid fa-calendar-check absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl text-blue-700"></i>
                     </div>
-                    <p class="mt-4 font-medium text-lg">กำลังซิงค์ข้อมูลจากฐานข้อมูล...</p>
+                    <p class="mt-4 font-medium text-lg">กำลังซิงค์ข้อมูลและตรวจสอบสิทธิ์...</p>
                 </div>
             </div>
 
@@ -176,69 +116,98 @@
     </div>
 
     <script>
-        // ==========================================
-        // ⚙️ ตั้งค่าระบบ
-        // ==========================================
         const FIREBASE_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP";
+        const EXECS_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/executives.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP";
         
-        // ✅ อัปเดต LIFF ID ของคุณพิง
         const LIFF_ID = "2010128406-pWJYT2lK"; 
 
         let currentDate = new Date();
         let eventsData = {};
+        let executivesData = {};
+        let currentUserData = null; // เก็บข้อมูลผู้ใช้ที่ล็อกอิน
 
         window.onload = async () => {
-            initializeLiff(); 
-            await fetchEvents();
+            await fetchDatabase();
+            await initializeLiff(); 
+            populateFilterDropdown();
             renderCalendar();
         };
 
         // ==========================================
-        // 🟢 ระบบเชื่อมต่อ LINE Profile (LIFF)
+        // 📥 1. โหลดข้อมูลงานและรายชื่อผู้บริหารทั้งหมด
         // ==========================================
-        async function initializeLiff() {
-            if (!LIFF_ID) return;
-
+        async function fetchDatabase() {
             try {
-                await liff.init({ liffId: LIFF_ID });
-                
-                if (liff.isLoggedIn()) {
-                    const profile = await liff.getProfile();
-                    document.getElementById('user-display-name').innerText = profile.displayName;
-                    document.getElementById('user-profile-img').src = profile.pictureUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.displayName)}&background=0D8ABC&color=fff`;
-                    
-                    document.getElementById('login-status-box').className = "text-[10px] text-green-700 font-bold bg-green-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5 border border-green-200";
-                    document.getElementById('login-status-dot').className = "w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse";
-                    document.getElementById('login-status-text').innerText = "เชื่อมต่อ LINE สำเร็จ";
-                    document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full";
-                } else {
-                    if(liff.isInClient()) {
-                        liff.login();
-                    } else {
-                        document.getElementById('user-display-name').innerText = "บุคคลภายนอก";
-                        document.getElementById('login-status-text').innerText = "ไม่ได้ล็อกอินผ่าน LINE";
-                    }
-                }
-            } catch (err) {
-                console.error("LIFF Error:", err);
-                document.getElementById('user-display-name').innerText = "ระบบขัดข้อง";
-                document.getElementById('login-status-text').innerText = "เชื่อมต่อ LINE ไม่สำเร็จ";
-            }
-        }
-
-        // ==========================================
-        // 📅 ระบบดึงข้อมูลและสร้างปฏิทิน
-        // ==========================================
-        async function fetchEvents() {
-            try {
-                const response = await fetch(FIREBASE_URL);
-                eventsData = await response.json() || {};
+                const [evRes, exRes] = await Promise.all([ fetch(FIREBASE_URL), fetch(EXECS_URL) ]);
+                eventsData = await evRes.json() || {};
+                executivesData = await exRes.json() || {};
             } catch (error) {
                 console.error("Error:", error);
                 document.getElementById('calendar-grid').innerHTML = `<div class="col-span-7 text-center py-20 text-red-500">ไม่สามารถเชื่อมต่อฐานข้อมูลได้</div>`;
             }
         }
 
+        // ==========================================
+        // 🟢 2. เช็คสิทธิ์ด้วย LINE LIFF
+        // ==========================================
+        async function initializeLiff() {
+            if (!LIFF_ID) return setAsGuest();
+
+            try {
+                await liff.init({ liffId: LIFF_ID });
+                
+                if (liff.isLoggedIn()) {
+                    const profile = await liff.getProfile();
+                    
+                    // ค้นหารายชื่อจากฐานข้อมูลว่าคนนี้มีสิทธิ์อะไร
+                    if (executivesData && executivesData[profile.userId]) {
+                        currentUserData = executivesData[profile.userId];
+                        document.getElementById('user-display-name').innerText = profile.displayName;
+                        document.getElementById('user-profile-img').src = profile.pictureUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.displayName)}&background=0D8ABC&color=fff`;
+                        
+                        document.getElementById('login-status-box').className = "text-[10px] text-green-700 font-bold bg-green-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5 border border-green-200";
+                        document.getElementById('login-status-dot').className = "w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse";
+                        document.getElementById('login-status-text').innerText = "สิทธิ์: " + currentUserData.role;
+                        document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full";
+                    } else {
+                        // ล็อกอิน LINE แต่ไม่มีชื่อในฐานข้อมูล = บุคคลทั่วไป
+                        setAsGuest(profile);
+                    }
+                } else {
+                    if(liff.isInClient()) liff.login(); else setAsGuest();
+                }
+            } catch (err) {
+                setAsGuest();
+            }
+        }
+
+        function setAsGuest(profile = null) {
+            currentUserData = { role: "บุคคลทั่วไป", uid: "GUEST" };
+            document.getElementById('user-display-name').innerText = profile ? profile.displayName : "บุคคลทั่วไป";
+            if(profile) document.getElementById('user-profile-img').src = profile.pictureUrl;
+            document.getElementById('login-status-text').innerText = "เข้าชมแบบสาธารณะ";
+            document.getElementById('login-status-box').className = "text-[10px] text-gray-600 font-bold bg-gray-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5 border border-gray-200";
+            document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full";
+        }
+
+        // ==========================================
+        // 🔽 3. สร้างตัวเลือกค้นหารายบุคคล (Dropdown)
+        // ==========================================
+        function populateFilterDropdown() {
+            const select = document.getElementById('filter-select');
+            let names = new Set();
+            for(let key in executivesData) {
+                if(executivesData[key].fullName && executivesData[key].isActive) names.add(executivesData[key].fullName);
+            }
+            // เรียงชื่อตามตัวอักษรและเพิ่มเข้า Dropdown
+            Array.from(names).sort().forEach(name => {
+                select.innerHTML += `<option value="NAME:${name}">👤 ${name}</option>`;
+            });
+        }
+
+        // ==========================================
+        // 📅 4. สร้างปฏิทิน (พร้อมระบบกรองและจัดเรียงอัจฉริยะ)
+        // ==========================================
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = ''; 
@@ -251,39 +220,58 @@
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const today = new Date();
+            const currentFilter = document.getElementById('filter-select').value;
 
             const eventsByDate = {};
             for (let key in eventsData) {
                 const ev = eventsData[key];
-                if (!eventsByDate[ev.date]) eventsByDate[ev.date] = [];
-                eventsByDate[ev.date].push(ev);
+                
+                // 🔒 ระบบคัดกรองสิทธิ์การมองเห็น (Visibility Control)
+                let canView = false;
+                if (!currentUserData || currentUserData.role === "บุคคลทั่วไป") {
+                    canView = (ev.visibility === "public" || !ev.visibility); 
+                } else if (currentUserData.role === "หัวหน้าบริหาร") {
+                    canView = true; // หัวหน้าเห็นทั้งหมด
+                } else {
+                    canView = (ev.visibility === "public" || !ev.visibility || ev.uid === currentUserData.uid);
+                }
+
+                if(canView) {
+                    if (!eventsByDate[ev.date]) eventsByDate[ev.date] = [];
+                    eventsByDate[ev.date].push(ev);
+                }
             }
 
-            for (let i = 0; i < firstDay; i++) {
-                grid.innerHTML += `<div class="p-1 md:p-2"></div>`;
-            }
+            for (let i = 0; i < firstDay; i++) { grid.innerHTML += `<div class="p-1 md:p-2"></div>`; }
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const dayOfWeek = new Date(year, month, day).getDay();
                 const isToday = (day === today.getDate() && month === today.getMonth() && year === today.getFullYear());
-                
-                let dailyEvents = eventsByDate[dateString] || [];
-                dailyEvents.sort((a, b) => a.timeStart.localeCompare(b.timeStart));
                 const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
                 
-                // 🎨 ปรับขนาดป้ายให้ยืดหยุ่น ย่อเล็กลงเมื่ออยู่บนจอมือถือ
-                let statusBadge = "";
-                if (isToday) {
-                    statusBadge = `<span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold shadow-md shadow-orange-200 border border-orange-300 whitespace-nowrap">วันนี้</span>`;
-                } else if (isWeekend) {
-                    statusBadge = `<span class="bg-gradient-to-r from-blue-400 to-indigo-400 text-white text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold shadow-md shadow-blue-200 border border-blue-300 whitespace-nowrap"><i class="fa-solid fa-bed text-[6px] md:text-[8px]"></i> วันหยุด</span>`;
-                }
+                let dailyEvents = eventsByDate[dateString] || [];
 
-                let countBadge = dailyEvents.length > 0 
-                    ? `<span class="bg-blue-100 text-blue-700 text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-md font-extrabold shadow-inner border border-blue-200 whitespace-nowrap hidden sm:inline-block">${dailyEvents.length} งาน</span>`
-                    : `<span class="bg-gray-100 text-gray-400 text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-md font-medium border border-gray-200 shadow-inner whitespace-nowrap hidden sm:inline-block">ว่าง</span>`;
+                // 🔍 ใช้ Filter กรองข้อมูล
+                dailyEvents = dailyEvents.filter(ev => {
+                    if (currentFilter === "ALL") return true;
+                    if (currentFilter === "ROLE:ทีมนำ" && ev.role === "ทีมนำ") return true;
+                    if (currentFilter === "ROLE:ผู้อำนวยการ" && ev.role === "ผู้อำนวยการ") return true;
+                    if (currentFilter.startsWith("NAME:") && ev.execName === currentFilter.split(":")[1]) return true;
+                    return false;
+                });
 
+                // 🌟 Smart Sorting (เรียงตามลำดับ Sort Order ก่อน ถ้าเท่ากันค่อยเรียงตามเวลา)
+                dailyEvents.sort((a, b) => {
+                    let orderA = a.sortOrder || 999;
+                    let orderB = b.sortOrder || 999;
+                    if (orderA !== orderB) return orderA - orderB;
+                    return (a.timeStart || "00:00").localeCompare(b.timeStart || "00:00");
+                });
+                
+                let statusBadge = isToday ? `<span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold shadow-md shadow-orange-200 border border-orange-300 whitespace-nowrap">วันนี้</span>` 
+                                          : (isWeekend ? `<span class="bg-gradient-to-r from-blue-400 to-indigo-400 text-white text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold shadow-md shadow-blue-200 border border-blue-300 whitespace-nowrap"><i class="fa-solid fa-bed text-[6px] md:text-[8px]"></i> วันหยุด</span>` : "");
+                let countBadge = dailyEvents.length > 0 ? `<span class="bg-blue-100 text-blue-700 text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-md font-extrabold shadow-inner border border-blue-200 whitespace-nowrap hidden sm:inline-block">${dailyEvents.length} งาน</span>` : `<span class="bg-gray-100 text-gray-400 text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-md font-medium border border-gray-200 shadow-inner whitespace-nowrap hidden sm:inline-block">ว่าง</span>`;
                 const textColors = ['text-red-500', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-purple-500'];
 
                 let dayHTML = `
@@ -291,7 +279,7 @@
                         <div class="p-1.5 md:p-3 pb-1 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-1">
                             <div class="flex items-center gap-1.5 md:gap-2">
                                 <span class="text-lg md:text-3xl font-extrabold ${textColors[dayOfWeek]} leading-none drop-shadow-sm">${day}</span>
-                                ${statusBadge}
+                                <div class="absolute -top-1 -right-[60px] md:-right-14 z-10">${statusBadge}</div>
                             </div>
                             ${countBadge}
                         </div>
@@ -302,14 +290,8 @@
                     dailyEvents.forEach(ev => {
                         let borderClass = "border-l-gray-300";
                         let priorityBadge = "";
-                        if(ev.priority === "สำคัญ") {
-                            borderClass = "border-l-amber-400";
-                            priorityBadge = `<span class="text-[7px] md:text-[8px] bg-amber-100 text-amber-700 px-1 rounded font-bold border border-amber-200">สำคัญ</span>`;
-                        }
-                        if(ev.priority === "ด่วนที่สุด") {
-                            borderClass = "border-l-red-500";
-                            priorityBadge = `<span class="text-[7px] md:text-[8px] bg-red-100 text-red-700 px-1 rounded font-bold border border-red-200">ด่วนที่สุด</span>`;
-                        }
+                        if(ev.priority === "สำคัญ") { borderClass = "border-l-amber-400"; priorityBadge = `<span class="text-[7px] md:text-[8px] bg-amber-100 text-amber-700 px-1 rounded font-bold border border-amber-200">สำคัญ</span>`; }
+                        if(ev.priority === "ด่วนที่สุด") { borderClass = "border-l-red-500"; priorityBadge = `<span class="text-[7px] md:text-[8px] bg-red-100 text-red-700 px-1 rounded font-bold border border-red-200">ด่วนที่สุด</span>`; }
 
                         dayHTML += `
                             <div class="event-item rounded-md md:rounded-lg p-1 md:p-2 border-l-[3px] md:border-l-4 ${borderClass} relative group cursor-pointer">
