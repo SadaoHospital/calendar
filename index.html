@@ -23,7 +23,7 @@
         .card-3d:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), inset 0 2px 5px rgba(255, 255, 255, 1); }
         
         .event-item { background: linear-gradient(145deg, #ffffff, #f9fafb); box-shadow: 2px 2px 6px rgba(0,0,0,0.04), -2px -2px 6px rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,1); transition: transform 0.2s; }
-        .event-item:hover { transform: scale(1.02); }
+        .event-item:hover { transform: scale(1.02); box-shadow: 4px 4px 10px rgba(0,0,0,0.08), -2px -2px 6px rgba(255,255,255,0.9); border-color: #e0f2fe; }
 
         .border-top-0 { border-top: 4px solid #ef4444; } .border-top-1 { border-top: 4px solid #eab308; } .border-top-2 { border-top: 4px solid #ec4899; } .border-top-3 { border-top: 4px solid #22c55e; } .border-top-4 { border-top: 4px solid #f97316; } .border-top-5 { border-top: 4px solid #3b82f6; } .border-top-6 { border-top: 4px solid #a855f7; } 
 
@@ -32,13 +32,19 @@
         ::-webkit-scrollbar { width: 4px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* 🔥 สไตล์สำหรับ Popup Modal */
+        .modal-overlay { background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { transform: scale(0.95) translateY(10px); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
     </style>
 </head>
 <body>
 
     <div class="bg-shapes"><div class="shape-1"></div><div class="shape-2"></div></div>
 
-    <div class="sticky top-0 z-50 pt-3 pb-2 bg-gradient-to-b from-[#eef2f6] via-[#eef2f6]/95 to-transparent px-2 md:px-4">
+    <div class="sticky top-0 z-40 pt-3 pb-2 bg-gradient-to-b from-[#eef2f6] via-[#eef2f6]/95 to-transparent px-2 md:px-4">
         <div class="max-w-[1600px] mx-auto">
             <header class="glass-nav rounded-2xl px-4 md:px-6 py-3 flex flex-col gap-3">
                 
@@ -83,7 +89,7 @@
                         <option value="ALL">📋 แสดงทุกรายการ (ตามสิทธิ์)</option>
                         <option value="ROLE:ทีมนำ">⭐ เฉพาะทีมนำ</option>
                         <option value="ROLE:ผู้อำนวยการ">🎯 เฉพาะผู้อำนวยการ</option>
-                        </select>
+                    </select>
                 </div>
 
             </header>
@@ -95,9 +101,9 @@
     </div>
 
     <div class="w-full overflow-x-auto hide-scroll px-1 md:px-4 pb-12">
-        <div class="min-w-[650px] max-w-[1600px] mx-auto">
+        <div class="min-w-[650px] max-w-[1600px] mx-auto relative z-10">
             
-            <div class="sticky top-0 z-40 glass-nav rounded-xl px-1.5 md:px-4 py-2 grid grid-cols-7 gap-1.5 md:gap-4 text-center font-bold text-[10px] md:text-sm shadow-sm">
+            <div class="sticky top-0 z-30 glass-nav rounded-xl px-1.5 md:px-4 py-2 grid grid-cols-7 gap-1.5 md:gap-4 text-center font-bold text-[10px] md:text-sm shadow-sm">
                 <div class="text-red-500">อา.</div><div class="text-yellow-600">จ.</div><div class="text-pink-500">อ.</div>
                 <div class="text-green-600">พ.</div><div class="text-orange-500">พฤ.</div><div class="text-blue-500">ศ.</div><div class="text-purple-500">ส.</div>
             </div>
@@ -115,16 +121,75 @@
         </div>
     </div>
 
+    <div id="eventModal" class="fixed inset-0 z-[100] flex items-center justify-center modal-overlay p-4">
+        <div class="modal-content glass-nav rounded-2xl w-full max-w-md overflow-hidden relative">
+            
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            
+            <div id="modal-color-bar" class="h-2 w-full bg-blue-500"></div>
+            
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
+                    <img id="modal-avatar" src="" class="w-12 h-12 rounded-full border-2 border-white shadow-md object-cover">
+                    <div>
+                        <h3 id="modal-exec-name" class="font-bold text-gray-800 text-lg leading-tight">ชื่อผู้บริหาร</h3>
+                        <p id="modal-exec-position" class="text-xs text-gray-500 font-medium">ตำแหน่ง</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <span id="modal-priority-badge" class="text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold"></span>
+                        <h2 id="modal-title" class="text-xl font-extrabold text-gray-800 leading-snug">ชื่องาน</h2>
+                    </div>
+                    
+                    <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 text-center text-blue-500 mt-0.5"><i class="fa-solid fa-calendar-day"></i></div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">วันที่</p>
+                                <p id="modal-date" class="text-sm font-bold text-gray-700"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 text-center text-amber-500 mt-0.5"><i class="fa-solid fa-clock"></i></div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">เวลา</p>
+                                <p id="modal-time" class="text-sm font-bold text-gray-700"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 text-center text-green-500 mt-0.5"><i class="fa-solid fa-location-dot"></i></div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">สถานที่</p>
+                                <p id="modal-room" class="text-sm font-bold text-gray-700"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="modal-actions" class="mt-6 pt-4 border-t border-gray-100 flex justify-end gap-2 hidden">
+                    <button onclick="deleteCurrentEvent()" class="px-4 py-2 bg-red-50 hover:bg-red-500 hover:text-white text-red-600 text-sm font-bold rounded-lg transition shadow-sm border border-red-200 hover:border-red-500 flex items-center gap-2">
+                        <i class="fa-solid fa-trash-can"></i> ลบข้อมูล
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const FIREBASE_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP";
         const EXECS_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/executives.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP";
-        
         const LIFF_ID = "2010128406-pWJYT2lK"; 
 
         let currentDate = new Date();
         let eventsData = {};
         let executivesData = {};
-        let currentUserData = null; // เก็บข้อมูลผู้ใช้ที่ล็อกอิน
+        let currentUserData = null; 
+        
+        let currentEditingEventKey = null; // เก็บค่า Key ของงานที่กำลังเปิด Popup อยู่
 
         window.onload = async () => {
             await fetchDatabase();
@@ -133,52 +198,40 @@
             renderCalendar();
         };
 
-        // ==========================================
-        // 📥 1. โหลดข้อมูลงานและรายชื่อผู้บริหารทั้งหมด
-        // ==========================================
         async function fetchDatabase() {
             try {
                 const [evRes, exRes] = await Promise.all([ fetch(FIREBASE_URL), fetch(EXECS_URL) ]);
                 eventsData = await evRes.json() || {};
                 executivesData = await exRes.json() || {};
+                
+                // ฝัง Key เข้าไปใน Data แต่ละก้อนเพื่อให้เอาไปใช้เวลาลบ/แก้ไขได้
+                for (let key in eventsData) {
+                    eventsData[key].firebaseKey = key;
+                }
             } catch (error) {
-                console.error("Error:", error);
                 document.getElementById('calendar-grid').innerHTML = `<div class="col-span-7 text-center py-20 text-red-500">ไม่สามารถเชื่อมต่อฐานข้อมูลได้</div>`;
             }
         }
 
-        // ==========================================
-        // 🟢 2. เช็คสิทธิ์ด้วย LINE LIFF
-        // ==========================================
         async function initializeLiff() {
             if (!LIFF_ID) return setAsGuest();
-
             try {
                 await liff.init({ liffId: LIFF_ID });
-                
                 if (liff.isLoggedIn()) {
                     const profile = await liff.getProfile();
-                    
-                    // ค้นหารายชื่อจากฐานข้อมูลว่าคนนี้มีสิทธิ์อะไร
                     if (executivesData && executivesData[profile.userId]) {
                         currentUserData = executivesData[profile.userId];
                         document.getElementById('user-display-name').innerText = profile.displayName;
                         document.getElementById('user-profile-img').src = profile.pictureUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.displayName)}&background=0D8ABC&color=fff`;
-                        
                         document.getElementById('login-status-box').className = "text-[10px] text-green-700 font-bold bg-green-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5 border border-green-200";
                         document.getElementById('login-status-dot').className = "w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse";
                         document.getElementById('login-status-text').innerText = "สิทธิ์: " + currentUserData.role;
                         document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full";
-                    } else {
-                        // ล็อกอิน LINE แต่ไม่มีชื่อในฐานข้อมูล = บุคคลทั่วไป
-                        setAsGuest(profile);
-                    }
+                    } else { setAsGuest(profile); }
                 } else {
                     if(liff.isInClient()) liff.login(); else setAsGuest();
                 }
-            } catch (err) {
-                setAsGuest();
-            }
+            } catch (err) { setAsGuest(); }
         }
 
         function setAsGuest(profile = null) {
@@ -190,24 +243,17 @@
             document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full";
         }
 
-        // ==========================================
-        // 🔽 3. สร้างตัวเลือกค้นหารายบุคคล (Dropdown)
-        // ==========================================
         function populateFilterDropdown() {
             const select = document.getElementById('filter-select');
             let names = new Set();
             for(let key in executivesData) {
                 if(executivesData[key].fullName && executivesData[key].isActive) names.add(executivesData[key].fullName);
             }
-            // เรียงชื่อตามตัวอักษรและเพิ่มเข้า Dropdown
             Array.from(names).sort().forEach(name => {
                 select.innerHTML += `<option value="NAME:${name}">👤 ${name}</option>`;
             });
         }
 
-        // ==========================================
-        // 📅 4. สร้างปฏิทิน (พร้อมระบบกรองและจัดเรียงอัจฉริยะ)
-        // ==========================================
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = ''; 
@@ -226,12 +272,11 @@
             for (let key in eventsData) {
                 const ev = eventsData[key];
                 
-                // 🔒 ระบบคัดกรองสิทธิ์การมองเห็น (Visibility Control)
                 let canView = false;
                 if (!currentUserData || currentUserData.role === "บุคคลทั่วไป") {
                     canView = (ev.visibility === "public" || !ev.visibility); 
                 } else if (currentUserData.role === "หัวหน้าบริหาร") {
-                    canView = true; // หัวหน้าเห็นทั้งหมด
+                    canView = true; 
                 } else {
                     canView = (ev.visibility === "public" || !ev.visibility || ev.uid === currentUserData.uid);
                 }
@@ -252,7 +297,6 @@
                 
                 let dailyEvents = eventsByDate[dateString] || [];
 
-                // 🔍 ใช้ Filter กรองข้อมูล
                 dailyEvents = dailyEvents.filter(ev => {
                     if (currentFilter === "ALL") return true;
                     if (currentFilter === "ROLE:ทีมนำ" && ev.role === "ทีมนำ") return true;
@@ -261,7 +305,6 @@
                     return false;
                 });
 
-                // 🌟 Smart Sorting (เรียงตามลำดับ Sort Order ก่อน ถ้าเท่ากันค่อยเรียงตามเวลา)
                 dailyEvents.sort((a, b) => {
                     let orderA = a.sortOrder || 999;
                     let orderB = b.sortOrder || 999;
@@ -288,13 +331,14 @@
 
                 if (dailyEvents.length > 0) {
                     dailyEvents.forEach(ev => {
-                        let borderClass = "border-l-gray-300";
+                        let borderClass = "border-l-blue-400";
                         let priorityBadge = "";
                         if(ev.priority === "สำคัญ") { borderClass = "border-l-amber-400"; priorityBadge = `<span class="text-[7px] md:text-[8px] bg-amber-100 text-amber-700 px-1 rounded font-bold border border-amber-200">สำคัญ</span>`; }
                         if(ev.priority === "ด่วนที่สุด") { borderClass = "border-l-red-500"; priorityBadge = `<span class="text-[7px] md:text-[8px] bg-red-100 text-red-700 px-1 rounded font-bold border border-red-200">ด่วนที่สุด</span>`; }
 
+                        // 🔥 เพิ่ม onclick ตรงนี้ เพื่อเรียกฟังก์ชันเปิด Popup
                         dayHTML += `
-                            <div class="event-item rounded-md md:rounded-lg p-1 md:p-2 border-l-[3px] md:border-l-4 ${borderClass} relative group cursor-pointer">
+                            <div onclick="openModal('${ev.firebaseKey}')" class="event-item rounded-md md:rounded-lg p-1 md:p-2 border-l-[3px] md:border-l-4 ${borderClass} relative group cursor-pointer">
                                 <div class="flex items-center gap-1.5 md:gap-2 mb-1">
                                     <img src="${ev.avatar}" class="w-4 h-4 md:w-5 md:h-5 rounded-full shadow-sm ring-1 ring-gray-200">
                                     <div class="font-bold text-gray-800 text-[9px] md:text-xs truncate w-full flex justify-between items-center gap-1">
@@ -315,6 +359,89 @@
 
                 dayHTML += `</div></div>`;
                 grid.innerHTML += dayHTML;
+            }
+        }
+
+        // ==========================================
+        // 🚨 5. ระบบ Popup Modal (สไตล์ Glassmorphism)
+        // ==========================================
+        function openModal(firebaseKey) {
+            const ev = eventsData[firebaseKey];
+            if(!ev) return;
+            
+            currentEditingEventKey = firebaseKey; // จำไว้ว่ากำลังเปิดงานชิ้นไหนอยู่
+
+            // ตกแต่งสีบาร์ด้านบนตามความสำคัญ
+            const colorBar = document.getElementById('modal-color-bar');
+            const badge = document.getElementById('modal-priority-badge');
+            if (ev.priority === "สำคัญ") {
+                colorBar.className = "h-2 w-full bg-amber-400";
+                badge.className = "text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold bg-amber-100 text-amber-700 border-amber-200";
+                badge.innerText = "สำคัญ";
+            } else if (ev.priority === "ด่วนที่สุด") {
+                colorBar.className = "h-2 w-full bg-red-500";
+                badge.className = "text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold bg-red-100 text-red-700 border-red-200";
+                badge.innerText = "ด่วนที่สุด";
+            } else {
+                colorBar.className = "h-2 w-full bg-blue-500";
+                badge.className = "text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold bg-blue-50 text-blue-600 border-blue-200";
+                badge.innerText = "ทั่วไป";
+            }
+
+            // ใส่ข้อมูลลงในหน้าต่าง
+            document.getElementById('modal-avatar').src = ev.avatar;
+            document.getElementById('modal-exec-name').innerText = ev.execName;
+            document.getElementById('modal-exec-position').innerText = ev.execPosition || "คณะกรรมการ";
+            document.getElementById('modal-title').innerText = ev.title;
+            document.getElementById('modal-date').innerText = ev.date;
+            document.getElementById('modal-time').innerText = `${ev.timeStart} - ${ev.timeEnd} น.`;
+            document.getElementById('modal-room').innerText = ev.room || "ไม่ระบุสถานที่";
+
+            // 🔐 เช็คสิทธิ์ว่ามีปุ่มให้ "ลบ" ไหม (ต้องเป็นหัวหน้าบริหาร หรือ เป็นเจ้าของคิวงานนี้เท่านั้น)
+            const actionsDiv = document.getElementById('modal-actions');
+            if (currentUserData && (currentUserData.role === "หัวหน้าบริหาร" || currentUserData.uid === ev.uid)) {
+                actionsDiv.classList.remove('hidden');
+            } else {
+                actionsDiv.classList.add('hidden');
+            }
+
+            // โชว์หน้าต่างขึ้นมา
+            document.getElementById('eventModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('eventModal').classList.remove('active');
+            currentEditingEventKey = null;
+        }
+
+        // ==========================================
+        // 🗑️ 6. ฟังก์ชันลบข้อมูล (เชื่อมต่อ Firebase แบบ Real-time)
+        // ==========================================
+        async function deleteCurrentEvent() {
+            if (!currentEditingEventKey) return;
+            
+            // ยืนยันการลบ
+            if (confirm("⚠️ ยืนยันการยกเลิก/ลบนัดหมายนี้ใช่หรือไม่?\n(ข้อมูลจะถูกลบออกจากปฏิทินทันที)")) {
+                
+                // เปลี่ยนปุ่มเป็นกำลังโหลด
+                const actionsDiv = document.getElementById('modal-actions');
+                actionsDiv.innerHTML = `<span class="text-sm font-bold text-gray-500"><i class="fa-solid fa-spinner fa-spin"></i> กำลังลบข้อมูล...</span>`;
+
+                try {
+                    // ยิงคำสั่ง DELETE ไปที่ Firebase
+                    const deleteUrl = `https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events/${currentEditingEventKey}.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP`;
+                    await fetch(deleteUrl, { method: 'DELETE' });
+
+                    closeModal(); // ปิดหน้าต่าง
+                    
+                    // รีเฟรชปฏิทินใหม่เพื่อโชว์ผลลัพธ์
+                    await fetchDatabase(); 
+                    renderCalendar();
+                    
+                } catch (error) {
+                    alert("เกิดข้อผิดพลาดในการลบข้อมูล กรุณาลองใหม่อีกครั้ง");
+                    closeModal();
+                }
             }
         }
 
