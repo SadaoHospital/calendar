@@ -33,15 +33,13 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        /* Styles สำหรับ Modal */
         .modal-overlay { background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-content { transform: scale(0.95) translateY(10px); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-overlay.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
         
-        /* สไตล์ Form */
-        .input-field { w-full; bg-gray-50; border; border-gray-200; text-gray-800; text-sm; rounded-lg; px-3; py-2; outline-none; transition: all 0.2s; }
-        .input-field:focus { bg-white; border-blue-400; ring-2; ring-blue-100; }
+        .shortcut-btn { padding: 4px 10px; font-size: 10px; font-weight: 600; border-radius: 99px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; transition: all 0.2s; white-space: nowrap; }
+        .shortcut-btn:hover { background: #e0f2fe; color: #0284c7; border-color: #bae6fd; }
     </style>
 </head>
 <body>
@@ -98,6 +96,10 @@
         </div>
     </div>
 
+    <div class="md:hidden text-center text-[10px] text-blue-500 font-medium mb-1 animate-pulse">
+        <i class="fa-solid fa-magnifying-glass-plus mr-1"></i> ใช้ 2 นิ้วถ่างเพื่อซูมดูรายละเอียด หรือปัดซ้าย-ขวา
+    </div>
+
     <div class="w-full overflow-x-auto hide-scroll px-1 md:px-4 pb-12">
         <div class="min-w-[650px] max-w-[1600px] mx-auto relative z-10">
             <div class="sticky top-0 z-30 glass-nav rounded-xl px-1.5 md:px-4 py-2 grid grid-cols-7 gap-1.5 md:gap-4 text-center font-bold text-[10px] md:text-sm shadow-sm">
@@ -141,9 +143,8 @@
                         <div class="flex items-start gap-3"><div class="w-6 text-center text-green-500 mt-0.5"><i class="fa-solid fa-location-dot"></i></div><div><p class="text-[10px] text-gray-400 font-semibold uppercase">สถานที่</p><p id="modal-room" class="text-sm font-bold text-gray-700"></p></div></div>
                     </div>
                 </div>
-                <div id="modal-actions" class="mt-6 pt-4 border-t border-gray-100 flex justify-end gap-2 hidden">
-                    <button onclick="deleteCurrentEvent()" class="px-4 py-2 bg-red-50 hover:bg-red-500 hover:text-white text-red-600 text-sm font-bold rounded-lg transition shadow-sm border border-red-200 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> ลบข้อมูล</button>
-                </div>
+                <div id="modal-actions-container" class="mt-6 pt-4 border-t border-gray-100 flex justify-end gap-2 hidden">
+                    </div>
             </div>
         </div>
     </div>
@@ -152,66 +153,75 @@
         <div class="modal-content glass-nav rounded-2xl w-full max-w-lg overflow-hidden relative my-auto">
             <div class="h-2 w-full bg-gradient-to-r from-blue-500 to-indigo-500"></div>
             <div class="p-5 md:p-6">
-                <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
+                <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-200">
                     <h2 class="text-lg font-bold text-blue-700"><i class="fa-solid fa-calendar-plus mr-2"></i>เพิ่มนัดหมายใหม่</h2>
                     <button onclick="closeModal('addEventModal')" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 
+                <div class="flex flex-wrap gap-1.5 mb-3 bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
+                    <div class="w-full text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1"><i class="fa-solid fa-bolt text-yellow-500"></i> ปุ่มลัดคีย์ด่วน:</div>
+                    <button type="button" onclick="setShortcut('ลาป่วย')" class="shortcut-btn"><i class="fa-solid fa-virus text-red-400 mr-1"></i>ลาป่วย</button>
+                    <button type="button" onclick="setShortcut('ลากิจ')" class="shortcut-btn"><i class="fa-solid fa-briefcase text-blue-400 mr-1"></i>ลากิจ</button>
+                    <button type="button" onclick="setShortcut('ลาพักผ่อน')" class="shortcut-btn"><i class="fa-solid fa-plane text-green-400 mr-1"></i>ลาพักผ่อน</button>
+                    <div class="w-[1px] bg-gray-200 mx-1"></div>
+                    <button type="button" onclick="setTime('08:30', '16:30')" class="shortcut-btn"><i class="fa-regular fa-clock mr-1"></i>เต็มวัน</button>
+                    <button type="button" onclick="setTime('08:30', '12:00')" class="shortcut-btn"><i class="fa-regular fa-sun mr-1"></i>ครึ่งเช้า</button>
+                    <button type="button" onclick="setTime('13:00', '16:30')" class="shortcut-btn"><i class="fa-regular fa-moon mr-1"></i>ครึ่งบ่าย</button>
+                </div>
+
                 <form id="addEventForm" onsubmit="submitAddEvent(event)" class="space-y-3">
-                    
-                    <div id="form-role-target" class="hidden bg-blue-50 p-3 rounded-lg border border-blue-200 mb-2">
-                        <label class="block text-xs font-semibold text-blue-700 mb-1">ลงตารางงานให้ (สำหรับหัวหน้าบริหาร)</label>
-                        <select id="input-target-user" class="w-full bg-white border border-blue-300 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400">
-                            </select>
+                    <div id="form-role-target" class="hidden bg-blue-50 p-2.5 rounded-lg border border-blue-200">
+                        <label class="block text-[10px] font-bold text-blue-700 mb-1">ลงตารางงานให้ (เฉพาะหัวหน้าบริหาร)</label>
+                        <select id="input-target-user" class="w-full bg-white border border-blue-300 text-gray-800 text-sm rounded-md px-2 py-1.5 outline-none"></select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">หัวข้อกิจกรรม / นัดหมาย <span class="text-red-500">*</span></label>
-                        <input type="text" id="input-title" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100" placeholder="ระบุชื่องาน">
+                        <label class="block text-[10px] font-bold text-gray-600 mb-1">หัวข้อกิจกรรม / นัดหมาย <span class="text-red-500">*</span></label>
+                        <input type="text" id="input-title" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400" placeholder="ระบุชื่องาน">
                     </div>
                     
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">ตั้งแต่วันที่ <span class="text-red-500">*</span></label>
-                            <input type="date" id="input-date-start" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400">
+                            <label class="block text-[10px] font-bold text-gray-600 mb-1">ตั้งแต่วันที่ <span class="text-red-500">*</span></label>
+                            <input type="date" id="input-date-start" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">ถึงวันที่ <span class="text-red-500">*</span></label>
-                            <input type="date" id="input-date-end" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400">
+                            <label class="block text-[10px] font-bold text-gray-600 mb-1">ถึงวันที่ <span class="text-red-500">*</span></label>
+                            <input type="date" id="input-date-end" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">เวลาเริ่ม (น.)</label>
-                            <input type="time" id="input-time-start" value="08:30" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400">
+                            <label class="block text-[10px] font-bold text-gray-600 mb-1">เวลาเริ่ม (น.)</label>
+                            <input type="time" id="input-time-start" value="08:30" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">เวลาสิ้นสุด (น.)</label>
-                            <input type="time" id="input-time-end" value="16:30" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400">
+                            <label class="block text-[10px] font-bold text-gray-600 mb-1">เวลาสิ้นสุด (น.)</label>
+                            <input type="time" id="input-time-end" value="16:30" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">สถานที่</label>
-                        <input type="text" id="input-room" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400" placeholder="เช่น ห้องประชุม 1, โรงแรม...">
+                        <label class="block text-[10px] font-bold text-gray-600 mb-1">สถานที่</label>
+                        <input type="text" id="input-room" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400" placeholder="ระบุสถานที่ (ถ้ามี)">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 pb-2">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">ความสำคัญ</label>
-                            <select id="input-priority" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400">
+                            <label class="block text-[10px] font-bold text-gray-600 mb-1">ความสำคัญ</label>
+                            <select id="input-priority" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none">
                                 <option value="ทั่วไป">ทั่วไป</option>
                                 <option value="สำคัญ">สำคัญ</option>
                                 <option value="ด่วนที่สุด">ด่วนที่สุด</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">สิทธิ์การมองเห็น</label>
-                            <select id="input-visibility" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none focus:bg-white focus:border-blue-400">
-                                <option value="public">🌐 สาธารณะ (ทุกคนเห็นได้)</option>
-                                <option value="committee">👥 เฉพาะคณะกรรมการ</option>
-                                <option value="private">🔒 ส่วนตัว (เห็นเฉพาะตนเอง)</option>
+                            <label class="block text-[10px] font-bold text-gray-600 mb-1">สิทธิ์การมองเห็น</label>
+                            <select id="input-visibility" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg px-3 py-2 outline-none">
+                                <option value="public">🌐 สาธารณะ</option>
+                                <option value="committee">👥 คณะกรรมการ</option>
+                                <option value="private">🔒 ส่วนตัว</option>
                             </select>
                         </div>
                     </div>
@@ -231,6 +241,29 @@
         const FIREBASE_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP";
         const EXECS_URL = "https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/executives.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP";
         const LIFF_ID = "2010128406-pWJYT2lK"; 
+
+        // 🗓️ ฐานข้อมูลวันหยุดราชการไทย (ปี 2569 / 2026) - สามารถเพิ่ม-ลดได้อิสระครับ
+        const THAI_HOLIDAYS_2026 = {
+            "2026-01-01": "วันขึ้นปีใหม่",
+            "2026-03-03": "วันมาฆบูชา",
+            "2026-04-06": "วันจักรี",
+            "2026-04-13": "วันสงกรานต์",
+            "2026-04-14": "วันสงกรานต์",
+            "2026-04-15": "วันสงกรานต์",
+            "2026-05-01": "วันแรงงานแห่งชาติ",
+            "2026-05-04": "วันฉัตรมงคล",
+            "2026-05-31": "วันวิสาขบูชา",
+            "2026-06-03": "วันเฉลิมฯ พระราชินี",
+            "2026-07-28": "วันเฉลิมฯ ร.10",
+            "2026-07-29": "วันอาสาฬหบูชา",
+            "2026-07-30": "วันเข้าพรรษา",
+            "2026-08-12": "วันแม่แห่งชาติ",
+            "2026-10-13": "วันนวมินทรมหาราช",
+            "2026-10-23": "วันปิยมหาราช",
+            "2026-12-05": "วันพ่อแห่งชาติ",
+            "2026-12-10": "วันรัฐธรรมนูญ",
+            "2026-12-31": "วันสิ้นปี"
+        };
 
         let currentDate = new Date();
         let eventsData = {};
@@ -271,7 +304,6 @@
                         document.getElementById('login-status-text').innerText = "สิทธิ์: " + currentUserData.role;
                         document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full";
                         
-                        // 🔥 เปิดใช้งานปุ่ม "+ เพิ่มคิวงาน" เฉพาะคนที่มีสิทธิ์
                         document.getElementById('fab-add-event').classList.remove('hidden');
                     } else { setAsGuest(profile); }
                 } else {
@@ -292,9 +324,7 @@
         function populateFilterDropdown() {
             const select = document.getElementById('filter-select');
             let names = new Set();
-            for(let key in executivesData) {
-                if(executivesData[key].fullName && executivesData[key].isActive) names.add(executivesData[key].fullName);
-            }
+            for(let key in executivesData) { if(executivesData[key].fullName && executivesData[key].isActive) names.add(executivesData[key].fullName); }
             Array.from(names).sort().forEach(name => { select.innerHTML += `<option value="NAME:${name}">👤 ${name}</option>`; });
         }
 
@@ -316,10 +346,8 @@
                 let canView = false;
                 if (!currentUserData || currentUserData.role === "บุคคลทั่วไป") {
                     canView = (ev.visibility === "public" || !ev.visibility); 
-                } else if (currentUserData.role === "หัวหน้าบริหาร") {
-                    canView = true; 
-                } else if (currentUserData.role === "คณะกรรมการ" || currentUserData.role === "ผู้อำนวยการ" || currentUserData.role === "ทีมนำ") {
-                    // ถ้าเซ็ตเป็น committee เฉพาะคนล็อกอิน(ที่ไม่ใช่ guest) ถึงเห็นได้
+                } else if (currentUserData.role === "หัวหน้าบริหาร") { canView = true; } 
+                else if (currentUserData.role === "คณะกรรมการ" || currentUserData.role === "ผู้อำนวยการ" || currentUserData.role === "ทีมนำ") {
                     canView = (ev.visibility === "public" || !ev.visibility || ev.visibility === "committee" || ev.uid === currentUserData.uid);
                 }
 
@@ -353,26 +381,33 @@
                     return (a.timeStart || "00:00").localeCompare(b.timeStart || "00:00");
                 });
                 
+                // 🛠️ ปรับแก้บั๊ก 1: ใช้ flex-wrap เพื่อป้องกันป้ายตกขอบ
                 let statusBadge = isToday ? `<span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold shadow-md shadow-orange-200 border border-orange-300 whitespace-nowrap">วันนี้</span>` : (isWeekend ? `<span class="bg-gradient-to-r from-blue-400 to-indigo-400 text-white text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold shadow-md shadow-blue-200 border border-blue-300 whitespace-nowrap"><i class="fa-solid fa-bed text-[6px] md:text-[8px]"></i> วันหยุด</span>` : "");
                 let countBadge = dailyEvents.length > 0 ? `<span class="bg-blue-100 text-blue-700 text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-md font-extrabold shadow-inner border border-blue-200 whitespace-nowrap hidden sm:inline-block">${dailyEvents.length} งาน</span>` : `<span class="bg-gray-100 text-gray-400 text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-md font-medium border border-gray-200 shadow-inner whitespace-nowrap hidden sm:inline-block">ว่าง</span>`;
                 const textColors = ['text-red-500', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-gray-700', 'text-purple-500'];
 
+                // 🛠️ เพิ่มฟีเจอร์ 2: ดึงข้อมูลวันหยุดราชการมาแสดง
+                let holidayName = THAI_HOLIDAYS_2026[dateString];
+                let holidayHTML = holidayName ? `<div class="text-[9px] md:text-[10px] text-red-500 font-bold bg-red-50 px-1 rounded truncate mt-1 w-max border border-red-100"><i class="fa-solid fa-star text-[8px]"></i> ${holidayName}</div>` : "";
+
                 let dayHTML = `
                     <div class="card-3d border-top-${dayOfWeek} min-h-[120px] md:min-h-[180px]">
-                        <div class="p-1.5 md:p-3 pb-1 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-1">
-                            <div class="flex items-center gap-1.5 md:gap-2">
-                                <span class="text-lg md:text-3xl font-extrabold ${textColors[dayOfWeek]} leading-none drop-shadow-sm">${day}</span>
-                                <div class="absolute -top-1 -right-[60px] md:-right-14 z-10">${statusBadge}</div>
+                        <div class="p-1.5 md:p-3 pb-1 flex flex-col justify-start gap-1">
+                            <div class="flex justify-between items-start w-full">
+                                <div class="flex items-center gap-1.5 md:gap-2 flex-wrap">
+                                    <span class="text-lg md:text-3xl font-extrabold ${textColors[dayOfWeek]} leading-none drop-shadow-sm">${day}</span>
+                                    ${statusBadge}
+                                </div>
+                                ${countBadge}
                             </div>
-                            ${countBadge}
+                            ${holidayHTML}
                         </div>
-                        <div class="p-1 md:p-2 pt-1 md:pt-3 flex-1 flex flex-col gap-1.5 overflow-y-auto max-h-[250px] md:max-h-[350px] hide-scroll">
+                        <div class="p-1 md:p-2 pt-1 md:pt-2 flex-1 flex flex-col gap-1.5 overflow-y-auto max-h-[250px] md:max-h-[350px] hide-scroll">
                 `;
 
                 if (dailyEvents.length > 0) {
                     dailyEvents.forEach(ev => {
-                        let borderClass = "border-l-blue-400";
-                        let priorityBadge = "";
+                        let borderClass = "border-l-blue-400"; let priorityBadge = "";
                         if(ev.priority === "สำคัญ") { borderClass = "border-l-amber-400"; priorityBadge = `<span class="text-[7px] md:text-[8px] bg-amber-100 text-amber-700 px-1 rounded font-bold border border-amber-200">สำคัญ</span>`; }
                         if(ev.priority === "ด่วนที่สุด") { borderClass = "border-l-red-500"; priorityBadge = `<span class="text-[7px] md:text-[8px] bg-red-100 text-red-700 px-1 rounded font-bold border border-red-200">ด่วนที่สุด</span>`; }
 
@@ -406,15 +441,13 @@
         }
 
         // ==========================================
-        // 🚨 5. ฟังก์ชัน Popup ดูและลบงาน
+        // 🚨 ฟังก์ชัน Popup ลบข้อมูล (แก้ไขบั๊กปุ่มค้าง)
         // ==========================================
         function openEventModal(firebaseKey) {
-            const ev = eventsData[firebaseKey];
-            if(!ev) return;
+            const ev = eventsData[firebaseKey]; if(!ev) return;
             currentEditingEventKey = firebaseKey; 
 
-            const colorBar = document.getElementById('modal-color-bar');
-            const badge = document.getElementById('modal-priority-badge');
+            const colorBar = document.getElementById('modal-color-bar'); const badge = document.getElementById('modal-priority-badge');
             if (ev.priority === "สำคัญ") { colorBar.className = "h-2 w-full bg-amber-400"; badge.className = "text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold bg-amber-100 text-amber-700 border-amber-200"; badge.innerText = "สำคัญ"; } 
             else if (ev.priority === "ด่วนที่สุด") { colorBar.className = "h-2 w-full bg-red-500"; badge.className = "text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold bg-red-100 text-red-700 border-red-200"; badge.innerText = "ด่วนที่สุด"; } 
             else { colorBar.className = "h-2 w-full bg-blue-500"; badge.className = "text-[10px] px-2 py-0.5 rounded border mb-2 inline-block font-bold bg-blue-50 text-blue-600 border-blue-200"; badge.innerText = "ทั่วไป"; }
@@ -429,11 +462,14 @@
             document.getElementById('modal-time').innerText = `${ev.timeStart} - ${ev.timeEnd} น.`;
             document.getElementById('modal-room').innerText = ev.room || "ไม่ระบุสถานที่";
 
-            const actionsDiv = document.getElementById('modal-actions');
+            // 🛠️ แก้บั๊ก 3: สร้างปุ่มลบขึ้นมาใหม่ (Refresh State) ทุกครั้งที่เปิด Popup เพื่อกันปุ่ม Loading ค้าง
+            const actionsDiv = document.getElementById('modal-actions-container');
             if (currentUserData && (currentUserData.role === "หัวหน้าบริหาร" || currentUserData.uid === ev.uid)) {
+                actionsDiv.innerHTML = `<button onclick="deleteCurrentEvent()" class="px-4 py-2 bg-red-50 hover:bg-red-500 hover:text-white text-red-600 text-sm font-bold rounded-lg transition shadow-sm border border-red-200 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> ลบข้อมูล</button>`;
                 actionsDiv.classList.remove('hidden');
             } else {
                 actionsDiv.classList.add('hidden');
+                actionsDiv.innerHTML = '';
             }
             document.getElementById('eventModal').classList.add('active');
         }
@@ -441,7 +477,7 @@
         async function deleteCurrentEvent() {
             if (!currentEditingEventKey) return;
             if (confirm("⚠️ ยืนยันการยกเลิก/ลบนัดหมายนี้ใช่หรือไม่?")) {
-                const actionsDiv = document.getElementById('modal-actions');
+                const actionsDiv = document.getElementById('modal-actions-container');
                 actionsDiv.innerHTML = `<span class="text-sm font-bold text-gray-500"><i class="fa-solid fa-spinner fa-spin"></i> กำลังลบข้อมูล...</span>`;
                 try {
                     await fetch(`https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events/${currentEditingEventKey}.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP`, { method: 'DELETE' });
@@ -453,49 +489,36 @@
         }
 
         // ==========================================
-        // ✍️ 6. ฟังก์ชันฟอร์มเพิ่มงานใหม่
+        // ✍️ ฟังก์ชันฟอร์มเพิ่มงานใหม่ + ปุ่มลัด
         // ==========================================
+        function setShortcut(text) { document.getElementById('input-title').value = text; }
+        function setTime(start, end) { document.getElementById('input-time-start').value = start; document.getElementById('input-time-end').value = end; }
+
         function openAddEventModal() {
             if(!currentUserData || currentUserData.uid === "GUEST") return;
-            
-            // ตั้งค่าวันที่เริ่มต้นในฟอร์มเป็นวันนี้
             document.getElementById('input-date-start').valueAsDate = new Date();
             document.getElementById('input-date-end').valueAsDate = new Date();
-
-            // 🌟 ระบบสวมสิทธิ์: ถ้าเป็น "หัวหน้าบริหาร" ให้ดึงรายชื่อผู้อำนวยการมาให้เลือก
             const roleTargetDiv = document.getElementById('form-role-target');
             const targetSelect = document.getElementById('input-target-user');
             targetSelect.innerHTML = '';
-
             if (currentUserData.role === "หัวหน้าบริหาร") {
                 roleTargetDiv.classList.remove('hidden');
-                // ตัวเลือกแรกคือตัวเอง
                 targetSelect.innerHTML += `<option value="${currentUserData.uid}">ลงให้ตนเอง (${currentUserData.fullName})</option>`;
-                // ค้นหาผู้อำนวยการ
-                for(let uid in executivesData) {
-                    if(executivesData[uid].role === "ผู้อำนวยการ" && executivesData[uid].isActive) {
-                        targetSelect.innerHTML += `<option value="${uid}">👉 สวมสิทธิ์ลงให้: ${executivesData[uid].fullName} (ผู้อำนวยการ)</option>`;
-                    }
-                }
+                for(let uid in executivesData) { if(executivesData[uid].role === "ผู้อำนวยการ" && executivesData[uid].isActive) { targetSelect.innerHTML += `<option value="${uid}">👉 สวมสิทธิ์ลงให้: ${executivesData[uid].fullName} (ผู้อำนวยการ)</option>`; } }
             } else {
                 roleTargetDiv.classList.add('hidden');
                 targetSelect.innerHTML = `<option value="${currentUserData.uid}">${currentUserData.fullName}</option>`;
             }
-
             document.getElementById('addEventModal').classList.add('active');
         }
 
         async function submitAddEvent(e) {
-            e.preventDefault(); // ป้องกันเว็บรีเฟรช
-            
+            e.preventDefault(); 
             const btn = document.getElementById('btn-submit-event');
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...`;
-            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...`; btn.disabled = true;
 
-            // 1. ดึงข้อมูลว่าเลือกลงคิวให้ใคร (ดึงสิทธิ์จาก UID นั้นๆ)
             const targetUid = document.getElementById('input-target-user').value;
             const targetUser = executivesData[targetUid] || currentUserData;
-
             const title = document.getElementById('input-title').value;
             const startDate = document.getElementById('input-date-start').value;
             const endDate = document.getElementById('input-date-end').value;
@@ -505,64 +528,25 @@
             const priority = document.getElementById('input-priority').value;
             const visibility = document.getElementById('input-visibility').value;
 
-            // 2. คำนวณวันที่ (รองรับลงคิวหลายวัน)
-            let currD = new Date(startDate);
-            let endD = new Date(endDate);
-            let datesArray = [];
-            while(currD <= endD) {
-                datesArray.push(currD.toISOString().split('T')[0]);
-                currD.setDate(currD.getDate() + 1);
-            }
+            let currD = new Date(startDate); let endD = new Date(endDate); let datesArray = [];
+            while(currD <= endD) { datesArray.push(currD.toISOString().split('T')[0]); currD.setDate(currD.getDate() + 1); }
+            if(datesArray.length === 0) { alert("กรุณาเลือกวันที่ให้ถูกต้อง"); btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`; btn.disabled=false; return; }
 
-            if(datesArray.length === 0) { alert("กรุณาเลือกวันที่ให้ถูกต้อง"); btn.innerHTML = `บันทึกข้อมูล`; btn.disabled=false; return; }
-
-            // 3. วนลูปบันทึกข้อมูลลง Firebase ทีละวัน
-            const groupId = 'GRP_WEB_' + new Date().getTime();
-            let promises = [];
+            const groupId = 'GRP_WEB_' + new Date().getTime(); let promises = [];
 
             datesArray.forEach(singleDate => {
                 const newEventId = "EVT_WEB_" + new Date().getTime() + "_" + Math.floor(Math.random() * 1000);
-                const finalEvent = {
-                    groupId: groupId,
-                    uid: targetUser.uid, 
-                    execName: targetUser.fullName, 
-                    execPosition: targetUser.position,
-                    role: targetUser.role,
-                    sortOrder: targetUser.sortOrder || 999,
-                    avatar: targetUser.picUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(targetUser.fullName)}`,
-                    title: title, 
-                    date: singleDate, 
-                    timeStart: timeStart || "08:30", 
-                    timeEnd: timeEnd || "16:30",
-                    room: room || "ไม่ระบุ", 
-                    priority: priority, 
-                    visibility: visibility,
-                    timestamp: new Date().toISOString()
-                };
-
-                const p = fetch(`https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events/${newEventId}.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP`, {
-                    method: "PUT", contentType: "application/json", body: JSON.stringify(finalEvent)
-                });
-                promises.push(p);
+                const finalEvent = { groupId: groupId, uid: targetUser.uid, execName: targetUser.fullName, execPosition: targetUser.position, role: targetUser.role, sortOrder: targetUser.sortOrder || 999, avatar: targetUser.picUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(targetUser.fullName)}`, title: title, date: singleDate, timeStart: timeStart || "08:30", timeEnd: timeEnd || "16:30", room: room || "ไม่ระบุ", priority: priority, visibility: visibility, timestamp: new Date().toISOString() };
+                promises.push(fetch(`https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events/${newEventId}.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP`, { method: "PUT", contentType: "application/json", body: JSON.stringify(finalEvent) }));
             });
 
             try {
                 await Promise.all(promises);
                 closeModal('addEventModal');
-                
-                // คืนค่าปุ่ม
-                btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`;
-                btn.disabled = false;
-                document.getElementById('addEventForm').reset();
-                
-                // รีเฟรชปฏิทิน
-                await fetchDatabase();
-                renderCalendar();
-
+                btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`; btn.disabled = false; document.getElementById('addEventForm').reset();
+                await fetchDatabase(); renderCalendar();
             } catch(e) {
-                alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
-                btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`;
-                btn.disabled = false;
+                alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล"); btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`; btn.disabled = false;
             }
         }
 
