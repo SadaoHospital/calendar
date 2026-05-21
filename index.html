@@ -40,53 +40,85 @@
         
         .shortcut-btn { padding: 4px 10px; font-size: 10px; font-weight: 600; border-radius: 99px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; transition: all 0.2s; white-space: nowrap; }
         .shortcut-btn:hover { background: #e0f2fe; color: #0284c7; border-color: #bae6fd; }
+
+        /* 📱🔥 โหมดจอย่อ / มือถือแนวนอน (Landscape UI Optimization) */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .glass-nav { padding: 4px 12px !important; flex-direction: row !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; border-radius: 12px !important; }
+            .header-main-row { flex-direction: row !important; width: auto !important; flex: 1 !important; justify-content: space-between !important; gap: 12px !important; }
+            
+            /* ย่อโลโก้และฟอนต์ */
+            .logo-box { width: 32px !important; height: 32px !important; padding: 2px !important; }
+            .h-title { font-size: 14px !important; }
+            .h-subtitle { display: none !important; } /* ซ่อนชื่อรอง */
+            
+            /* ย่อปุ่มเดือนให้อยู่ตรงกลางเล็กๆ */
+            .month-control { gap: 4px !important; padding: 2px 6px !important; }
+            .month-control button { width: 22px !important; height: 22px !important; font-size: 10px !important; }
+            .month-control span { min-width: 90px !important; font-size: 11px !important; padding: 0 !important; }
+            .today-btn { padding: 2px 6px !important; font-size: 9px !important; }
+            
+            /* ย่อโปรไฟล์ */
+            .profile-section { padding-left: 8px !important; gap: 6px !important; border-left: 1px solid rgba(209,213,219,0.5) !important; }
+            .profile-img { width: 28px !important; height: 28px !important; }
+            .profile-name { font-size: 10px !important; margin: 0 !important; }
+            .profile-badge { font-size: 8px !important; padding: 0 4px !important; margin-top: 0 !important; }
+            
+            /* ดึง Dropdown มารวมในบรรทัดเดียวกัน */
+            .filter-section { width: auto !important; padding-top: 0 !important; border-top: none !important; flex-direction: row !important; margin-left: auto !important; }
+            .filter-icon-text { display: none !important; } /* ซ่อนไอคอนกรวย */
+            .filter-select { font-size: 10px !important; padding: 2px 8px !important; width: auto !important; height: 26px !important; }
+            
+            /* ลดระยะห่างตาราง */
+            #calendar-grid { padding-top: 4px !important; }
+        }
     </style>
 </head>
 <body>
 
     <div class="bg-shapes"><div class="shape-1"></div><div class="shape-2"></div></div>
 
-    <div class="sticky top-0 z-40 pt-3 pb-2 bg-gradient-to-b from-[#eef2f6] via-[#eef2f6]/95 to-transparent px-2 md:px-4">
+    <div class="sticky top-0 z-40 pt-2 md:pt-3 pb-2 bg-gradient-to-b from-[#eef2f6] via-[#eef2f6]/95 to-transparent px-2 md:px-4">
         <div class="max-w-[1600px] mx-auto">
-            <header class="glass-nav rounded-2xl px-4 md:px-6 py-3 flex flex-col gap-3">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <header class="glass-nav rounded-2xl px-4 md:px-6 py-3 flex flex-col gap-3 transition-all duration-300">
+                
+                <div class="header-main-row flex flex-col md:flex-row justify-between items-center gap-4">
                     <div class="flex items-center gap-3 md:gap-4 w-full md:w-auto justify-center md:justify-start">
-                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white shadow-md flex items-center justify-center p-1.5 border border-gray-100 flex-shrink-0">
+                        <div class="logo-box w-12 h-12 md:w-14 md:h-14 rounded-full bg-white shadow-md flex items-center justify-center p-1.5 border border-gray-100 flex-shrink-0">
                             <img src="https://github.com/SadaoHospital/calendar/blob/Img/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%20%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B8%B2%20-%20Copy.png?raw=true" class="w-full h-full object-contain drop-shadow-sm">
                         </div>
                         <div class="text-center md:text-left">
-                            <h1 class="text-xl md:text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600 drop-shadow-sm">ปฏิทินผู้บริหาร</h1>
-                            <p class="text-xs md:text-sm text-gray-500 font-medium tracking-wide">โรงพยาบาลสะเดา</p>
+                            <h1 class="h-title text-xl md:text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600 drop-shadow-sm">ปฏิทินผู้บริหาร</h1>
+                            <p class="h-subtitle text-xs md:text-sm text-gray-500 font-medium tracking-wide">โรงพยาบาลสะเดา</p>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-2 bg-white/50 p-1.5 rounded-full shadow-inner border border-gray-200/60 w-full md:w-auto justify-between md:justify-center">
+                    <div class="month-control flex items-center gap-2 bg-white/50 p-1.5 rounded-full shadow-inner border border-gray-200/60 w-full md:w-auto justify-between md:justify-center">
                         <button onclick="loadPreviousMonth()" class="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm hover:bg-blue-50 text-gray-600 transition"><i class="fa-solid fa-chevron-left"></i></button>
                         <span id="current-month-display" class="px-2 md:px-4 font-bold text-gray-700 min-w-[140px] md:min-w-[160px] text-center text-sm md:text-base">กำลังโหลด...</span>
-                        <button onclick="resetToToday()" class="px-3 py-1 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-bold transition">วันนี้</button>
+                        <button onclick="resetToToday()" class="today-btn px-3 py-1 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-bold transition">วันนี้</button>
                         <button onclick="loadNextMonth()" class="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm hover:bg-blue-50 text-gray-600 transition"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
 
-                    <div class="flex items-center gap-3 pl-0 md:pl-6 border-l-0 md:border-l border-gray-300/50 w-full md:w-auto justify-center md:justify-end">
+                    <div class="profile-section flex items-center gap-3 pl-0 md:pl-6 border-l-0 md:border-l border-gray-300/50 w-full md:w-auto justify-center md:justify-end">
                         <div class="text-right">
-                            <p id="user-display-name" class="text-sm font-bold text-gray-800">กำลังตรวจสอบสิทธิ์...</p>
-                            <p class="text-[10px] text-gray-600 font-bold bg-gray-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5 border border-gray-200" id="login-status-box">
+                            <p id="user-display-name" class="profile-name text-sm font-bold text-gray-800">กำลังตรวจสอบสิทธิ์...</p>
+                            <p class="profile-badge text-[10px] text-gray-600 font-bold bg-gray-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-0.5 border border-gray-200" id="login-status-box">
                                 <span id="login-status-dot" class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span> 
                                 <span id="login-status-text">รอการเชื่อมต่อ</span>
                             </p>
                         </div>
                         <div class="relative">
-                            <img id="user-profile-img" src="https://ui-avatars.com/api/?name=User&background=e5e7eb&color=9ca3af" class="w-10 h-10 md:w-11 md:h-11 rounded-full border-2 border-white shadow-lg object-cover">
+                            <img id="user-profile-img" src="https://ui-avatars.com/api/?name=User&background=e5e7eb&color=9ca3af" class="profile-img w-10 h-10 md:w-11 md:h-11 rounded-full border-2 border-white shadow-lg object-cover">
                             <div id="status-indicator" class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row justify-between items-center w-full gap-3 pt-3 border-t border-gray-200/50">
-                    <div class="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-700">
+                <div class="filter-section flex flex-col sm:flex-row justify-between items-center w-full gap-3 pt-3 border-t border-gray-200/50">
+                    <div class="filter-icon-text flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-700">
                         <i class="fa-solid fa-filter"></i> ตัวกรองข้อมูลผู้บริหาร
                     </div>
-                    <select id="filter-select" onchange="renderCalendar()" class="w-full sm:w-auto bg-white/90 border border-gray-300 text-gray-700 text-xs md:text-sm rounded-full px-4 py-1.5 shadow-sm outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer font-medium transition">
+                    <select id="filter-select" onchange="renderCalendar()" class="filter-select w-full sm:w-auto bg-white/90 border border-gray-300 text-gray-700 text-xs md:text-sm rounded-full px-4 py-1.5 shadow-sm outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer font-medium transition">
                         <option value="ALL">📋 แสดงทุกรายการ (ตามสิทธิ์)</option>
                     </select>
                 </div>
@@ -141,8 +173,7 @@
                         <div class="flex items-start gap-3"><div class="w-6 text-center text-green-500 mt-0.5"><i class="fa-solid fa-location-dot"></i></div><div><p class="text-[10px] text-gray-400 font-semibold uppercase">สถานที่</p><p id="modal-room" class="text-sm font-bold text-gray-700"></p></div></div>
                     </div>
                 </div>
-                <div id="modal-actions-container" class="mt-6 pt-4 border-t border-gray-100 flex justify-end gap-2 hidden">
-                    </div>
+                <div id="modal-actions-container" class="mt-6 pt-4 border-t border-gray-100 flex justify-end gap-2 hidden"></div>
             </div>
         </div>
     </div>
@@ -249,7 +280,6 @@
         let executivesData = {};
         let currentUserData = null; 
         
-        // ตัวแปรสำหรับระบบแก้ไขข้อมูล
         let currentEditingEventKey = null; 
         let isEditMode = false;
         let editOldKey = null;
@@ -259,6 +289,16 @@
             await initializeLiff(); 
             populateFilterDropdown();
             renderCalendar();
+
+            setInterval(async () => {
+                try {
+                    const evRes = await fetch(FIREBASE_URL);
+                    const newEvents = await evRes.json() || {};
+                    for (let key in newEvents) newEvents[key].firebaseKey = key;
+                    eventsData = newEvents; 
+                    renderCalendar(); 
+                } catch(e) {}
+            }, 20000);
         };
 
         async function fetchDatabase() {
@@ -322,8 +362,7 @@
                 select.innerHTML += `<option value="ROLE:ผู้อำนวยการ">🎯 เฉพาะกลุ่มผู้อำนวยการ</option>`;
                 select.innerHTML += `<option value="ROLE:คณะกรรมการ">👥 เฉพาะคณะกรรมการทั่วไป</option>`;
                 select.innerHTML += `<option value="VISIBILITY:public">🌐 เฉพาะงานสาธารณะ</option>`;
-                if (role === "ผู้อำนวยการ") select.value = "VISIBILITY:private";
-                else select.value = "ALL";
+                if (role === "ผู้อำนวยการ") select.value = "VISIBILITY:private"; else select.value = "ALL";
             } else {
                 select.innerHTML += `<option value="ALL">📋 รวมทั้งหมด (ส่วนตัว+กรรมการ+สาธารณะ)</option>`;
                 select.innerHTML += `<option value="VISIBILITY:private">🔒 เฉพาะงานส่วนตัวของท่าน</option>`;
@@ -454,9 +493,6 @@
             }
         }
 
-        // ==========================================
-        // 🚨 ฟังก์ชัน Popup ลบข้อมูล / เปิดโหมดแก้ไข
-        // ==========================================
         function openEventModal(firebaseKey) {
             const ev = eventsData[firebaseKey]; if(!ev) return;
             currentEditingEventKey = firebaseKey; 
@@ -478,15 +514,13 @@
 
             const actionsDiv = document.getElementById('modal-actions-container');
             if (currentUserData && (currentUserData.role === "หัวหน้าบริหาร" || currentUserData.uid === ev.uid)) {
-                // 🔥 แทรกปุ่ม "แก้ไข" คู่กับปุ่ม "ลบ"
                 actionsDiv.innerHTML = `
                     <button onclick="prepareEditEvent()" class="px-4 py-2 bg-blue-50 hover:bg-blue-500 hover:text-white text-blue-600 text-sm font-bold rounded-lg transition shadow-sm border border-blue-200 flex items-center gap-2"><i class="fa-solid fa-pen"></i> แก้ไข</button>
                     <button onclick="deleteCurrentEvent()" class="px-4 py-2 bg-red-50 hover:bg-red-500 hover:text-white text-red-600 text-sm font-bold rounded-lg transition shadow-sm border border-red-200 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> ลบข้อมูล</button>
                 `;
                 actionsDiv.classList.remove('hidden');
             } else {
-                actionsDiv.classList.add('hidden');
-                actionsDiv.innerHTML = '';
+                actionsDiv.classList.add('hidden'); actionsDiv.innerHTML = '';
             }
             document.getElementById('eventModal').classList.add('active');
         }
@@ -505,20 +539,14 @@
             }
         }
 
-        // ==========================================
-        // ✍️ ฟังก์ชันฟอร์มเพิ่มงานและแก้ไขงาน
-        // ==========================================
         function setShortcut(text) { document.getElementById('input-title').value = text; }
         function setTime(start, end) { document.getElementById('input-time-start').value = start; document.getElementById('input-time-end').value = end; }
 
         function openAddEventModal() {
             if(!currentUserData || currentUserData.uid === "GUEST") return;
-            
-            isEditMode = false;
-            editOldKey = null;
+            isEditMode = false; editOldKey = null;
             document.getElementById('modal-form-title').innerHTML = '<i class="fa-solid fa-calendar-plus mr-2"></i>เพิ่มนัดหมายใหม่';
             document.getElementById('addEventForm').reset();
-            
             document.getElementById('input-date-start').valueAsDate = new Date();
             document.getElementById('input-date-end').valueAsDate = new Date();
             
@@ -529,29 +557,19 @@
             if (currentUserData.role === "หัวหน้าบริหาร") {
                 roleTargetDiv.classList.remove('hidden');
                 targetSelect.innerHTML += `<option value="${currentUserData.uid}">ลงให้ตนเอง (${currentUserData.fullName})</option>`;
-                for(let uid in executivesData) { 
-                    if(executivesData[uid].role === "ผู้อำนวยการ" && executivesData[uid].isActive) { 
-                        targetSelect.innerHTML += `<option value="${uid}">👉 สวมสิทธิ์ลงให้: ${executivesData[uid].fullName} (ผู้อำนวยการ)</option>`; 
-                    } 
-                }
+                for(let uid in executivesData) { if(executivesData[uid].role === "ผู้อำนวยการ" && executivesData[uid].isActive) { targetSelect.innerHTML += `<option value="${uid}">👉 สวมสิทธิ์ลงให้: ${executivesData[uid].fullName} (ผู้อำนวยการ)</option>`; } }
             } else {
-                roleTargetDiv.classList.add('hidden');
-                targetSelect.innerHTML = `<option value="${currentUserData.uid}">${currentUserData.fullName}</option>`;
+                roleTargetDiv.classList.add('hidden'); targetSelect.innerHTML = `<option value="${currentUserData.uid}">${currentUserData.fullName}</option>`;
             }
             document.getElementById('addEventModal').classList.add('active');
         }
 
-        // 🔥 ฟังก์ชันเตรียมเปิดหน้าแก้ไข
         function prepareEditEvent() {
             if (!currentEditingEventKey) return;
             const ev = eventsData[currentEditingEventKey];
+            isEditMode = true; editOldKey = currentEditingEventKey;
+            closeModal('eventModal');
             
-            isEditMode = true;
-            editOldKey = currentEditingEventKey; // จดจำ key เดิมไว้ เพื่อสั่งลบทิ้งตอนกดเซฟ
-            
-            closeModal('eventModal'); // ปิดหน้าต่างดูรายละเอียด
-            
-            // นำข้อมูลเดิมไปยัดใส่ฟอร์ม
             document.getElementById('modal-form-title').innerHTML = '<i class="fa-solid fa-pen mr-2"></i>แก้ไขนัดหมาย';
             document.getElementById('input-title').value = ev.title || "";
             document.getElementById('input-date-start').value = ev.date;
@@ -569,18 +587,11 @@
             if (currentUserData.role === "หัวหน้าบริหาร") {
                 roleTargetDiv.classList.remove('hidden');
                 targetSelect.innerHTML += `<option value="${currentUserData.uid}">ลงให้ตนเอง (${currentUserData.fullName})</option>`;
-                for(let uid in executivesData) { 
-                    if(executivesData[uid].role === "ผู้อำนวยการ" && executivesData[uid].isActive) { 
-                        let isSelected = (ev.uid === uid) ? "selected" : "";
-                        targetSelect.innerHTML += `<option value="${uid}" ${isSelected}>👉 สวมสิทธิ์ลงให้: ${executivesData[uid].fullName} (ผู้อำนวยการ)</option>`; 
-                    } 
-                }
+                for(let uid in executivesData) { if(executivesData[uid].role === "ผู้อำนวยการ" && executivesData[uid].isActive) { let isSelected = (ev.uid === uid) ? "selected" : ""; targetSelect.innerHTML += `<option value="${uid}" ${isSelected}>👉 สวมสิทธิ์ลงให้: ${executivesData[uid].fullName} (ผู้อำนวยการ)</option>`; } }
                 if(ev.uid === currentUserData.uid) targetSelect.value = currentUserData.uid;
             } else {
-                roleTargetDiv.classList.add('hidden');
-                targetSelect.innerHTML = `<option value="${currentUserData.uid}">${currentUserData.fullName}</option>`;
+                roleTargetDiv.classList.add('hidden'); targetSelect.innerHTML = `<option value="${currentUserData.uid}">${currentUserData.fullName}</option>`;
             }
-            
             document.getElementById('addEventModal').classList.add('active');
         }
 
@@ -604,11 +615,8 @@
             while(currD <= endD) { datesArray.push(currD.toISOString().split('T')[0]); currD.setDate(currD.getDate() + 1); }
             if(datesArray.length === 0) { alert("กรุณาเลือกวันที่ให้ถูกต้อง"); btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`; btn.disabled=false; return; }
 
-            // 🔥 หากอยู่ในโหมด "แก้ไข" ให้ทำการลบข้อมูลเก่าทิ้งก่อน 1 จังหวะ
             if (isEditMode && editOldKey) {
-                try {
-                    await fetch(`https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events/${editOldKey}.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP`, { method: 'DELETE' });
-                } catch(e) { console.error("Failed to delete old event during edit"); }
+                try { await fetch(`https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events/${editOldKey}.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP`, { method: 'DELETE' }); } catch(e) {}
             }
 
             const groupId = 'GRP_WEB_' + new Date().getTime(); let promises = [];
@@ -620,15 +628,12 @@
             });
 
             try {
-                await Promise.all(promises);
-                closeModal('addEventModal');
+                await Promise.all(promises); closeModal('addEventModal');
                 btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`; btn.disabled = false; 
                 document.getElementById('addEventForm').reset();
-                isEditMode = false; editOldKey = null; // รีเซ็ตโหมด
+                isEditMode = false; editOldKey = null;
                 await fetchDatabase(); renderCalendar();
-            } catch(e) {
-                alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล"); btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`; btn.disabled = false;
-            }
+            } catch(e) { alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล"); btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`; btn.disabled = false; }
         }
 
         function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
