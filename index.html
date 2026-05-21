@@ -84,10 +84,11 @@
 
                 <div class="flex flex-col sm:flex-row justify-between items-center w-full gap-3 pt-3 border-t border-gray-200/50">
                     <div class="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-700">
-                        <i class="fa-solid fa-filter"></i> ตัวกรองข้อมูลปฏิทิน
+                        <i class="fa-solid fa-filter"></i> ตัวกรองข้อมูลผู้บริหาร
                     </div>
                     <select id="filter-select" onchange="renderCalendar()" class="w-full sm:w-auto bg-white/90 border border-gray-300 text-gray-700 text-xs md:text-sm rounded-full px-4 py-1.5 shadow-sm outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer font-medium transition">
-                        </select>
+                        <option value="ALL">📋 แสดงทุกรายการ (ตามสิทธิ์)</option>
+                    </select>
                 </div>
             </header>
         </div>
@@ -107,7 +108,7 @@
             <div id="calendar-grid" class="grid grid-cols-7 gap-1.5 md:gap-4 pt-2 md:pt-4">
                 <div class="col-span-7 text-center py-32 text-gray-400">
                     <i class="fa-solid fa-circle-notch fa-spin text-5xl text-blue-500"></i>
-                    <p class="mt-4 font-medium text-lg">กำลังตรวจสอบสิทธิ์...</p>
+                    <p class="mt-4 font-medium text-lg">กำลังซิงค์ข้อมูล...</p>
                 </div>
             </div>
         </div>
@@ -140,7 +141,8 @@
                         <div class="flex items-start gap-3"><div class="w-6 text-center text-green-500 mt-0.5"><i class="fa-solid fa-location-dot"></i></div><div><p class="text-[10px] text-gray-400 font-semibold uppercase">สถานที่</p><p id="modal-room" class="text-sm font-bold text-gray-700"></p></div></div>
                     </div>
                 </div>
-                <div id="modal-actions-container" class="mt-6 pt-4 border-t border-gray-100 flex justify-end gap-2 hidden"></div>
+                <div id="modal-actions-container" class="mt-6 pt-4 border-t border-gray-100 flex justify-end gap-2 hidden">
+                    </div>
             </div>
         </div>
     </div>
@@ -150,7 +152,7 @@
             <div class="h-2 w-full bg-gradient-to-r from-blue-500 to-indigo-500"></div>
             <div class="p-5 md:p-6">
                 <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-200">
-                    <h2 class="text-lg font-bold text-blue-700"><i class="fa-solid fa-calendar-plus mr-2"></i>เพิ่มนัดหมายใหม่</h2>
+                    <h2 id="modal-form-title" class="text-lg font-bold text-blue-700"><i class="fa-solid fa-calendar-plus mr-2"></i>เพิ่มนัดหมายใหม่</h2>
                     <button onclick="closeModal('addEventModal')" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 
@@ -246,7 +248,11 @@
         let eventsData = {};
         let executivesData = {};
         let currentUserData = null; 
+        
+        // ตัวแปรสำหรับระบบแก้ไขข้อมูล
         let currentEditingEventKey = null; 
+        let isEditMode = false;
+        let editOldKey = null;
 
         window.onload = async () => {
             await fetchDatabase();
@@ -298,7 +304,6 @@
             document.getElementById('status-indicator').className = "absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full";
         }
 
-        // 🌟 1. ฟังก์ชันสร้าง Dropdown Filter ตามสิทธิ์ผู้ใช้งาน
         function populateFilterDropdown() {
             const select = document.getElementById('filter-select');
             select.innerHTML = '';
@@ -317,13 +322,9 @@
                 select.innerHTML += `<option value="ROLE:ผู้อำนวยการ">🎯 เฉพาะกลุ่มผู้อำนวยการ</option>`;
                 select.innerHTML += `<option value="ROLE:คณะกรรมการ">👥 เฉพาะคณะกรรมการทั่วไป</option>`;
                 select.innerHTML += `<option value="VISIBILITY:public">🌐 เฉพาะงานสาธารณะ</option>`;
-                
-                // Set ค่าเริ่มต้นอัจฉริยะ
                 if (role === "ผู้อำนวยการ") select.value = "VISIBILITY:private";
                 else select.value = "ALL";
-
             } else {
-                // สำหรับ ทีมนำ และ คณะกรรมการ
                 select.innerHTML += `<option value="ALL">📋 รวมทั้งหมด (ส่วนตัว+กรรมการ+สาธารณะ)</option>`;
                 select.innerHTML += `<option value="VISIBILITY:private">🔒 เฉพาะงานส่วนตัวของท่าน</option>`;
                 select.innerHTML += `<option value="VISIBILITY:committee">👥 เฉพาะงานคณะกรรมการ</option>`;
@@ -332,7 +333,6 @@
             }
         }
 
-        // 🌟 2. ฟังก์ชันตรวจสอบสิทธิ์การมองเห็น และประมวลผลตาราง
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = ''; 
@@ -344,35 +344,23 @@
             const currentFilter = document.getElementById('filter-select').value;
             const eventsByDate = {};
 
-            // 🧠 ลูปเช็คสิทธิ์ (Base Visibility Logic) ก่อนเอาไปใส่ในแต่ละวัน
             for (let key in eventsData) {
                 const ev = eventsData[key];
                 let canView = false;
                 let isOwner = currentUserData && currentUserData.uid === ev.uid;
                 let userRole = currentUserData ? currentUserData.role : "บุคคลทั่วไป";
 
-                if (userRole === "บุคคลทั่วไป") {
-                    canView = (ev.visibility === "public" || !ev.visibility);
-                } 
+                if (userRole === "บุคคลทั่วไป") { canView = (ev.visibility === "public" || !ev.visibility); } 
                 else if (userRole === "หัวหน้าบริหาร") {
-                    if (ev.visibility === "private") {
-                        // หัวหน้าบริหารตาทิพย์ เห็นส่วนตัวของ ผอ. และทีมนำ
-                        canView = isOwner || ev.role === "ผู้อำนวยการ" || ev.role === "ทีมนำ";
-                    } else { canView = true; }
+                    if (ev.visibility === "private") { canView = isOwner || ev.role === "ผู้อำนวยการ" || ev.role === "ทีมนำ"; } else { canView = true; }
                 } 
                 else if (userRole === "ผู้อำนวยการ" || userRole === "ทีมนำ") {
-                    if (ev.visibility === "private") canView = isOwner;
-                    else canView = true; 
+                    if (ev.visibility === "private") canView = isOwner; else canView = true; 
                 } 
-                else { // 💼 คณะกรรมการทั่วไป
-                    if (ev.visibility === "private") {
-                        canView = isOwner;
-                    } else {
-                        // ❌ ซ่อนการ "ลา" ของผู้อื่นไม่ให้กรรมการคนอื่นเห็น
+                else { 
+                    if (ev.visibility === "private") { canView = isOwner; } else {
                         const t = ev.title || "";
-                        if (!isOwner && (t.includes("ลาป่วย") || t.includes("ลากิจ") || t.includes("ลาพักผ่อน") || t.includes("ลาไป"))) {
-                            canView = false;
-                        } else { canView = true; }
+                        if (!isOwner && (t.includes("ลาป่วย") || t.includes("ลากิจ") || t.includes("ลาพักผ่อน") || t.includes("ลาไป"))) { canView = false; } else { canView = true; }
                     }
                 }
 
@@ -391,7 +379,6 @@
                 const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
                 let dailyEvents = eventsByDate[dateString] || [];
 
-                // 🔍 ประยุกต์ใช้ Dropdown Filter
                 dailyEvents = dailyEvents.filter(ev => {
                     let isOwner = currentUserData && currentUserData.uid === ev.uid;
                     if (currentFilter === "ALL") return true;
@@ -468,7 +455,7 @@
         }
 
         // ==========================================
-        // 🚨 ฟังก์ชัน Popup ลบข้อมูล
+        // 🚨 ฟังก์ชัน Popup ลบข้อมูล / เปิดโหมดแก้ไข
         // ==========================================
         function openEventModal(firebaseKey) {
             const ev = eventsData[firebaseKey]; if(!ev) return;
@@ -491,7 +478,11 @@
 
             const actionsDiv = document.getElementById('modal-actions-container');
             if (currentUserData && (currentUserData.role === "หัวหน้าบริหาร" || currentUserData.uid === ev.uid)) {
-                actionsDiv.innerHTML = `<button onclick="deleteCurrentEvent()" class="px-4 py-2 bg-red-50 hover:bg-red-500 hover:text-white text-red-600 text-sm font-bold rounded-lg transition shadow-sm border border-red-200 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> ลบข้อมูล</button>`;
+                // 🔥 แทรกปุ่ม "แก้ไข" คู่กับปุ่ม "ลบ"
+                actionsDiv.innerHTML = `
+                    <button onclick="prepareEditEvent()" class="px-4 py-2 bg-blue-50 hover:bg-blue-500 hover:text-white text-blue-600 text-sm font-bold rounded-lg transition shadow-sm border border-blue-200 flex items-center gap-2"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+                    <button onclick="deleteCurrentEvent()" class="px-4 py-2 bg-red-50 hover:bg-red-500 hover:text-white text-red-600 text-sm font-bold rounded-lg transition shadow-sm border border-red-200 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> ลบข้อมูล</button>
+                `;
                 actionsDiv.classList.remove('hidden');
             } else {
                 actionsDiv.classList.add('hidden');
@@ -515,13 +506,19 @@
         }
 
         // ==========================================
-        // ✍️ ฟังก์ชันฟอร์มเพิ่มงานใหม่
+        // ✍️ ฟังก์ชันฟอร์มเพิ่มงานและแก้ไขงาน
         // ==========================================
         function setShortcut(text) { document.getElementById('input-title').value = text; }
         function setTime(start, end) { document.getElementById('input-time-start').value = start; document.getElementById('input-time-end').value = end; }
 
         function openAddEventModal() {
             if(!currentUserData || currentUserData.uid === "GUEST") return;
+            
+            isEditMode = false;
+            editOldKey = null;
+            document.getElementById('modal-form-title').innerHTML = '<i class="fa-solid fa-calendar-plus mr-2"></i>เพิ่มนัดหมายใหม่';
+            document.getElementById('addEventForm').reset();
+            
             document.getElementById('input-date-start').valueAsDate = new Date();
             document.getElementById('input-date-end').valueAsDate = new Date();
             
@@ -541,6 +538,49 @@
                 roleTargetDiv.classList.add('hidden');
                 targetSelect.innerHTML = `<option value="${currentUserData.uid}">${currentUserData.fullName}</option>`;
             }
+            document.getElementById('addEventModal').classList.add('active');
+        }
+
+        // 🔥 ฟังก์ชันเตรียมเปิดหน้าแก้ไข
+        function prepareEditEvent() {
+            if (!currentEditingEventKey) return;
+            const ev = eventsData[currentEditingEventKey];
+            
+            isEditMode = true;
+            editOldKey = currentEditingEventKey; // จดจำ key เดิมไว้ เพื่อสั่งลบทิ้งตอนกดเซฟ
+            
+            closeModal('eventModal'); // ปิดหน้าต่างดูรายละเอียด
+            
+            // นำข้อมูลเดิมไปยัดใส่ฟอร์ม
+            document.getElementById('modal-form-title').innerHTML = '<i class="fa-solid fa-pen mr-2"></i>แก้ไขนัดหมาย';
+            document.getElementById('input-title').value = ev.title || "";
+            document.getElementById('input-date-start').value = ev.date;
+            document.getElementById('input-date-end').value = ev.date; 
+            document.getElementById('input-time-start').value = ev.timeStart || "08:30";
+            document.getElementById('input-time-end').value = ev.timeEnd || "16:30";
+            document.getElementById('input-room').value = ev.room || "";
+            document.getElementById('input-priority').value = ev.priority || "ทั่วไป";
+            document.getElementById('input-visibility').value = ev.visibility || "public";
+            
+            const roleTargetDiv = document.getElementById('form-role-target');
+            const targetSelect = document.getElementById('input-target-user');
+            targetSelect.innerHTML = '';
+            
+            if (currentUserData.role === "หัวหน้าบริหาร") {
+                roleTargetDiv.classList.remove('hidden');
+                targetSelect.innerHTML += `<option value="${currentUserData.uid}">ลงให้ตนเอง (${currentUserData.fullName})</option>`;
+                for(let uid in executivesData) { 
+                    if(executivesData[uid].role === "ผู้อำนวยการ" && executivesData[uid].isActive) { 
+                        let isSelected = (ev.uid === uid) ? "selected" : "";
+                        targetSelect.innerHTML += `<option value="${uid}" ${isSelected}>👉 สวมสิทธิ์ลงให้: ${executivesData[uid].fullName} (ผู้อำนวยการ)</option>`; 
+                    } 
+                }
+                if(ev.uid === currentUserData.uid) targetSelect.value = currentUserData.uid;
+            } else {
+                roleTargetDiv.classList.add('hidden');
+                targetSelect.innerHTML = `<option value="${currentUserData.uid}">${currentUserData.fullName}</option>`;
+            }
+            
             document.getElementById('addEventModal').classList.add('active');
         }
 
@@ -564,6 +604,13 @@
             while(currD <= endD) { datesArray.push(currD.toISOString().split('T')[0]); currD.setDate(currD.getDate() + 1); }
             if(datesArray.length === 0) { alert("กรุณาเลือกวันที่ให้ถูกต้อง"); btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`; btn.disabled=false; return; }
 
+            // 🔥 หากอยู่ในโหมด "แก้ไข" ให้ทำการลบข้อมูลเก่าทิ้งก่อน 1 จังหวะ
+            if (isEditMode && editOldKey) {
+                try {
+                    await fetch(`https://calendarsadao-default-rtdb.asia-southeast1.firebasedatabase.app/sadaoExecCalendar/events/${editOldKey}.json?auth=c0RJi6FNEQfcCur7GddJ12QbleXtzLneiVwNBaeP`, { method: 'DELETE' });
+                } catch(e) { console.error("Failed to delete old event during edit"); }
+            }
+
             const groupId = 'GRP_WEB_' + new Date().getTime(); let promises = [];
 
             datesArray.forEach(singleDate => {
@@ -575,7 +622,9 @@
             try {
                 await Promise.all(promises);
                 closeModal('addEventModal');
-                btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`; btn.disabled = false; document.getElementById('addEventForm').reset();
+                btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`; btn.disabled = false; 
+                document.getElementById('addEventForm').reset();
+                isEditMode = false; editOldKey = null; // รีเซ็ตโหมด
                 await fetchDatabase(); renderCalendar();
             } catch(e) {
                 alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล"); btn.innerHTML = `<i class="fa-solid fa-save"></i> บันทึกข้อมูล`; btn.disabled = false;
